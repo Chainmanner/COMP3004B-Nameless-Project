@@ -1,4 +1,0 @@
-#Thu Jan 23 20:37:54 EST 2020
-base.0=/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/dex/debug/mergeDexDebug/out/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
