@@ -1,0 +1,18 @@
+# ninja log v5
+0	558	1579788015	CMakeFiles/hello-libs.dir/hello-libs.cpp.o	835765fb6964408
+558	585	1579788015	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libhello-libs.so	c3b15cb4c6e75212
+1	514	1579790965	CMakeFiles/hello-libs.dir/hello-libs.cpp.o	835765fb6964408
+514	697	1579790965	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libhello-libs.so	c3b15cb4c6e75212
+0	74	1579811551	CMakeFiles/backend.dir/backend.c.o	294f8d12133c0387
+74	147	1579811551	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	7c59769a2c49445a
+0	25	1579811570	CMakeFiles/backend.dir/backend.c.o	294f8d12133c0387
+25	35	1579811570	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	7c59769a2c49445a
+1	121	1579811777	CMakeFiles/backend.dir/backend.c.o	294f8d12133c0387
+121	272	1579811777	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	7c59769a2c49445a
+0	88	1579826870	CMakeFiles/backend.dir/backend.c.o	294f8d12133c0387
+88	188	1579826871	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	7c59769a2c49445a
+0	22	1579827046	CMakeFiles/backend.dir/backend.c.o	fc4f511c1709cd14
+23	30	1579827046	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	7c59769a2c49445a
+0	24	1579827317	CMakeFiles/backend.dir/multisource_test.c.o	64e5f9002491b61
+0	26	1579827317	CMakeFiles/backend.dir/backend.c.o	294f8d12133c0387
+26	36	1579827317	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86_64/libbackend.so	c80c71813c89dcbe

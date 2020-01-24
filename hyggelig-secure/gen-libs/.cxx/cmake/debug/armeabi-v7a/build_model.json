@@ -1,0 +1,71 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure",
+      "sdkFolder": "/home/chainmanner/Android/Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "ideBuildTargetAbi": "x86,armeabi-v7a,armeabi",
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/build/intermediates",
+      "gradleModulePathName": ":gen-libs",
+      "moduleRootFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs",
+      "makeFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/.cxx",
+      "cxxFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx",
+      "ndkFolder": "/home/chainmanner/Android/Sdk/ndk/21.0.6113669",
+      "ndkVersion": "21.0.6113669",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "soFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/build/intermediates/cmake/debug/lib",
+    "objFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/build/intermediates/cmake/debug/obj",
+    "jsonFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug",
+    "gradleBuildOutputFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "X86",
+      "ARMEABI_V7A"
+    ],
+    "buildTargetSet": [
+      "bc-numbers"
+    ]
+  },
+  "abi": "ARMEABI_V7A",
+  "abiPlatformVersion": 16,
+  "cxxBuildFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a",
+  "jsonFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a",
+  "objFolder": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/build/intermediates/cmake/debug/obj/armeabi-v7a",
+  "buildCommandFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/build_command.txt",
+  "buildOutputFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/build_output.txt",
+  "modelOutputFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/CMakeLists.txt",
+    "toolchainWrapperFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/build_generation_state.json",
+    "cacheKeyFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cxx/debug/armeabi-v7a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/json_generation_record.json",
+  "compileCommandsJsonFile": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/compile_commands.json"
+}

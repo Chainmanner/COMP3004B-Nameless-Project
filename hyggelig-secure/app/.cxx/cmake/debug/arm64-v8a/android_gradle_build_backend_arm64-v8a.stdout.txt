@@ -1,0 +1,2 @@
+ninja: Entering directory `/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/.cxx/cmake/debug/arm64-v8a'
+ninja: no work to do.

@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
+    "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/.cxx/cmake/debug/arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "backend-Debug-arm64-v8a": {
+      "artifactName": "backend",
+      "buildCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/.cxx/cmake/debug/arm64-v8a\" backend",
+      "abi": "arm64-v8a",
+      "output": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so"
+    }
+  }
+}

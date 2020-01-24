@@ -1,0 +1,7 @@
+Executable : /home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja
+arguments : 
+-C
+/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/.cxx/cmake/debug/x86_64
+hello-libs
+jvmArgs : 
+

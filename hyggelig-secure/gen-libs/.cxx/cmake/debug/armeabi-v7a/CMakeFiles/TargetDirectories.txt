@@ -1,0 +1,5 @@
+/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/chainmanner/tmp/armeabi-v7a/bc-numbers/CMakeFiles/rebuild_cache.dir
+/home/chainmanner/tmp/armeabi-v7a/bc-numbers/CMakeFiles/edit_cache.dir
+/home/chainmanner/tmp/armeabi-v7a/bc-numbers/CMakeFiles/bc-numbers.dir

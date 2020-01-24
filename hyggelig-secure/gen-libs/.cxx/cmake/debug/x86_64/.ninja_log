@@ -1,0 +1,6 @@
+# ninja log v5
+0	133	1579808452	/home/chainmanner/tmp/x86_64/bc-numbers/CMakeFiles/bc-numbers.dir/src/number.c.o	bf4d61e13a85a48c
+134	194	1579808452	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/x86_64/libbc-numbers.a	ac3c63e073b55955
+0	54	1579808864	build.ninja	44e2a45f4f74e436
+1	67	1579808864	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/x86_64/libbc-numbers.a	189aba5eb80c993f
+2	108	1579811775	build.ninja	44e2a45f4f74e436

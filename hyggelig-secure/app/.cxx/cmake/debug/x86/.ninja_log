@@ -1,0 +1,8 @@
+# ninja log v5
+0	26	1579826870	CMakeFiles/backend.dir/backend.c.o	e7fae263bdd4d127
+26	36	1579826870	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86/libbackend.so	3e9d1064401eeb93
+0	21	1579827046	CMakeFiles/backend.dir/backend.c.o	954ef98320af4e5d
+21	30	1579827046	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86/libbackend.so	3e9d1064401eeb93
+0	21	1579827317	CMakeFiles/backend.dir/multisource_test.c.o	b4ff51be153f728c
+0	26	1579827317	CMakeFiles/backend.dir/backend.c.o	e7fae263bdd4d127
+26	34	1579827317	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/x86/libbackend.so	2fe914b0a8814aa4

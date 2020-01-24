@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
+    "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/bc-numbers/CMakeLists.txt",
+    "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "bc-numbers-Debug-x86_64": {
+      "artifactName": "bc-numbers",
+      "buildCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/debug/x86_64\" bc-numbers",
+      "abi": "x86_64",
+      "output": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/x86_64/libbc-numbers.a"
+    }
+  }
+}

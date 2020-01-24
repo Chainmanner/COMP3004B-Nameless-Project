@@ -1,0 +1,43 @@
+{
+  "stringTable": {
+    "0": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/release/armeabi-v7a",
+    "1": "--target=armv7-none-linux-androideabi16 --gcc-toolchain=/home/chainmanner/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/chainmanner/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security -Oz -DNDEBUG -fPIC"
+  },
+  "buildFiles": [
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
+    "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
+    "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/bc-numbers/CMakeLists.txt",
+    "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/release/armeabi-v7a\" clean"
+  ],
+  "buildTargetsCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/release/armeabi-v7a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "bc-numbers-Release-armeabi-v7a": {
+      "buildCommand": "/home/chainmanner/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/.cxx/cmake/release/armeabi-v7a\" bc-numbers",
+      "buildType": "release",
+      "toolchain": "3960097112",
+      "abi": "armeabi-v7a",
+      "artifactName": "bc-numbers",
+      "files": [
+        {
+          "src": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/gen-libs/src/main/cpp/bc-numbers/src/number.c",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/armeabi-v7a/libbc-numbers.a"
+    }
+  },
+  "toolchains": {
+    "3960097112": {
+      "cCompilerExecutable": "/home/chainmanner/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": []
+}

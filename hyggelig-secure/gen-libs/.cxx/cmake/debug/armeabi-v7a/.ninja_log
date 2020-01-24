@@ -1,0 +1,6 @@
+# ninja log v5
+0	442	1579808451	/home/chainmanner/tmp/armeabi-v7a/bc-numbers/CMakeFiles/bc-numbers.dir/src/number.c.o	90527fd31d80fa78
+443	666	1579808451	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/armeabi-v7a/libbc-numbers.a	5d10dc642fc1a159
+0	54	1579808864	build.ninja	dc573e711a9bdb7c
+1	48	1579808864	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/distribution/bc-numbers/lib/armeabi-v7a/libbc-numbers.a	d25c5d5d921eb1ca
+1	338	1579811668	build.ninja	dc573e711a9bdb7c

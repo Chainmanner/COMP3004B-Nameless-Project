@@ -1,0 +1,18 @@
+# ninja log v5
+0	446	1579788014	CMakeFiles/hello-libs.dir/hello-libs.cpp.o	64a40665091557d3
+446	514	1579788014	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libhello-libs.so	71cdeb7a29d7f686
+3	798	1579790964	CMakeFiles/hello-libs.dir/hello-libs.cpp.o	64a40665091557d3
+798	951	1579790964	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libhello-libs.so	71cdeb7a29d7f686
+0	39	1579811550	CMakeFiles/backend.dir/backend.c.o	f88407479b5a947d
+39	111	1579811550	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d69999ee4cd69be8
+0	35	1579811570	CMakeFiles/backend.dir/backend.c.o	f88407479b5a947d
+36	51	1579811570	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d69999ee4cd69be8
+1	183	1579811776	CMakeFiles/backend.dir/backend.c.o	f88407479b5a947d
+183	319	1579811776	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d69999ee4cd69be8
+1	83	1579826870	CMakeFiles/backend.dir/backend.c.o	f88407479b5a947d
+83	199	1579826870	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d69999ee4cd69be8
+0	22	1579827046	CMakeFiles/backend.dir/backend.c.o	f7977d3c5fe98a59
+22	37	1579827046	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d69999ee4cd69be8
+1	17	1579827317	CMakeFiles/backend.dir/multisource_test.c.o	ce7cc96ffabcf72c
+0	28	1579827317	CMakeFiles/backend.dir/backend.c.o	f88407479b5a947d
+28	42	1579827317	/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-secure/app/build/intermediates/cmake/debug/obj/arm64-v8a/libbackend.so	d6a974d7b7e25fbc
