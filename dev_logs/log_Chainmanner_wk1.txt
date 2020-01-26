@@ -15,7 +15,7 @@ Tasks:
 		- Currently has no ability to convert text into a number.
 		- Implementation works on x86-64, but has not been tested on ARM (ie. added to the Android Studio project, compiled, and tested on a simulator).
 
-	Total time spent:
+	Total time spent: 9 hours
 
 Next steps:
 	- Come up with a formal plan for the design and back end of the application this coming week.
