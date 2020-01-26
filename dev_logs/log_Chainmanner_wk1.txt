@@ -1,0 +1,28 @@
+Student: Gabriel Valachi
+ID: 101068875
+Log written Sunday January 26, 2020.
+
+Tasks:
+	- Set up Android Studio project. (1 hour)
+	- Wrote several tests to ensure proper configuration of Android Studio project. (1 hour)
+	- Attempted to link C (native) code with Java code for Android Studio project. (3 hours)
+		- This was successful; we can write our own native C/C++ code for the project.
+	- Attempted to compile and use GMP (GNU Multiple Precision) with our project, for cryptography. (2 hours)
+		- Failed, along with other libraries of similar complexity.
+		- Ultimately resorted to using the arbitrary-precision arithmetic code in bc, the Linux-standard arbitrary-precision calculator.
+	- Implemented RSA (Rivest-Shamir-Alderman) in C. (3 hours)
+		- Has some test code to encrypt/decrypt a number.
+		- Currently has no ability to convert text into a number.
+		- Implementation works on x86-64, but has not been tested on ARM (ie. added to the Android Studio project, compiled, and tested on a simulator).
+
+	Total time spent:
+
+Next steps:
+	- Come up with a formal plan for the design and back end of the application this coming week.
+		- Although we understand the general idea of what must be done, we still need to actually write down the steps we will take.
+		- This is so that we don't lose focus and so that we know the exact goals we need to meet.
+	- Add a way to convert ASCII text into a number, so that we can encrypt an actual message with it.
+		- In practice, it will be used to encrypt a symmetric key, which in turn is used to encrypt data. Unsure if ASCII-to-number conversion is strictly necessary.
+		- This may be put off for later.
+	- If there is time, for the sake of OpenPGP compliance, implement DSA (Digital Signature Algorithm).
+		- This may be put off for later.
