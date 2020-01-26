@@ -1,0 +1,17 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 1: Jan 20 - Jan 26
+
+Jan 20	Presentation Preparation 		[1 hr]
+Jan 21	D1 Presentation
+Jan 22	Team Meeting
+Jan 24	Researching SHA-2 algorithms		[2 hr]
+Jan 25	Researching Android App Architectures	[2 hr]
+	Setting up Android Studio & first app	[1 hr]
+Jan 26	Researching Android documentation on
+		- Biometric Authentication
+		- App Fundamentals
+		- App Components		[4 hr]
+______________________________________________________
+Total hours:					10 hrs
