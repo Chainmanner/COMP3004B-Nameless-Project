@@ -1,8 +1,25 @@
 Student: Connor Stewart
 ID: 101041125
-
-Saturday January 26:
+Monday January 20: 
+  Time: [1 Hour]
+	Printed information pages for group presentation [30 minutes]
+	Prepaired for presentation [30 minutes]
+Tuesday January 21: 
   Time:
+  	Deliverable one presentation
+Wensday January 22: 
+  Time: [1.5 Hours]
+  	Team meeting [1.5 Hours]
+		We researched verious frameworks and software packages for implementation of cryptography and the application UI
+  Notes:
+  	Going to need to learn how to do symmetric cryptography in an application
+	Might want to learn more AES stuff
+Thursday January 23: 
+	NA
+Friday January 24: 
+	NA
+Saturday January 25: 
+  Time: [8 Hours]
 	Researched verious types of symmetric key encription and how to implement AES inside an application [1 Hour]
 	Researched weather to use c or java for AES encription tool (choose java) [1 Hour]
 		First I wrote a failed prototype using C [2 Hour]
@@ -11,8 +28,6 @@ Saturday January 26:
 		next photo files will be implemented
 	Implemented all three AES keys (128, 192, 256 bit) [1 Hour]
 	Tool is accsessable via a command line interface, and can read files [1 Hour]
-
-	Total Time for day 8 hours.
   Notes:
 	I spent a lot of time setting up things and doing research on how to actually implement AES encryption and decryption in code
 	It turns out the task it not too trivial due to the oversaturation of encription and decryption packages out there
@@ -20,3 +35,11 @@ Saturday January 26:
   Things to add:
 	Next, im going to try and allow the application to encrypt/decrypt mp3 files and jpg/png files.
 	Also, I going to add the ability to save the encripted/decrypted information into the file system
+Sunday January 26:
+  Time: [1 Hour]
+	Organization of code produced so far [10 minutes]
+	Fixed some of my documentation [20 minutes]
+	Added more information to my dev_logs based off my agenda entries [30 minutes]
+  Notes:
+  	I needed to spend some time organizing my stuff, I was getting a little lost in disorganization
+Total Time this week: [11.5 Hours]
