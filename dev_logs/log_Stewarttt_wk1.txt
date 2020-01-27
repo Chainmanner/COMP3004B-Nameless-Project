@@ -1,3 +1,6 @@
+Student: Connor Stewart
+ID: 101041125
+
 Saturday January 26:
   Time:
 	Researched verious types of symmetric key encription and how to implement AES inside an application [1 Hour]
