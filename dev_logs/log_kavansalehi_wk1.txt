@@ -1,0 +1,11 @@
+kavan salehi
+101046945
+comp3004b
+week 1 devlog
+
+-presentation prep [1 hrs]
+-Research arbritary precision arithmitic [1 hrs]
+-Research on compressed file encryption/ decryption [2 hrs]
+-Resarch on architecture design and user interface design for android apps [2 hrs]
+----------------------------------------------------------------------------------------
+total time 6 hrs
