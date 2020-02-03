@@ -1,0 +1,41 @@
+Student: Connor Stewart
+ID: 101041125
+Monday January 27: [30 minutes]
+  Discussion for integrating password generator with UI [30 minutes]
+Tuesday January 28: [30 minutes]
+  Researching ASCII/UTF stuff [30 minutes]
+Wednesday January 29: [1.5 Hours]
+  Time: [1.5 Hours]
+  	Team meeting [1.5 Hours]
+		We discussed ways to integrate out various pieces of code
+    We decided I would do a lot of the back end Java stuff
+  Notes:
+  	I'm going to need to create the password generator back-end
+Thursday January 30:
+  NA
+Friday January 31:
+  NA
+Saturday February 1: [4 Hours]
+  Created the first two functions for my password generator
+  The two functions work with ASCII encoding
+  the first method creates a password using alphabetical characters with the option for capitals
+  The second uses alphanumerical characters with symbols
+Sunday February 2: [4 Hours]
+  Created the final two functions for the password generator
+  The two functions work with utf-8 encoding
+  The first method generates alphanumerical passwords with symbols using characters from a veriety of common languages
+  The second method creates any valid utf-8 string with any character (except the null character), including characters that are not normally used as keyboard input
+  Added documentation
+  Added a JSON file to automatically launch the file with the correct parameters from Microsoft visual studio
+Modified program interface:
+  Program can now output to either the terminal/file or output a string into another program
+    This means the program can now effectively be called from inside another program
+  Added encapsulation along with getter and setter methods for important data, making it harder for a hacker to read the password as its being created
+  Added JSON support for utf-8 code
+  Added more documentation to the code I produced
+  Finished Weekly log for uploading
+Notes:
+  Still have not added changes to AES program to encrypt alternative file formats (meaning music/video/photo files)
+    Need to research how this is done
+Total Time This Week:
+	[10.5 Hours]
