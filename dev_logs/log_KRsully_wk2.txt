@@ -1,0 +1,18 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 1: Jan 27 - Feb 2
+
+Jan 27	- Blockchain API research
+	- Android App Navigation research
+	- Android App HTTP Request research
+	- Working on Bitcoin balance lookup implementation		[2.5 hrs]
+Jan 29	Team Meeting
+Feb 2	- Learning implementation of Java's:
+				* HttpURLConnection
+				* AsyncTask
+				* JSONObject
+	- Completion of basic Bitcoin balance lookup by address
+	- Researching RecyclerView implementations for Help feature	[4 hrs]
+______________________________________________________
+Total hours:	6.5 hrs

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">My First App</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="hyggelig_secure">hyggelig-secure</string>
+    <string name="enter_blockchain_address">Enter a blockchain address</string>
+    <string name="show_blockchain_addr_balance">Show Balance</string>
+</resources>
