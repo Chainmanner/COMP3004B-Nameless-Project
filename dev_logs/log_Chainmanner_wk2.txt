@@ -1,0 +1,18 @@
+Student: Gabriel Valachi
+ID: 101068875
+Log written Sunday February 2, 2020.
+
+Tasks:
+	- Created a menu for the Encryption Tools. (2 hours)
+		- Non-functional.
+		- I was hoping to get the whole front end done, but due to unfamiliarity with Android studio, technical problems, and other schoolwork to be done, I was unable to do more than just the main menu at the time of writing.
+		- Will continue on this tonight and before the next meeting.
+	- Attempted to make navigation between menus, instead of spawning a new Activity for each menu. (2 hours)
+		- Failed. Will look for examples, maybe they can help.
+	- Researched how to add navigation between screens. (1 hour)
+
+Next steps:
+	- Keep working on the front end for the Encryption Tools.
+	- Make it possible to navigate between menus, instead of spawning a new Activity for each menu.
+		- Will look for examples on this.
+	- Once the front end is done, actually implement the encryption/decryption functionality.
