@@ -104,7 +104,7 @@ public class passwordGen {
 	
 	//entry point for the object if run as a program
 	public static void main(String[] argv) {
-		newPassword(argv);
+		/*newPassword(argv);
 		System.out.println(newPassword); //print the characters to the console
 		System.out.println(newPassword.length()); //print the length of the characters to the console
 		try(PrintWriter out = new PrintWriter("output.txt")) { //try to open a file
@@ -113,7 +113,7 @@ public class passwordGen {
 		catch (Exception e) {
 			System.out.println("ERROR, file output.txt does not exist, exiting");
 			return; //exit if the file cannot be opened
-		} //END TRY
+		} *///END TRY
 	} //END main
 	
 	public static int randomNumberGenerator(int lowerBound, int upperBound) {
