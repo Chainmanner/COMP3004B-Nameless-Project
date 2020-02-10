@@ -3,149 +3,226 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
- 
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.security.spec.KeySpec;
+import java.security.SecureRandom;
+import java.security.*;
+import java.util.Random;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File; 
+import java.io.FileOutputStream; 
+import java.io.OutputStream; 
+import java.nio.file.*;
+import java.io.File;
+
 /*
 Name: aes
-Discription:
-	Contains a collection of functions used to encrypt and decrypt various forms of data using the AES cypher
+Description:
+	Contains a collection of functions used to encrypt and decrypt various forms of data using the AES cipher
 */
 public class aes {
+
+	//stores in global private encapsulated variables for extra security
+	private static byte[] secretMessage;
+	private static SecretKey secKey;
+
+	/*
+	Name: clearMemory
+	Input: None
+	Output: sets secret message and secret key to null
+	Description:
+		A simple method to clear variables which contain encrypted information
+	*/
+	public static void clearMemory() {
+		secretMessage = null;
+		secKey = null;
+	} //END clearMemory
+
 	/*
 	Name: Main
-	Input: String[] - user defined set of command line arguments
-		[0] - contains the number of bits for the AES cipher (128, 192, 256)
-		[1] - cotnains the user key for the data
-		[2] - contains the file to be encrypted
+	Input: 
+		String[] args - user defined set of command line arguments
+			[0] - contains the number of bits for the AES cipher (128, 192, 256)
+			[1] - contains the user key for the data
+			[2] - contains the file to be encrypted
+			[3] - Request save to file or save to byte array
 	Output: None
-	Discription: The entry point function for the program
+	Description: The entry point function for the program
 		First step is to convert the users password into valid password the AES cipher can use
 		The second step is to convert that password into an AES key
 		The final step is to use the key to convert the data
 	*/
     public static void main(String[] args) throws Exception {
-		String message = readFile(args[2]);
+		//encrypt the data
+		secretMessage = encryptFile(args, System.getProperty("user.dir"));
+		//write the data
+		writeFiles(2, secretMessage, System.getProperty("user.dir")+ "\\" + args[2]);
+		//the new file has .AES appended to it
+		args[2] += ".AES";
+		//open and decrypt the new file
+		secretMessage = decryptFile(args, System.getProperty("user.dir"));
+		//the appended ending .AES is removed so remove it from the file name string
+		args[2] = args[2].substring(0, args[2].length() - 4);
+		//write the decrypted data and prepend New to its file name
+		writeFiles(1, secretMessage, System.getProperty("user.dir") + "\\New_" + args[2]);
 		
-        SecretKey secKey = convertToAESHash(Integer.parseInt(args[0]), args[1]);
-        byte[] cipherText = encrypt(message, secKey);
-        String decryptedText = decrypt(cipherText, secKey);
-		System.out.println("Original: \n" + message);
-        System.out.println("AES Key (Hexidecimal): \n" + DatatypeConverter.printHexBinary(secKey.getEncoded()));
-        System.out.println("Encrypted data (Hexidecimal): \n" + DatatypeConverter.printHexBinary(cipherText));
-        System.out.println("Descrypted data: \n" + decryptedText);
+		//clear the unencrypted data
+		clearMemory();
     } //END main
-	
-	public static String readFile(String filename) throws Exception {
-		return new Scanner(new File(filename)).useDelimiter("\\Z").next();
-	}
-	
+
 	/*
-	Name: convertToAESHash
+	Name: decryptFile
 	Input:
-		keyBits - the number of bits in the AES key being used (i.e. 128)
-		password - the password being used to open the AES file
+		String[] args - user defined set of command line arguments
+			[0] - contains the number of bits for the AES cipher (128, 192, 256)
+			[1] - contains the user key for the data
+			[2] - contains the file to be encrypted
+			[3] - Request save to file or save to byte array
+		String path - path to the file were looking to decrypt
+			For example: C:/users/billy/encriptedStuffFolder
 	Output:
-		SecretKey - an AES secret key representation of the password the user entered
-	Discription:
-		generates a secret key using a user password
+		returns a byte array representation of the decrypted data
+	Description:
+		Takes in a file name, a path, a bit size, and a password and decrypts the file
 	*/
-	public static SecretKey convertToAESHash(int keyBits, String password) {
-		//based on the number of bits in the AES key, find the number of characters in the string
-		int digits = 0;
-		if (keyBits == 128) {
-			digits = 16;
+	public static byte[] decryptFile(String[] args, String path) throws Exception {
+		//open the file and get its contents
+		Path fileDirectory = Paths.get(path + "\\" + args[2]);
+		byte[] cipherText = Files.readAllBytes(fileDirectory);
+		//generate a hash key using the password and bit length
+		secKey = generateHash(Integer.parseInt(args[0]), args[1]);
+		//run the AES cipher using the given parameters to get the secret message in plane text
+		return decrypt(cipherText, secKey);
+	} //END decryptFile
+
+	/*
+	Name: writeFiles
+	Input:
+		int type - this is the type of output
+			1 - output byte data in file format for decrypted data
+			2 - output byte data in file format for encrypted data
+		byte[] data - this is the data to be written to a file
+		String path - this is the path to the new file to be created/overwritten
+	Output:
+		Outputs a new file containing information stored in 'data' at specified location 'path'
+	Description:
+		A simple function which can be called to write files after they are encrypted or decrypted
+	*/
+	public static void writeFiles(int type, byte[] data, String path) throws Exception {
+		if (type == 1) { //write a decrypted byte stream
+			try (FileOutputStream output = new FileOutputStream(path)) {
+				output.write(data); //write byte data to output stream
+			} //END TRY
 		}
-		else if (keyBits == 192) {
-			digits = 16;
-		}
-		else if (keyBits == 256) {
-			digits = 22;
-		}
-		else {
-			return null;
-		}
-		//find the length of the currently inputted string
-		int passLength = password.length();
-		//set the psudopassword to password
-		String psudoPassword = password;
-		//current character to add
-		int character = 0;
-		
-		if (passLength > digits) {
-			return null;
+		else if (type == 2) { //write an encrypted byte stream
+			//Initialize the file output stream
+			OutputStream os = new FileOutputStream(path + ".AES");
+
+			//Write the byte array containing the encrypted data into the above stream
+			os.write(data);
+
+			//Close the stream
+			os.close();
 		} //END IF
+		//remove the secret encrypted data from memory
+		clearMemory();
+	} //END writeFiles
+	/*
+	Name: encryptFile
+	Input:
+		String[] args - user defined set of command line arguments
+			[0] - contains the number of bits for the AES cipher (128, 192, 256)
+			[1] - contains the user key for the data
+			[2] - contains the file to be encrypted
+			[3] - Request save to file or save to byte array
+		String path - path to the file were looking to encrypt
+			For example: C:/users/billy/importantStuffFolder
+	Output:
+		The function itself is of return void type, however the function saves
+		information in a file at the location specified by the path variable.
+		Please note that the new file has the same name as the old with the appendix .AES attached
+			For example, say the original file is: image.png
+			Then the new file will be called: image.png.AES
+	Description:
+		Function takes a bit size, a password, a file name, and a path and
+		encrypts the file specified at path and saves it in the same folder.
+	*/
+	public static byte[] encryptFile(String[] args, String path) throws Exception {
+		//get the directory to the current file
+		Path fileDirectory = Paths.get(path + "\\" + args[2]);
+		//open the file and get its contents
+		secretMessage = Files.readAllBytes(fileDirectory);
+		//generate a hash key using the password and bit length
+		secKey = generateHash(Integer.parseInt(args[0]), args[1]);
+		//run the AES cipher using the given parameters
+		byte[] cipherText = encrypt(secretMessage, secKey);
+		//clear the secret message
+		clearMemory();
 
-		//for the number of characters missing from the AES character limit, append characters from the begining of the string to the end
-		for (int i = 0; i < digits-passLength; i++) {
-			psudoPassword = psudoPassword+password.charAt(character);
-			//if the whole string has been repeated, start again from the begining
-			if (character == passLength-1) {
-				character = 0;
-			}
-			else { //get the next character next iteration of the for loop
-				character += 1;
-			} //END IF
-		} //END FOR
-		System.out.println(psudoPassword);
-		//convert the psudopassword to a character array
-		char[] charPass = psudoPassword.toCharArray();
+		return cipherText;
+	} //END encryptFile
 
-		//create a new string builder variable
-		StringBuilder intPass = new StringBuilder();
-		
-		//for every character in the psudopassword
-		for (char x : charPass) {
-			//convert the character from decimal to hexidecimal character code
-			intPass.append(Integer.toHexString((int) x).toUpperCase());
-		} //END FOR
+	/*
+	Name: generateHash
+	Input: 
+		int bits - this is the number of bits used in the cipher
+			For example: AES-128 would use 128 as its argument for bits
+		String password - this is the users password
+	Output:
+		Creates a AES formatted hash
+	Description:
+		Converts a user password into an AES hash using PBKDF2 key derivation functions
+	*/
+	public static SecretKey generateHash(int bits, String password) throws Exception {
+		//create a buffer
+		byte[] salt = new byte[8];
+		//get an instances of PBKDF2 key maker
+		SecretKeyFactory keyFactor = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		//input the user password data
+		PBEKeySpec specifications = new PBEKeySpec(password.toCharArray(), salt, 8192, 256);
+		//generate a hash
+		SecretKey tempKey = keyFactor.generateSecret(specifications);
+		//convert hash to AES hash
+		SecretKey secretCode = new SecretKeySpec(tempKey.getEncoded(), "AES");
+		//return the hash
+		return secretCode;
+	} //END generateHash
 
-		//remove the last hexidecimal digit to get an even value of 32 hexidecimal digits
-		//this occurs because 256 bit AES cannot be converted from keyboard characters without having an extra hexidecimal digit
-		if (keyBits == 256) {
-			intPass.deleteCharAt(intPass.length() - 1);
-		} //END IF
-		
-		//convert the hexidecimal representation of the psudopassword into a byte stream
-		byte[] decodedKey = Base64.getDecoder().decode(intPass.toString());
-		
-		//convert byte stream into an AES secret key
-		SecretKey secretKeyFormatted = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-		//return the secret key
-		return secretKeyFormatted;
-	} //END convertToAESHash
-     
     /*
 	Name: encrypt
 	Input: data - a set of characters in planetext to be converted back to encrypted characters
 		   key - the secret key used to convert between AES and non-AES text
 	Output: return cipherText - this is encrypted text
-	Discription: Converts an array of planetext characters back into AES encrypted characters using the password key
+	Description: Converts an array of planetext characters back into AES encrypted characters using the password key
 	*/
-    public static byte[] encrypt(String data,SecretKey key) throws Exception{
+    public static byte[] encrypt(byte[] data,SecretKey key) throws Exception{
 		//Java 7 uses AES with PKCS5Padding
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] cipherText = cipher.doFinal(data.getBytes());
+        byte[] cipherText = cipher.doFinal(data);
         return cipherText;
     } //END encrypt
-     
+
     /*
 	Name: decrypt
 	Input: cipherText - a set of characters in AES to be converted back to unencrypted characters
 		   key - the secret key used to convert between AES and non-AES text
 	Output: return new String(text) - this is unencrypted text
-	Discription: Converts an array of encrypted AES characters back into plane text using the AES cipher and the AES password key
+	Description: Converts an array of encrypted AES characters back into plane text using the AES cipher and the AES password key
 	*/
-    public static String decrypt(byte[] cipherText, SecretKey key) throws Exception {
+    public static byte[] decrypt(byte[] cipherText, SecretKey key) throws Exception {
 		//Java 7 uses AES with PKCS5Padding
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] text = cipher.doFinal(cipherText);
-        return new String(text);
+        return text;
     } //END decrypt
 } //END aes
