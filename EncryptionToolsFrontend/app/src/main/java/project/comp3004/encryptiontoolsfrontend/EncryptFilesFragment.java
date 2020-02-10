@@ -32,11 +32,11 @@ public class EncryptFilesFragment extends Fragment {
         });
 
         // TEST CODE - IT WORKS!
-        //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        //intent.addCategory(Intent.CATEGORY_OPENABLE);
-        //intent.setType("*/*");
-        //Intent intent2 = Intent.createChooser(intent, "Choose a file");
-        //startActivityForResult(intent2, 0);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        Intent intent2 = Intent.createChooser(intent, "Choose a file");
+        startActivityForResult(intent2, 0);
 
         return theView;
     }
