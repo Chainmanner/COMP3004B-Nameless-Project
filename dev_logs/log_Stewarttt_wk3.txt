@@ -31,7 +31,7 @@ Notes:
   Some code may need slight modifications, but overall I think this code should allow for all files to be encrypted or decrypted
   This application won't work directly with a database, meaning I will also need to make some code later to integrate the database (which is not made yet) with the encryption tool
 	However, the code created this week is enough to do simple encryption and decryption within a file system environment
-	Once the database is made by the other group members, will work on the integration code
+	Once the database is made by the other group members, I will work on the integration code
   Until then, I will look into OpenPGP protocols.
 Total Time This Week:
   [10.5 Hours]
