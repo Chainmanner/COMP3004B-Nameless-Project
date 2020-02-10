@@ -1,5 +1,6 @@
 package project.comp3004.encryptiontoolsfrontend;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,13 @@ public class EncryptFilesFragment extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.action_encryptFilesFragment2_to_encryptionToolsMainMenuFragment3);
             }
         });
+
+        // TEST CODE - IT WORKS!
+        //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        //intent.setType("*/*");
+        //Intent intent2 = Intent.createChooser(intent, "Choose a file");
+        //startActivityForResult(intent2, 0);
 
         return theView;
     }
