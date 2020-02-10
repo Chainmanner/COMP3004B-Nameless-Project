@@ -74,8 +74,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void beginBitcoin(View view){
+    public void beginBlockchain(View view){
         Intent intent = new Intent(getApplicationContext(), ShowBitcoinBalance.class);
+        startActivity(intent);
+    }
+
+    public void beginHelp(View view){
+        Intent intent = new Intent(getApplicationContext(), BrowseHelpActivity.class);
         startActivity(intent);
     }
 }

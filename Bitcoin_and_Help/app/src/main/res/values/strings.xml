@@ -5,4 +5,7 @@
     <string name="hyggelig_secure">hyggelig-secure</string>
     <string name="enter_blockchain_address">Enter a blockchain address</string>
     <string name="show_blockchain_addr_balance">Show Balance</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

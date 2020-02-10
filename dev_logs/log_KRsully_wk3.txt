@@ -1,0 +1,13 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 3: Feb 3 - Feb 9
+
+Feb 5	Team Meeting
+Feb 7	- Android Fragment Research
+	- Android ListFragment Research
+	- Android RecyclerView Research					[3 hrs]
+
+Feb 9	- Help Page RecyclerViewFragment Implementation			[5 hrs]			
+______________________________________________________
+Total hours:	8 hrs

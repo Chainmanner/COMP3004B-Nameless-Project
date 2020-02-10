@@ -128,7 +128,7 @@ public class ShowBitcoinBalance extends AppCompatActivity{
 
                     double balance = balances.get(0).getDouble("final_balance")/SATOSHI_VALUE;
 
-                    addr_balance.setText(String.format("Current balance: %f BTC", balance));
+                    addr_balance.setText(String.format("Address balance: %f BTC", balance));
                 }
 
 
