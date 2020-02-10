@@ -1,0 +1,38 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday January 27: 
+  None
+Tuesday January 28: 
+  None
+Wednesday January 29: [1.5 Hours]
+  Time: [1.5 Hours]
+  	Team meeting [1.5 Hours]
+		integrated password generator with Kavans user interface
+	We decided the next thing I should do is work on AES encryption for all files.
+	After this, it was also discussed I look into OpenPGP protocols.
+Thursday January 30:
+  Researched methods for encrypting files using AES: [30 minutes]
+	I was looking to see if I should convert files to byte streams or text streams
+	Settled on byte streams
+Friday January 31:
+  Looked into how to convert passwords to hashes: [15 minutes]
+	Settled on using PBKDF2 (Password-Based Key Derivation Function 2) key derivation function
+Saturday February 1: [4 Hours]
+  Implemented PBKDF2 password hasher and removed old password hasher
+Sunday February 2: [4.25 Hours]
+  Implemented encrypt and decrypt functions capable of reading and writing non text files: [3 Hours]
+	Accomplished by reading and writing all files as byte streams rather then text streams like before
+	Required reworking all read and write functions
+  Implemented a feature to allow data to be returned either as a saved file or as a byte stream returned to the caller [1 Hour]
+  Compiled my notes and completed my dev log for the week [15 minutes]
+Notes:
+  It may take some work to integrate this with the UI being created by the others. I plan on doing this next group meeting.
+  Some code may need slight modifications, but overall I think this code should allow for all files to be encrypted or decrypted
+  This application won't work directly with a database, meaning I will also need to make some code later to integrate the database (which is not made yet) with the encryption tool
+	However, the code created this week is enough to do simple encryption and decryption within a file system environment
+	Once the database is made by the other group members, will work on the integration code
+  Until then, I will look into OpenPGP protocols.
+Total Time This Week:
+  [10.5 Hours]
+	
