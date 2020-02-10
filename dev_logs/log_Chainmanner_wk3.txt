@@ -1,0 +1,18 @@
+Student: Gabriel Valachi
+ID: 101068875
+Log written Sunday February 9, 2020.
+
+Tasks:
+	- Met with the team to discuss progress and next steps. (1 hour)
+	- FINALLY managed to get navigation within an Android Activity (ie. having and switching between Fragments). (3 hours)
+	- More research into OpenPGP standard, ie. how we will parse OpenPGP key files and the structure of encrypted files. (2 hours)
+
+	Total time: 6 hours
+
+Next Steps:
+	- Finish the Encryption Tools UI.
+		- Also add some placeholder code.
+
+Notes:
+	- I won't even pretend that I managed to do any meaningful work this week; due to other group projects and midterms, I had barely any time to work on this assignment.
+	  However, since the worst is over, I can almost guarantee that the Encryption Tools front end will be done sometime before mid-reading week.
