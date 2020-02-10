@@ -16,10 +16,11 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"></action>
-                <category android:name="android.intent.category.LAUNCHER"></category>
-                <action android:name="android.intent.action.GET_CONTENT"></action>
-                <category android:name="android.intent.category.OPENABLE"></category>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <!--<action android:name="android.intent.action.GET_CONTENT" />-->
+                <!--<action android:name="android.intent.action.PICK_ACTIVITY" />-->
+                <!--<category android:name="android.intent.category.OPENABLE"></category>-->
             </intent-filter>
             <nav-graph android:value="@navigation/navigation"></nav-graph>
         </activity>

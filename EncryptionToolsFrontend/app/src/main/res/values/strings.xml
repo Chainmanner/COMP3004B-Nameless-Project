@@ -2,6 +2,15 @@
     <string name="app_name">EncryptionToolsFrontend</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="enc_file_types">
+            <item>File</item>
+            <item>Picture</item>
+            <item>Video</item>
+    </string-array>
+
+    <string-array name="enc_ciphers">
+        <item>AES</item>
+        <item>RSA</item>    <!-- TENTATIVE (also, should warn about this) -->
+        <item>DSA</item>    <!-- TENTATIVE (also, should warn about this) -->
+    </string-array>
 </resources>

@@ -1,7 +1,10 @@
 package project.comp3004.encryptiontoolsfrontend;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ public class EncryptFilesFragment extends Fragment {
         {
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+            ((MainActivity)getActivity()).getSupportActionBar().setTitle("Encrypt a File");
         }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,9 +37,15 @@ public class EncryptFilesFragment extends Fragment {
 
         // TEST CODE - IT WORKS!
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        //                <category android:name="android.intent.category.OPENABLE"></category>
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
+        //intent.putExtra(Intent.EXTRA_MIME_TYPES, "*/*");
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, "true");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Intent intent2 = Intent.createChooser(intent, "Choose a file");
+        PackageManager pm = ((MainActivity)getActivity()).getPackageManager();
+        Log.w("hyggelig", "" + (pm.queryIntentActivities(intent2, 0).size()));
         startActivityForResult(intent2, 0);
 
         return theView;
