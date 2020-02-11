@@ -84,7 +84,7 @@
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
                 android:gravity="right|center_vertical"
-                android:text="Encrypt File"
+                android:text="Encrypt/Sign File"
                 android:textSize="30sp"
                 android:visibility="visible"
                 tools:visibility="visible" />
@@ -125,7 +125,7 @@
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
                 android:gravity="right|center_vertical"
-                android:text="Decrypt File"
+                android:text="Decrypt/Verify File"
                 android:textSize="30sp"
                 android:visibility="visible"
                 tools:visibility="visible" />
