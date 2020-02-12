@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -17,9 +18,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+// TODO: When this is done, clean it up for God's sake.
 public class EncryptFilesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    // TODO: Move all references to UI elements as class references, because there's no guarantee we'll always find them.
+    // Custom intent codes
+    private final int SELECT_FILE = 0;
+    private final int TAKE_PICTURE = 1;
+    private final int RECORD_VIDEO = 2;
+
+    // TODO: Move ALL references to UI elements as class references, because there's no guarantee we'll always find them.
     private TableRow filetype_row;
     private TableRow getfile_row;
     private TableRow preview_row;
@@ -27,11 +34,13 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private TableRow sign_algo_row;
     private TableRow pubkey_row;
     private TableRow privkey_row;
-    private TableRow password_row;
+    private TableRow password_row;  // TODO: Give the option to generate a password.
     private TableRow execute_row;
 
     private Spinner enc_cipher;
     private Spinner sign_algo;
+
+    private Button getfile;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -116,6 +125,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         enc_cipher = v.findViewById(R.id.enc_cipher);
         sign_algo = v.findViewById(R.id.sign_algo);
 
+        getfile = v.findViewById(R.id.getfile);
+
         if ( filetype_row != null ) filetype_row.setVisibility(View.GONE);
         if ( getfile_row != null ) getfile_row.setVisibility(View.GONE);
         if ( preview_row != null ) preview_row.setVisibility(View.GONE);
@@ -139,7 +150,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     }
 
     // Show the options applicable for encrypting data.
-    public void showEncryptionOptions(View v)
+    private void showEncryptionOptions(View v)
     {
         Log.w("hyggelig", "showEncryptionOptions");
 
@@ -157,7 +168,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     }
 
     // Show the options applicable for signing data.
-    public void showSigningOptions(View v)
+    private void showSigningOptions(View v)
     {
         Log.w("hyggelig", "showSigningOptions");
         //initAndHideAllOptions(v);
@@ -173,7 +184,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
     }
 
-    // Updates the spanners.
+    // Makes the UI react to the options selected in spinners.
+    // For example, if a symmetric cipher is shown, hide the public key spinner and show the password prompt.
     private void handleSpanners(View v, int position, int ID)
     {
         Log.w("hyggelig", "handleSpanners");
@@ -182,25 +194,48 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         switch (ID) {
             // File type
             case (R.id.filetype): {
-                // TODO
+                Log.w("hyggelig", "filetype");
+
+                if (position == 0)
+                {
+                    if ( getfile != null )
+                        getfile.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pickFile();
+                            }
+                        });
+                }
+                else if (position == 1)
+                {
+                    if ( getfile != null )
+                        getfile.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                takePicture();
+                            }
+                        });
+                }
+                else if (position == 2)
+                {
+                    if ( getfile != null )
+                        getfile.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                recordVideo();
+                            }
+                        });
+                }
             } break;
             // Encryption ciphers
             case (R.id.enc_cipher): {
                 Log.w("hyggelig", "enc_cipher");
-                //curMenu = v.findViewById(R.id.enc_cipher);
-                //curOption = curMenu.getSelectedItem().toString();
-                //Log.w("hyggelig", curOption);
 
                 // Symmetric - show password prompt
                 if (position == 0) {
                     Log.w("hyggelig", "pos 0");
 
-                    //TableRow sign_algo_row = v.findViewById(R.id.sign_algo_row);
-                    //if ( sign_algo_row != null ) sign_algo_row.setVisibility(View.GONE);
-                    //TableRow pubkey_row = v.findViewById(R.id.pubkey_row);
                     if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
-                    //TableRow privkey_row = v.findViewById(R.id.privkey_row);
-                    //if ( privkey_row != null ) privkey_row.setVisibility(View.GONE);
 
                     if (password_row != null) password_row.setVisibility(View.VISIBLE);
                 }
@@ -210,9 +245,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
                     if (password_row != null) password_row.setVisibility(View.GONE);
 
-                    //if ( sign_algo_row != null ) sign_algo_row.setVisibility(View.VISIBLE);
                     if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
-                    //if ( privkey_row != null ) privkey_row.setVisibility(View.VISIBLE);
                 }
             } break;
             // Public key selection
@@ -223,9 +256,6 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             // Signing algorithm
             case (R.id.sign_algo): {
                 Log.w("hyggelig", "sign_algo");
-                //curMenu = v.findViewById(R.id.sign_algo);
-                //curOption = curMenu.getSelectedItem().toString();
-                //Log.w("hyggelig", curOption);
 
                 if (privkey_row != null) privkey_row.setVisibility(View.VISIBLE);
 
@@ -256,8 +286,6 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     {
         Log.w("hyggelig", "onItemSelected");
         Log.w("hyggelig", "actual pos " + position);
-        //Spinner curMenu;
-        //String curOption;
         handleSpanners(v, position, parent.getId());
     }
 
@@ -265,5 +293,51 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     public void onNothingSelected(AdapterView<?> parent)
     {
         // Nothing to do here.
+    }
+
+    // Open a file manager to have the user select a file.
+    private void pickFile()
+    {
+        Intent pickFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        pickFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        pickFileIntent.setType("*/*");
+        pickFileIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, "true");
+        // Need to make sure we actually have something that can handle this action.
+        if ( getActivity() != null && pickFileIntent.resolveActivity(getActivity().getPackageManager()) != null )
+            startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), SELECT_FILE);
+    }
+
+    // Opens a camera program to have the user take a picture.
+    // TODO: Why the hell does using this terminate the app? Sometimes it happens, sometimes it doesn't.
+    //  Maybe I should move some of this code to the main Activity...
+    private void takePicture()
+    {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if ( getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null )
+            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);
+    }
+
+    // Opens a camera program to have the user record a video.
+    private void recordVideo()
+    {
+        Intent recordVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if ( getActivity() != null && recordVideoIntent.resolveActivity(getActivity().getPackageManager()) != null )
+            startActivityForResult(Intent.createChooser(recordVideoIntent, "Select a Camera App"), RECORD_VIDEO);
+    }
+
+    // Responds primarily to the file choosing Intents.
+    @Override
+    public void onActivityResult(int requestcode, int resultcode, Intent resultIntent)
+    {
+        Log.w("hyggelig", "onActivityResult - invoked");
+
+        if ( resultIntent != null )
+            Log.w("hyggelig", resultIntent.toString());
+        else
+            Log.w("hyggelig", "resultIntent is null");
+
+        // TODO: We actually need to do something with the returned data...
+
+        super.onActivityResult(requestcode, resultcode, resultIntent);
     }
 }

@@ -5,9 +5,9 @@
     <!-- TODO: Softcode the hardcoded strings.-->
 
     <string-array name="enc_file_types">
-            <item>Arbitrary File</item>
-            <item>Picture</item>
-            <item>Video</item>
+            <item>Pick a File</item>
+            <item>Take a Picture</item>
+            <item>Record a Video</item>
     </string-array>
 
     <string-array name="enc_ciphers">   <!-- ORDER-DEPENDENT! -->

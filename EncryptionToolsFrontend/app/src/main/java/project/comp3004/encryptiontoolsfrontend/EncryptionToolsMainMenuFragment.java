@@ -10,8 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.snackbar.Snackbar;
-
+// TODO: This could use some cleanup.
 public class EncryptionToolsMainMenuFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
