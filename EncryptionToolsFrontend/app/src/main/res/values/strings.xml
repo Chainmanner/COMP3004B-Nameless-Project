@@ -2,7 +2,7 @@
     <string name="app_name">EncryptionToolsFrontend</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Softcode the strings.-->
+    <!-- TODO: Softcode the hardcoded strings.-->
 
     <string-array name="enc_file_types">
             <item>Arbitrary File</item>
@@ -10,13 +10,12 @@
             <item>Video</item>
     </string-array>
 
-    <string-array name="enc_ciphers">
-        <item>AES</item>
-        <item>RSA</item>    <!-- TENTATIVE (also, should warn about this) -->
-        <item>DSA</item>    <!-- TENTATIVE (also, should warn about this) -->
+    <string-array name="enc_ciphers">   <!-- ORDER-DEPENDENT! -->
+        <item>Symmetric</item>
+        <item>Asymmetric</item>
     </string-array>
 
-    <string-array name="sign_ciphers">
+    <string-array name="sign_ciphers">  <!-- ORDER-DEPENDENT! -->
         <item>RSA</item>
         <item>DSA</item>
     </string-array>

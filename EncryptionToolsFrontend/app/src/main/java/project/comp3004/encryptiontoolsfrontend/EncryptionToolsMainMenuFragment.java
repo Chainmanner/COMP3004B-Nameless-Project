@@ -26,7 +26,7 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
                                                                         @Override
                                                                         public void onClick(View v)
                                                                         {
-                                                                            Snackbar.make(v, "wow", Snackbar.LENGTH_SHORT).show();
+                                                                            //Snackbar.make(v, "wow", Snackbar.LENGTH_SHORT).show();
                                                                             Navigation.findNavController(v).navigate(R.id.action_encryptionToolsMainMenuFragment3_to_encryptFilesFragment2);
                                                                         }
                                                                     }
@@ -40,7 +40,12 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        // Will add code to make the back button go back when integrating this with the rest of the project.
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {   // This actually makes the back button go back.
+                Navigation.findNavController(v).popBackStack();
+            }
+        });
 
         return theView;
     }

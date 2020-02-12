@@ -30,6 +30,7 @@
         android:layout_marginBottom="16dp">
 
         <TableRow
+            android:id="@+id/action_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -48,25 +49,27 @@
                     android:textSize="30sp" />
 
                 <RadioGroup
+                    android:id="@+id/action_radiogroup"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
 
                     <RadioButton
-                        android:id="@+id/radioButton"
+                        android:id="@+id/enc_radio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Encrypt a File" />
 
                     <RadioButton
-                        android:id="@+id/radioButton2"
+                        android:id="@+id/sign_radio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Verify a File" />
+                        android:text="Sign a File" />
                 </RadioGroup>
             </LinearLayout>
         </TableRow>
 
         <TableRow
+            android:id="@+id/filetype_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -80,7 +83,7 @@
                 android:textSize="30sp" />
 
             <Spinner
-                android:id="@+id/spinner"
+                android:id="@+id/filetype"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -90,6 +93,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/getfile_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -104,7 +108,7 @@
                 android:textSize="30sp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/getfile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -114,6 +118,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/preview_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -129,13 +134,14 @@
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/preview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_launcher_background" />
         </TableRow>
 
         <TableRow
+            android:id="@+id/enc_cipher_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -146,11 +152,11 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cipher"
+                android:text="Type"
                 android:textSize="30sp" />
 
             <Spinner
-                android:id="@+id/spinner2"
+                android:id="@+id/enc_cipher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -160,10 +166,11 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/sign_algo_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" >
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/textView10"
@@ -173,7 +180,7 @@
                 android:textSize="30sp" />
 
             <Spinner
-                android:id="@+id/spinner3"
+                android:id="@+id/sign_algo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -183,10 +190,11 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/pubkey_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" >
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/textView11"
@@ -197,7 +205,7 @@
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/spinner4"
+                android:id="@+id/pubkey"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -207,10 +215,11 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/privkey_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" >
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/textView12"
@@ -221,7 +230,7 @@
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/spinner5"
+                android:id="@+id/privkey"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
@@ -231,10 +240,11 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/password_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" >
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/textView14"
@@ -245,7 +255,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -255,13 +265,14 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/execute_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" >
+            android:layout_marginBottom="8dp">
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/execute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Encrypt/Sign"
