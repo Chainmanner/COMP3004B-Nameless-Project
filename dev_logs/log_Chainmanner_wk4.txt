@@ -1,0 +1,13 @@
+Student: Gabriel Valachi
+ID: 101068875
+Log written Sunday February 16, 2020.
+Edited Wednesday February 19, 2020 to indicate that I forgot to upload this. Sorry about that. Please don't dock too many marks for that, it happens sometimes.
+
+Tasks:
+	- Created the UI for Encrypt/Sign File under Encryption Tools. (4 hours)
+		- It's interactive, too.
+	- Met with the team to discuss the work to be done over Reading Week. (1 hour)
+
+Next steps:
+	- Finish the UI for the Encryption Tools over the reading week.
+	- Add functionality to "encrypt or sign" files and save the output, minus the encryption/signing step itself due to the need to get a prototype out the door ASAP.
