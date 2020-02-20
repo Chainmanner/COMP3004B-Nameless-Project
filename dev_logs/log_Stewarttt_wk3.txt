@@ -1,21 +1,21 @@
 Student: Connor Stewart
 ID: 101041125
 
-Monday January 3: 
+Monday February 3: 
   None
-Tuesday January 4: 
+Tuesday February 4: 
   None
-Wednesday January 5: [1.5 Hours]
+Wednesday February 5: [1.5 Hours]
   Time: [1.5 Hours]
   	Team meeting [1.5 Hours]
 		integrated password generator with Kavans user interface
 	We decided the next thing I should do is work on AES encryption for all files.
 	After this, it was also discussed I look into OpenPGP protocols.
-Thursday January 6:
+Thursday February 6:
   Researched methods for encrypting files using AES: [30 minutes]
 	I was looking to see if I should convert files to byte streams or text streams
 	Settled on byte streams
-Friday January 7:
+Friday February 7:
   Looked into how to convert passwords to hashes: [15 minutes]
 	Settled on using PBKDF2 (Password-Based Key Derivation Function 2) key derivation function
 Saturday February 8: [4 Hours]
