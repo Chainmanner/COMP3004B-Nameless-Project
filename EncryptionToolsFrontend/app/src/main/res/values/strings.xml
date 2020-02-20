@@ -21,6 +21,6 @@
     </string-array>
 
     <string-array name="placeholder_array">
-        <item>placeholder</item>
+        <item>Select a Key</item>
     </string-array>
 </resources>
