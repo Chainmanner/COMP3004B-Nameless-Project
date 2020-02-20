@@ -35,4 +35,3 @@ Notes:
   Until then, I will look into OpenPGP protocols.
 Total Time This Week:
   [10.5 Hours]
-	
