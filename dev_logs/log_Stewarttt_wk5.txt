@@ -9,12 +9,15 @@ Tuesday February 18:
   Modified encrypter and decrypter to work correctly with key pairs: [2 Hours]
 	I needed to change the arguments for encrypt and decrypt
 	I also needed to change the internal usage and representation of the user input arguments
-Wednesday February 19: [1.5 Hours]
+Wednesday February 19: [2.5 Hours]
   Time: [1.5 Hours]
   	Team meeting [1.5 Hours]
 	  Talked about implementing SQL databases to work with key values
     openPGP test cases: [0.5 Hour]
 	  Put code in main to allow for easy test cases for other team members working on the project
+	  Got example files for encryption and decryption
       Completed openPGP stuff by this point
+    github organization: [0.5 Hour]
+      Cleaned up some of my code for presentation on github
 Total Time this Week (so far):
-  [6 Hours]
+  [6.5 Hours]
