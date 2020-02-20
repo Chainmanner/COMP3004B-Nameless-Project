@@ -1,0 +1,30 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday February 10: 
+  None
+Tuesday February 11: 
+  None
+Wednesday February 12: [1.5 Hours]
+  Time: [1.5 Hours]
+  	Team meeting [1.5 Hours]
+	  Talked about code prototype and presentation necessities
+	  Talked about UML design layout of the applications various methods
+	Started working on OpenPGP stuff
+Thursday February 13:
+  Time: [0.5 Hours]
+	Researched openPGP libraries and utilities to use
+Friday February 14:
+  Time: [1 Hour]
+	Figured out how to install OpenPGP libraries and link .json files for compilation and execution
+Saturday February 15:
+  Time: [3 Hours]
+	Created a working encryption and decryption method for the functions
+Sunday February 16:
+  Time: [3 Hours]
+    Built a working public/private key key-generator
+	I'm having difficulty actually getting the key generator to actually make keys the encrypter and decrypter can use
+  Note:
+	I think I'm going to continue this project over the reading week
+Total Time this Week:
+  [9 Hours]
