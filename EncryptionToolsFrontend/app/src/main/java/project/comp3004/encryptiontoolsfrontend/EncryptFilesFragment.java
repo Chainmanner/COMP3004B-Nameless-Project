@@ -351,8 +351,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     // Why the hell does using this sometimes terminate the app?
     private void takePicture() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // TODO: Fuck you, your excessive security measures, and your overall complicated architecture, Android. Nothing will satisfy you, will it?
-        // TODO: I'll have to do this later, because I've had it with this son of a bitch.
+        // TODO: I'll have to do this later, because I've had it with this. Programming for Android is absurdly complicated.
         File tempFolder = new File(baseExternDir, "temp");
         File img = new File(tempFolder, "temp-pic.jpg");
         Uri imgURI = Uri.fromFile(img);
