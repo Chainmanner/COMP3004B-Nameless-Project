@@ -43,7 +43,8 @@ public class PublicKey {
 		Generates a public and a private key pair for future encryption
 	*/
 	public static void generateKeyPair(String[] args) throws Exception {
-		KeyStore ks = new KeyStore(args[4], args[2]);
+		//make a keystore memory object to contain the public and private keys
+		KeyStore keyStoreObject = new KeyStore(args[4], args[2]);
 		
 		//symmetric key algorithm being which can be selected from by the caller
 		String[] cyphers = new String[] {CypherAlgorithm.AES_128, CypherAlgorithm.AES_192, CypherAlgorithm.AES_256, CypherAlgorithm.CAST5, CypherAlgorithm.TWOFISH};
@@ -59,15 +60,7 @@ public class PublicKey {
 		int keySize = 4096; //the key size in bytes
 		
 		//generate the keys
-		ks.generateKeyPair(keySize, args[1], keyAlgorithm, args[2], compressionAlg, hashAlg, cypherAlg, expiryDate);
-				
-		//generate the key store
-		//KeyStore keyHolder = new KeyStore("pgp.keystore", args[2]);
-		
-		//export the public key
-		//keyHolder.exportPublicKey(args[4], args[6], Boolean.parseBoolean(args[3]));
-		//export the private key
-		//keyHolder.exportPrivateKey(args[5], args[6], Boolean.parseBoolean(args[3]));
+		keyStoreObject.generateKeyPair(keySize, args[1], keyAlgorithm, args[2], compressionAlg, hashAlg, cypherAlg, expiryDate);
 	} //END generateKeyPair
 	
 	/*
@@ -88,7 +81,8 @@ public class PublicKey {
 		Allows for the encryption of files using a public key
 	*/
 	public static int encrypt(String args[]) throws Exception {
-		KeyStore keyFile = new KeyStore(args[1], args[2]);
+		//make a keystore memory object to contain the public and private keys
+		KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
 		//check if input is of the correct length
 		if (args.length != 7) {
 			//return negative one error
@@ -100,7 +94,7 @@ public class PublicKey {
 			return -2;
 		} //END IF
 
-		pgpEntryPoint.encryptFile(args[0], keyFile, args[3], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
+		pgpEntryPoint.encryptFile(args[0], keyStoreObject, args[3], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
 		return 0; //return zero for success
 	} //END entryPoint
 
@@ -119,7 +113,8 @@ public class PublicKey {
 		Allows for the decryption of files using a private key
 	*/
 	public static int decrypt(String args[]) throws Exception {
-		KeyStore keyFile = new KeyStore(args[1], args[2]);
+		//make a keystore memory object to contain the public and private keys
+		KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
 		//check if input is of the correct length
 		if (args.length != 4) {
 			//return negative one for error
@@ -127,7 +122,7 @@ public class PublicKey {
 		} //END IF
 		
 		//decrypt the file
-		pgpEntryPoint.decryptFile(args[0], keyFile, args[2], args[3]);
+		pgpEntryPoint.decryptFile(args[0], keyStoreObject, args[2], args[3]);
 		return 0; //return zero for success
 	} //END decrypt
 	
