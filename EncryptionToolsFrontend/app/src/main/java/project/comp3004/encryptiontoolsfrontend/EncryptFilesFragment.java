@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -68,6 +69,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private TableRow pubkey_row;
     private TableRow privkey_row;
     private TableRow password_row;  // TODO: Give the option to generate a password.
+    private TableRow deleteorig_row;
     private TableRow execute_row;
 
     private Spinner enc_cipher;
@@ -81,6 +83,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private ImageView preview;
 
     private EditText password;
+
+    private CheckBox deleteOrig;
 
     // The file we'll be working on.
     private Uri targetFileURI;
@@ -174,6 +178,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         pubkey_row = v.findViewById(R.id.pubkey_row);
         privkey_row = v.findViewById(R.id.privkey_row);
         password_row = v.findViewById(R.id.password_row);
+        deleteorig_row = v.findViewById(R.id.deleteorig_row);
         execute_row = v.findViewById(R.id.execute_row);
 
         enc_cipher = v.findViewById(R.id.enc_cipher);
@@ -188,6 +193,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
         password = v.findViewById(R.id.password);
 
+        deleteOrig = v.findViewById(R.id.deleteorig);
+
         if (filetype_row != null) filetype_row.setVisibility(View.GONE);
         if (getfile_row != null) getfile_row.setVisibility(View.GONE);
         if (preview_row != null) preview_row.setVisibility(View.GONE);
@@ -196,6 +203,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
         if (execute_row != null) execute_row.setVisibility(View.GONE);
     }
 
@@ -220,6 +228,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
 
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
         //Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
         if (enc_cipher != null)
             handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
@@ -240,6 +249,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
         if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
 
         if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
         //Spinner sign_algo = v.findViewById(R.id.sign_algo);
@@ -486,7 +496,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 .show();
     }
 
-    // TODO: At least do all of the error messages.
+    // TODO: When encryption is available, finish this up.
+    // TODO: Also, react to the checkbox asking if the user wants to delete the original.
     private void executeAction()
     {
         Log.w("hyggelig", "executeAction");
