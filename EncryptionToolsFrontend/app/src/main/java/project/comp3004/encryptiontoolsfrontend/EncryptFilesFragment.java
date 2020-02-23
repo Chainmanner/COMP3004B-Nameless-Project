@@ -2,20 +2,28 @@ package project.comp3004.encryptiontoolsfrontend;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -46,6 +54,12 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private final boolean MODE_SIGN = true;
     private boolean execMode;
 
+    // Encryption type - true if symmetric, false if asymmetric (public key).
+    private boolean symmetricEncrypt;
+
+    // The public/private key selected in the respective Spinner, depending on if we're encrypting or signing.
+    private int selectedKey = 0;
+
     // TODO: Move ALL references to UI elements as class references, because there's no guarantee we'll always find them.
     private TableRow filetype_row;
     private TableRow getfile_row;
@@ -55,15 +69,22 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private TableRow pubkey_row;
     private TableRow privkey_row;
     private TableRow password_row;  // TODO: Give the option to generate a password.
+    private TableRow deleteorig_row;
     private TableRow execute_row;
 
     private Spinner enc_cipher;
+    private Spinner pubkey;
     private Spinner sign_algo;
+    private Spinner privkey;
 
     private Button getfile;
     private Button execute;
 
     private ImageView preview;
+
+    private EditText password;
+
+    private CheckBox deleteOrig;
 
     // The file we'll be working on.
     private Uri targetFileURI;
@@ -157,15 +178,22 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         pubkey_row = v.findViewById(R.id.pubkey_row);
         privkey_row = v.findViewById(R.id.privkey_row);
         password_row = v.findViewById(R.id.password_row);
+        deleteorig_row = v.findViewById(R.id.deleteorig_row);
         execute_row = v.findViewById(R.id.execute_row);
 
         enc_cipher = v.findViewById(R.id.enc_cipher);
+        pubkey = v.findViewById(R.id.pubkey);
         sign_algo = v.findViewById(R.id.sign_algo);
+        privkey = v.findViewById(R.id.privkey);
 
         getfile = v.findViewById(R.id.getfile);
         execute = v.findViewById(R.id.execute);
 
         preview = v.findViewById(R.id.preview);
+
+        password = v.findViewById(R.id.password);
+
+        deleteOrig = v.findViewById(R.id.deleteorig);
 
         if (filetype_row != null) filetype_row.setVisibility(View.GONE);
         if (getfile_row != null) getfile_row.setVisibility(View.GONE);
@@ -175,6 +203,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
         if (execute_row != null) execute_row.setVisibility(View.GONE);
     }
 
@@ -199,6 +228,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
 
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
         //Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
         if (enc_cipher != null)
             handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
@@ -206,6 +236,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
         if ( execute != null )
             execMode = MODE_ENCRYPT;
+
+        selectedKey = 0;
     }
 
     // Show the options applicable for signing data.
@@ -217,6 +249,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
         if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
+        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
 
         if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
         //Spinner sign_algo = v.findViewById(R.id.sign_algo);
@@ -226,6 +259,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         // NOTE: Kind of inefficient to reset the listener every time, but okay.
         if ( execute != null )
             execMode = MODE_SIGN;
+
+        selectedKey = 0;
     }
 
     // Makes the UI react to the options selected in spinners.
@@ -238,6 +273,9 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             // File type
             case (R.id.filetype): {
                 Log.w("hyggelig", "filetype");
+                if ( getfile != null )
+                    getfile.setText("Click here to select...");
+                targetFileURI = null;   // Clear this out just to be safe.
 
                 if (position == 0) {
                     if (getfile != null)
@@ -274,24 +312,32 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 if (position == 0) {
                     Log.w("hyggelig", "pos 0");
 
+                    symmetricEncrypt = true;
+
                     if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
 
                     if (password_row != null) password_row.setVisibility(View.VISIBLE);
+
+                    selectedKey = 0;
                 }
                 // Asymmetric - show password prompt
                 else if (position == 1) {
                     Log.w("hyggelig", "pos 1");
 
+                    symmetricEncrypt = false;
+
                     if (password_row != null) password_row.setVisibility(View.GONE);
 
                     if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
+
+                    selectedKey = 0;
                 }
             }
             break;
             // Public key selection
             case (R.id.pubkey): {
-                Log.w("hyggelig", "pubkey");
-                // TODO - Now that I think of it, probably nothing's gonna be done with this.
+                Log.w("hyggelig", "pubkey = " + position);
+                selectedKey = position;
             }
             break;
             // Signing algorithm
@@ -316,8 +362,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             break;
             // Private key selection
             case (R.id.privkey): {
-                Log.w("hyggelig", "privkey");
-                // TODO - Now that I think of it, probably nothing's gonna be done with this.
+                Log.w("hyggelig", "privkey = " + position);
+                selectedKey = position;
             }
             break;
         }
@@ -427,33 +473,112 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         super.onActivityResult(requestcode, resultcode, resultIntent);
     }
 
-    // TODO: At least do all of the error messages.
-    private boolean executeAction()
+    private boolean encryptFile()
+    {
+        // TODO: Make this work.
+        alertError("You followed the correct steps, but encryption is NYI.");
+        return true;
+    }
+
+    private boolean signFile()
+    {
+        // TODO: Make this work.
+        alertError("You followed the correct steps, but signing is NYI.");
+        return true;
+    }
+
+    private void alertError(String msg)
+    {
+        new AlertDialog.Builder(instance)
+                .setTitle("Error")
+                .setMessage(msg)
+                .setNegativeButton(android.R.string.ok, null)
+                .show();
+    }
+
+    // TODO: When encryption is available, finish this up.
+    // TODO: Also, react to the checkbox asking if the user wants to delete the original.
+    private void executeAction()
     {
         Log.w("hyggelig", "executeAction");
         Log.w("hyggelig", "mode = " + execMode);
-        AlertDialog dialog;
 
         if ( targetFileURI == null )
         {
             Log.w("hyggelig", "no file URI provided");
-            dialog = new AlertDialog.Builder(instance)
-                        .setTitle("Error")
-                        .setMessage("No file selected")
-                        .setNegativeButton(android.R.string.ok, null)
-                        .show();
-            return false;
+            alertError("No file selected");
+            return;
         }
 
-        if ( execMode == MODE_ENCRYPT )
+        if ( execMode == MODE_ENCRYPT ) // Encryption, could be symmetric or asymmetric.
         {
-
+            if ( symmetricEncrypt )
+            {
+                if ( password != null )
+                {
+                    final String encPass = password.getText().toString();
+                    Log.w("hyggelig", "password = " + encPass); // FIXME: REMOVE WHEN DONE
+                    if ( encPass.equals("") )   // Blank password.
+                    {
+                        alertError("No password provided");
+                    }
+                    else    // Password filled in; reprompt.
+                    {
+                        final EditText reprompt = new EditText(instance);
+                        reprompt.setHint("KEEP THIS SECRET");
+                        reprompt.setGravity(Gravity.CENTER_HORIZONTAL);
+                        reprompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
+                                .setTitle("Re-enter Password")
+                                .setView(reprompt)
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String repromptPass = reprompt.getText().toString();
+                                        Log.w("hyggelig", "reprompt = " + repromptPass);  // FIXME: REMOVE WHEN DONE
+                                        if ( repromptPass.equals("") )
+                                        {
+                                            alertError("No password re-entered");
+                                        }
+                                        else if ( !repromptPass.equals(encPass) )
+                                        {
+                                            alertError("Passwords do not match");
+                                        }
+                                        else    // Passwords match. Do the encryption.
+                                        {
+                                            encryptFile();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.cancel, null);
+                        dialog.show();
+                    }
+                }
+            }
+            else    // Asymmetric encryption
+            {
+                if ( selectedKey == 0 ) // No key selected.
+                {
+                    alertError("No public key selected");
+                }
+                else
+                {
+                    alertError("You did fine, but public key encryption is NYI.");
+                    // TODO
+                }
+            }
         }
-        else if ( execMode == MODE_SIGN )
+        else if ( execMode == MODE_SIGN )   // Signing.
         {
-
+            if ( selectedKey == 0 )
+            {
+                alertError("No private key selected");
+            }
+            else
+            {
+                alertError("You did fine, but the rest of this dialog is NYI until we can fetch private keys.");
+                // TODO
+            }
         }
-
-        return true;
     }
 }
