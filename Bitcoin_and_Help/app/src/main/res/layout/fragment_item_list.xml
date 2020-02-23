@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="?attr/colorBackgroundFloating"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".HelpListFragment"
+    tools:context=".HelpListFrag.HelpListFragment"
     tools:listitem="@layout/fragment_item" />

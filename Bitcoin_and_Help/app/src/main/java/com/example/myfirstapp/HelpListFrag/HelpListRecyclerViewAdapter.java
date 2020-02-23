@@ -1,4 +1,4 @@
-package com.example.myfirstapp;
+package com.example.myfirstapp.HelpListFrag;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -7,23 +7,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.myfirstapp.HelpListFragment.OnListFragmentInteractionListener;
-import com.example.myfirstapp.dummy.DummyContent.DummyItem;
+import com.example.myfirstapp.HelpListFrag.HelpListFragment.OnListFragmentInteractionListener;
+import com.example.myfirstapp.HelpListFrag.HelpTopicListContent.HelpTopic;
+import com.example.myfirstapp.R;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link HelpTopic} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<HelpTopic> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public HelpListRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public HelpListRecyclerViewAdapter(List<HelpTopic> topics, OnListFragmentInteractionListener listener) {
+        mValues = topics;
         mListener = listener;
     }
 
@@ -36,17 +37,16 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mContentView.setText(mValues.get(position).topic);
+        holder.mTopic = mValues.get(position);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
+                if (mListener != null) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.mTopic);
                 }
             }
         });
@@ -59,15 +59,13 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public HelpTopic mTopic;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mContentView = (TextView) view.findViewById(R.id.help_topic);
         }
 
         @Override

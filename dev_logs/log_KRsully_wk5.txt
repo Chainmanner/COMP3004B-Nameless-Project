@@ -1,0 +1,14 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 4: Feb 17 - Feb 23
+
+Feb 20		- Alternative blockchain API research
+		- HelpListFragment Implementation 		[2 hrs]
+Feb 21		- HelpTopicListContent	Implementation		[3 hrs]
+Feb 22		- HelpListFragment Refactoring
+		- Block.io API Setup				[6 hrs]
+Feb 23		- CryptocurrencyActivity Refactor
+		- Block.io API integration			[6.5 hrs]
+______________________________________________________
+Total hours:	17.5 hours

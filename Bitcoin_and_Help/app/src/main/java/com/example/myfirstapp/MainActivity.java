@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void beginBlockchain(View view){
-        Intent intent = new Intent(getApplicationContext(), ShowBitcoinBalance.class);
+        Intent intent = new Intent(getApplicationContext(), CryptocurrencyActivity.class);
         startActivity(intent);
     }
 
