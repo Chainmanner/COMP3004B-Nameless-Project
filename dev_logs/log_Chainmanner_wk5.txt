@@ -4,14 +4,18 @@ Log started Wednesday February 19, 2020.
 Starting it in advance just so that I'm not late this time.
 
 Tasks:
-	- More work on the Encrypt/Sign File UI itself. (1 hour)
+	- More work on the Encrypt/Sign File UI itself. (3 hours)
 	- Attempted to directly read pictures/videos taken from the camera without them being stored on disk. (2 hours)
 		- Failed; there's no feasible way (at least not without root access) to directly store the results in memory.
 		- So far, not feasible to securely store the picture/video taken either in a private directory...
-	- More to come.
+
+5 hours total.
 
 Next Steps:
 	- Unfortunately, it looks like we'll have to back down on one of the promises we made about forensic security of encrypted files.
 		- We may still be able to store them in a privately accessible directory, though. Let's hope mobile forensics aren't that easy.
 		- I'm gonna deal with that later. Android development is not as easy as I thought, though I kind of learned this lesson the hard way earlier.
 	- Need to finish the Encryption Tools UI so that, when they're done, we just need to "plug in" the encryption process itself.
+	- Prototype needs to be done by March 2, including the writeup.
+		- Encryption Tools UI and some functionality will need to be finished by presentation date.
+		- Won't have much time to work on this before our meeting, but definitely after Thursday.
