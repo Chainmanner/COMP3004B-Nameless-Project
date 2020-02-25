@@ -31,6 +31,17 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
                                                                     }
         );
 
+        theView.findViewById(R.id.decryptFiles).setOnClickListener( new View.OnClickListener()
+                                                                    {
+                                                                        @Override
+                                                                        public void onClick(View v)
+                                                                        {
+                                                                            //Snackbar.make(v, "wow", Snackbar.LENGTH_SHORT).show();
+                                                                            Navigation.findNavController(v).navigate(R.id.action_encryptionToolsMainMenuFragment3_to_decryptVerifyFragment);
+                                                                        }
+                                                                    }
+        );
+
         // This adds a back button.
         Toolbar toolbar = theView.findViewById(R.id.toolbar);
         ((MainActivity)getActivity()).setSupportActionBar(toolbar);

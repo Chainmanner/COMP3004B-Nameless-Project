@@ -16,14 +16,22 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_encryptionToolsMainMenuFragment3_to_decryptVerifyFragment"
+            app:destination="@id/decryptVerifyFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/encryptFilesFragment2"
         android:name="project.comp3004.encryptiontoolsfrontend.EncryptFilesFragment"
         android:label="encrypt_files_layout"
-        tools:layout="@layout/encrypt_files_layout" >
-        <action
-            android:id="@+id/action_encryptFilesFragment2_to_encryptionToolsMainMenuFragment3"
-            app:destination="@id/encryptionToolsMainMenuFragment3" />
-    </fragment>
+        tools:layout="@layout/encrypt_files_layout" />
+    <fragment
+        android:id="@+id/decryptVerifyFragment"
+        android:name="project.comp3004.encryptiontoolsfrontend.DecryptVerifyFragment"
+        android:label="decrypt_file_layout"
+        tools:layout="@layout/decrypt_file_layout" />
 </navigation>

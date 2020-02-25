@@ -144,56 +144,30 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         //Log.w("hyggelig", "" + (pm.queryIntentActivities(intent2, 0).size()));
         //startActivityForResult(intent2, 0);
 
-        initAndHideAllOptions(theView);
+        filetype_row = theView.findViewById(R.id.filetype_row);
+        getfile_row = theView.findViewById(R.id.getfile_row);
+        preview_row = theView.findViewById(R.id.preview_row);
+        enc_cipher_row = theView.findViewById(R.id.enc_cipher_row);
+        sign_algo_row = theView.findViewById(R.id.sign_algo_row);
+        pubkey_row = theView.findViewById(R.id.pubkey_row);
+        privkey_row = theView.findViewById(R.id.privkey_row);
+        password_row = theView.findViewById(R.id.password_row);
+        deleteorig_row = theView.findViewById(R.id.deleteorig_row);
+        execute_row = theView.findViewById(R.id.execute_row);
 
-        Spinner filetype_menu = theView.findViewById(R.id.filetype);
-        if (filetype_menu != null) filetype_menu.setOnItemSelectedListener(this);
-        Spinner enc_cipher_menu = theView.findViewById(R.id.enc_cipher);
-        if (enc_cipher_menu != null) enc_cipher_menu.setOnItemSelectedListener(this);
-        Spinner sign_algo_menu = theView.findViewById(R.id.sign_algo);
-        if (sign_algo_menu != null) sign_algo_menu.setOnItemSelectedListener(this);
-        Spinner pubkey_menu = theView.findViewById(R.id.pubkey);
-        if (pubkey_menu != null) pubkey_menu.setOnItemSelectedListener(this);
-        Spinner privkey_menu = theView.findViewById(R.id.privkey);
-        if (privkey_menu != null) privkey_menu.setOnItemSelectedListener(this);
+        enc_cipher = theView.findViewById(R.id.enc_cipher);
+        pubkey = theView.findViewById(R.id.pubkey);
+        sign_algo = theView.findViewById(R.id.sign_algo);
+        privkey = theView.findViewById(R.id.privkey);
 
-        execute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executeAction();
-            }
-        });
+        getfile = theView.findViewById(R.id.getfile);
+        execute = theView.findViewById(R.id.execute);
 
-        return theView;
-    }
+        preview = theView.findViewById(R.id.preview);
 
-    // Hides all options except for action_row.
-    private void initAndHideAllOptions(View v) {
-        Log.w("hyggelig", "initAndHideAllOptions");
-        filetype_row = v.findViewById(R.id.filetype_row);
-        getfile_row = v.findViewById(R.id.getfile_row);
-        preview_row = v.findViewById(R.id.preview_row);
-        enc_cipher_row = v.findViewById(R.id.enc_cipher_row);
-        sign_algo_row = v.findViewById(R.id.sign_algo_row);
-        pubkey_row = v.findViewById(R.id.pubkey_row);
-        privkey_row = v.findViewById(R.id.privkey_row);
-        password_row = v.findViewById(R.id.password_row);
-        deleteorig_row = v.findViewById(R.id.deleteorig_row);
-        execute_row = v.findViewById(R.id.execute_row);
+        password = theView.findViewById(R.id.password);
 
-        enc_cipher = v.findViewById(R.id.enc_cipher);
-        pubkey = v.findViewById(R.id.pubkey);
-        sign_algo = v.findViewById(R.id.sign_algo);
-        privkey = v.findViewById(R.id.privkey);
-
-        getfile = v.findViewById(R.id.getfile);
-        execute = v.findViewById(R.id.execute);
-
-        preview = v.findViewById(R.id.preview);
-
-        password = v.findViewById(R.id.password);
-
-        deleteOrig = v.findViewById(R.id.deleteorig);
+        deleteOrig = theView.findViewById(R.id.deleteorig);
 
         if (filetype_row != null) filetype_row.setVisibility(View.GONE);
         if (getfile_row != null) getfile_row.setVisibility(View.GONE);
@@ -205,6 +179,22 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (password_row != null) password_row.setVisibility(View.GONE);
         if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
         if (execute_row != null) execute_row.setVisibility(View.GONE);
+
+        Spinner filetype_menu = theView.findViewById(R.id.filetype);
+        if (filetype_menu != null) filetype_menu.setOnItemSelectedListener(this);
+        if (enc_cipher != null) enc_cipher.setOnItemSelectedListener(this);
+        if (sign_algo != null) sign_algo.setOnItemSelectedListener(this);
+        if (pubkey != null) pubkey.setOnItemSelectedListener(this);
+        if (privkey != null) privkey.setOnItemSelectedListener(this);
+
+        execute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                executeAction();
+            }
+        });
+
+        return theView;
     }
 
     // Shows options that are applicable to both encryption and signing.
@@ -256,7 +246,6 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (sign_algo != null)
             handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
 
-        // NOTE: Kind of inefficient to reset the listener every time, but okay.
         if ( execute != null )
             execMode = MODE_SIGN;
 
