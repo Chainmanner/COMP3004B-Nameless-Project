@@ -6,4 +6,6 @@ Team name: Hyggelig Security
 
 Project: hyggelig secure
 
-We'll create the dev_logs directory and add the project files when we start working.
+See /dev_logs/ for our weekly dev logs.
+
+Our merged project is under "hyggelig-final".
