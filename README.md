@@ -8,4 +8,4 @@ Project: hyggelig secure
 
 See /dev_logs/ for our weekly dev logs.
 
-Our merged project is under "hyggelig-final".
+Our merged project is under "hyggelig-merged".
