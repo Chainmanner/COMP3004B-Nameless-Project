@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Hyggelig</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Softcode the hardcoded strings.-->
+
+    <string-array name="enc_file_types">
+        <item>Pick a File</item>
+        <item>Take a Picture</item>
+        <item>Record a Video</item>
+    </string-array>
+
+    <string-array name="enc_ciphers">   <!-- ORDER-DEPENDENT! -->
+        <item>Symmetric</item>
+        <item>Asymmetric</item>
+    </string-array>
+
+    <string-array name="sign_ciphers">  <!-- ORDER-DEPENDENT! -->
+        <item>RSA</item>
+        <item>DSA</item>
+    </string-array>
+
+    <string-array name="placeholder_array">
+        <item>Select a Key</item>
+    </string-array>
+
+    <!-- Gabriel: Straight from Kevin's Bitcoin/Help strings.xml. -->
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="hyggelig_secure">hyggelig-secure</string>
+    <string name="enter_blockchain_address">Enter a blockchain address</string>
+    <string name="show_blockchain_addr_balance">Show Balance</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_label_hint">Enter a unique label (optional)</string>
+    <string name="new_addr_button_text">GET NEW ADDRESS</string>
+</resources>

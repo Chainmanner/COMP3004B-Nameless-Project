@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="project.comp3004.hyggelig">
+
+    <!-- TODO: Explicitly request these permissions. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- Entry point Activity. -->
+        <activity
+            android:name="project.comp3004.hyggelig.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- <nav-graph android:value="@navigation/navigation" /> -->
+        </activity>
+
+        <activity
+            android:name="project.comp3004.hyggelig.encryptiontools.EncryptionTools_MainActivity"
+            android:label="Encryption Tools"
+            android:theme="@style/AppTheme.NoActionBar">
+            <nav-graph android:value="@navigation/encryptiontools_navigation" />
+        </activity>
+        <activity
+            android:name="project.comp3004.hyggelig.password.Password_MainActivity"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <!-- Passwords -->
+        <!-- TODO: Not a good idea to have a new Activity for each submenu. -->
+        <activity
+            android:name="project.comp3004.hyggelig.password.PasswordGenerator"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name="project.comp3004.hyggelig.password.PasswordManager"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <!-- Bitcoin and Help -->
+        <!-- TODO: Separate these! -->
+        <activity
+            android:name="project.comp3004.hyggelig.bitcoin.Bitcoin_MainActivity"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name="project.comp3004.hyggelig.bitcoin.CryptocurrencyActivity"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name="project.comp3004.hyggelig.bitcoin.DisplayMessageActivity"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name="project.comp3004.hyggelig.help.BrowseHelpActivity"
+            android:label="Password Utilities"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+    </application>
+</manifest>

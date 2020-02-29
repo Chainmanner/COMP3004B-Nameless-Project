@@ -1,0 +1,17 @@
+Student: Gabriel Valachi
+ID: 101068875
+Last updated Saturday February 29, 2020.
+
+Tasks:
+	- Finished the Encrypt/Sign UI. (1 hour)
+	- Finished the Decrypt/Verify UI. (2 hours)
+	- Merged all of our projects together. (5 hours)
+		- Some things have been refactored/separated.
+		- Conner, I had to modify some of your AES code so that we can directly encrypt/decrypt the data without writing to a file.
+			Given the minimum SDK version as well, I had to also comment out some stuff you did. Hope you don't mind.
+		- Otherwise, no new features added.
+
+Next Steps:
+	- At the time of writing, the project still isn't in a presentable state.
+		- Will make the main menu, maybe clean up some stuff as well.
+	- Need to do the component diagram for our report. I'll get on it as soon as I can.

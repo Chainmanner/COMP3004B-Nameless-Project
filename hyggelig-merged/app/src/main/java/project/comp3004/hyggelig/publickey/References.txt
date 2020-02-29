@@ -1,0 +1,7 @@
+The example text in tester.txt is taken from the Wikipedia article on time and is used solely as an example.
+	The article can be found here: https://en.wikipedia.org/wiki/Time
+The sound file in sound.ogg used is from Wikipedia as well, and is used as an example for encryption and decryption:
+	The article can be found here: https://commons.wikimedia.org/w/index.php?title=File%3AToreador_song.ogg#
+The libraries being used are provided by OpenPGP, which is a free public key cryptography library.
+	All relevant .jar files can be downloaded from the following link: https://www.didisoft.com/java-openpgp
+	All relevant examples on using OpenPGP can be found on the following link: https://www.didisoft.com/java-openpgp/examples/
