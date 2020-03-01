@@ -39,9 +39,9 @@ dependencies {
     compile 'androidx.core:core-ktx:+'
     compile 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation files('/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-merged/libs/bcpg-lw-jdk15on-1.59.jar')
-    implementation files('/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-merged/libs/bcprov-lw-jdk15on-1.59.jar')
-    implementation files('/home/chainmanner/Desktop/assignments/3004/project/COMP3004B-Nameless-Project/hyggelig-merged/libs/pgplib-3.2.1.jar')
+    implementation files('../libs/bcpg-lw-jdk15on-1.59.jar')
+    implementation files('../libs/bcprov-lw-jdk15on-1.59.jar')
+    implementation files('../libs/pgplib-3.2.1.jar')
 }
 repositories {
     mavenCentral()
