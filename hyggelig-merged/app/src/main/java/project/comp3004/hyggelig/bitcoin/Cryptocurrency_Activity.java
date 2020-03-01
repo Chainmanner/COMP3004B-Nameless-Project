@@ -42,7 +42,7 @@ import javax.net.ssl.HttpsURLConnection;
  *     would be better. Could make use of AsyncHttpClient? Or Volley?
  * </p>
  */
-public class CryptocurrencyActivity extends AppCompatActivity{
+public class Cryptocurrency_Activity extends AppCompatActivity{
     //https://block.io/docs/basic
     private static final String BITCOIN_TESTNET_API_KEY = "4b8a-d875-87c9-6be9";
     private static final double SATOSHI_VALUE=100000000.0;

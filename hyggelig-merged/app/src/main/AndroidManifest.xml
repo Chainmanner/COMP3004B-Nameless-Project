@@ -60,7 +60,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name="project.comp3004.hyggelig.bitcoin.CryptocurrencyActivity"
+            android:name="project.comp3004.hyggelig.bitcoin.Cryptocurrency_Activity"
             android:label="Password Utilities"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
@@ -70,7 +70,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name="project.comp3004.hyggelig.help.BrowseHelpActivity"
+            android:name="project.comp3004.hyggelig.help.BrowseHelp_Activity"
             android:label="Password Utilities"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

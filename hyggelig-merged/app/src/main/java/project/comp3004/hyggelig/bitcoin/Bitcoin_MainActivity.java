@@ -1,6 +1,6 @@
 package project.comp3004.hyggelig.bitcoin;
 import project.comp3004.hyggelig.R;
-import project.comp3004.hyggelig.help.BrowseHelpActivity;
+import project.comp3004.hyggelig.help.BrowseHelp_Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -76,12 +76,12 @@ public class Bitcoin_MainActivity extends AppCompatActivity {
     }
 
     public void beginBlockchain(View view){
-        Intent intent = new Intent(getApplicationContext(), CryptocurrencyActivity.class);
+        Intent intent = new Intent(getApplicationContext(), Cryptocurrency_Activity.class);
         startActivity(intent);
     }
 
     public void beginHelp(View view){
-        Intent intent = new Intent(getApplicationContext(), BrowseHelpActivity.class);
+        Intent intent = new Intent(getApplicationContext(), BrowseHelp_Activity.class);
         startActivity(intent);
     }
 }

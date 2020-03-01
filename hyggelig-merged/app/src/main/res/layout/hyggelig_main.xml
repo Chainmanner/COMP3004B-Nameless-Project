@@ -7,4 +7,96 @@
     android:layout_height="match_parent"
     tools:context="project.comp3004.hyggelig.MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/hyggeligLogo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/mainmenu_topbot_margin"
+            android:layout_weight=".10"
+            android:paddingTop="12dp"
+            android:paddingBottom="@dimen/mainmenu_topbot_margin"
+            android:text="hyggelig"
+            android:textAlignment="center"
+            android:textColor="#03A9F4"
+            android:textSize="20sp" />
+
+
+        <Button
+            android:id="@+id/passwordGenerator"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/mainmenu_topbot_margin"
+            android:layout_marginBottom="@dimen/mainmenu_topbot_margin"
+            android:layout_weight="@dimen/mainmenu_button_weight"
+            android:background="#03A9F4"
+            android:lineSpacingExtra="12sp"
+
+
+            android:onClick="beginPassword"
+            android:text="@string/mainmenu_passwords_text"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/encryptionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mainmenu_topbot_margin"
+            android:layout_marginBottom="@dimen/mainmenu_topbot_margin"
+            android:layout_weight="@dimen/mainmenu_button_weight"
+            android:background="#03A9F4"
+            android:onClick="beginEncryption"
+            android:text="@string/encryption_text"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/passwordManager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/mainmenu_topbot_margin"
+            android:layout_marginBottom="@dimen/mainmenu_topbot_margin"
+            android:layout_weight="@dimen/mainmenu_button_weight"
+            android:background="#03A9F4"
+            android:onClick="beginCryptocurrency"
+            android:text="@string/cryptocurrency_test"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/helpButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mainmenu_topbot_margin"
+            android:layout_marginBottom="@dimen/mainmenu_topbot_margin"
+            android:layout_weight="@dimen/mainmenu_button_weight"
+            android:background="#03A9F4"
+            android:onClick="beginHelp"
+            android:text="@string/mainmenu_help_text"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/hyggelig-secure"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight=".10"
+            android:paddingTop="32dp"
+            android:text="hyggelig-secure"
+            android:textAlignment="center"
+            android:textColor="#FB8C00"
+            android:textSize="14sp"
+            android:textStyle="bold|italic" />
+
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import project.comp3004.hyggelig.help.HelpListFrag.HelpListFragment;
 import project.comp3004.hyggelig.help.HelpListFrag.HelpTopicListContent;
 
-public class BrowseHelpActivity extends AppCompatActivity implements HelpListFragment.OnListFragmentInteractionListener{
+public class BrowseHelp_Activity extends AppCompatActivity implements HelpListFragment.OnListFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

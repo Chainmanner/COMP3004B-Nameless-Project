@@ -35,4 +35,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_label_hint">Enter a unique label (optional)</string>
     <string name="new_addr_button_text">GET NEW ADDRESS</string>
+    <string name="mainmenu_passwords_text">Passwords</string>
+    <string name="mainmenu_help_text">Help</string>
+    <string name="encryption_text">Encryption</string>
+    <string name="cryptocurrency_test">Cryptocurrency</string>
 </resources>

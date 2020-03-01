@@ -1,0 +1,17 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 6: Feb 24 - Mar 1
+
+Feb 26		- Component Diagram Review
+		- Rough Component Diagram sketches
+		- (Team Meeting)			 		[1.5 hrs]
+Feb 28		- Component Diagram Creation for Help and Cryptocurrency[1.5 hrs]
+Feb 29		- Component Diagram Consolidation			[2.5 hrs]
+Mar 1		- D2 Deliverable Writing
+		- Merge Troubleshooting
+		- Creation of Main Menu					
+		- still writing D2 (more to come)			[2.5 hrs]
+		
+______________________________________________________
+Total hours:		8 hours

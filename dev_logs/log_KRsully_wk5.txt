@@ -1,7 +1,7 @@
 Kevin Sullivan
 100896774
 COMP3004B
-Week 4: Feb 17 - Feb 23
+Week 5: Feb 17 - Feb 23
 
 Feb 20		- Alternative blockchain API research
 		- HelpListFragment Implementation 		[2 hrs]
