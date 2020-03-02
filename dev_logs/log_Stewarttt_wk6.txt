@@ -1,0 +1,36 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday February 24: 
+  None
+Tuesday February 25: 
+  None
+Wednesday February 26: [1.5 Hours]
+	Teem meeting:
+		We discusses our prototype for our group presentation
+		We discussed that we should all make UML component diagrams for our code for our presentation
+		We discussed a few back-end things for me to implement
+			Instead of key store files in the public key cryptography system:
+				Use public/private key pairs which can be exported
+			Add more algorithms and ciphers the user can choose from for the public key system
+			Add a google drive back-end:
+				upload files
+				download files
+				application backup system
+Thursday February 27:
+  None
+Friday February 28 :
+  None
+Saturday February 29 : [1 Hour]
+	Created UML diagram for my code used in the applications back-end [30 minutes]
+	Looked up how to use public and private key pairs in openPGP [30 minutes]
+Sunday March 1:
+	Made modifications to my openPGP system: [2.5 Hours]
+		removed key pairs
+		added public keys
+		added private keys
+		encryption and decryption with public and private keys
+		added more encryption algorithms/ciphers
+		added more hashing algorithms
+Total Time this Week (so far):
+  [5 Hours]
