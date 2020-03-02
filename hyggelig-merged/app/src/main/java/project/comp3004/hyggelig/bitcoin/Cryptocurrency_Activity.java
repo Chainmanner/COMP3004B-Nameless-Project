@@ -9,6 +9,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +24,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -33,265 +42,288 @@ import javax.net.ssl.HttpsURLConnection;
  *      with a wallet for free.
  * </p>
  * <p>
- *     Currently, all queries are made the the Bitcoin Testnet. API keys are available for
- *     Bitcoin, Dogecoin, and Litecoin.
+ *     Currently, all queries are made against the Bitcoin Testnet. API keys are available for
+ *     Bitcoin, Dogecoin, and Litecoin and their respective testnets.
  * </p>
  * <p>
- *     Improvements: Each user activity has a separate AsyncTask. Instead, having one AsyncTask
- *     that gets the JSON object and returns so that an appropriate handler can deal with the JSON
- *     would be better. Could make use of AsyncHttpClient? Or Volley?
+ *     With Volley, each activity's method now includes a success callback, and an error callback.
+ *     This is still not quite as modular as I was hoping, but it feels a bit less janky than with
+ *     the AsyncTasks.
  * </p>
  */
 public class Cryptocurrency_Activity extends AppCompatActivity{
     //https://block.io/docs/basic
-    private static final String BITCOIN_TESTNET_API_KEY = "4b8a-d875-87c9-6be9";
-    private static final double SATOSHI_VALUE=100000000.0;
+    private static final String BITCOIN_TESTNET_API_KEY = "e650-fcc9-1426-181d";
+    private static final double SATOSHI_VALUE = 100000000.0;
     private static final String BLOCKIO_URL_BASE = "https://block.io/api/v2/";
-    private static final String WALLET_BALANCE_QUERY="get_balance/?api_key=";
-    private static final String ADDRESS_BALANCE_QUERY="get_address_balance/?api_key=";
-    private static final String NEW_ADDRESS_QUERY="get_new_address/?api_key=";
+    private static final String WALLET_BALANCE_QUERY = "get_balance/?api_key=";
+    private static final String ADDRESS_BALANCE_QUERY = "get_address_balance/?api_key=";
+    private static final String NEW_ADDRESS_QUERY = "get_new_address/?api_key=";
     private static final String VALIDATE_ADDRESS = "is_valid_address/?api_key=";
 
-    //private JSONObject jsonResponse;
-    //private AsyncHttpClient async_client = new
+    private final String generateAddressTag = "GA";
+    private final String checkBalanceTag = "CB";
+    private final String validateAddressTag = "VA";
+
+    private  EditText balance_addr_edittext;
+    private  EditText label_edittext;
+    private  TextView new_addr_textview;
+    private  TextView balance_textview;
+
+
+    private static RequestQueue REQUEST_QUEUE = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bitcoin_cryptocurrency_linearlayout);
 
+        setContentView(R.layout.bitcoin_cryptocurrency_linearlayout);
+        balance_addr_edittext = findViewById(R.id.blockchain_addr_input);
+        label_edittext = findViewById(R.id.new_addr_label_input);
+        new_addr_textview = findViewById(R.id.address_text);
+        balance_textview = findViewById(R.id.addr_balance);
+
+        if(REQUEST_QUEUE==null){
+            REQUEST_QUEUE=Volley.newRequestQueue(this);
+        }
+        REQUEST_QUEUE.start();
     }
 
-    public void validateAddress (String address) {
+    public void validateAddress (JsonObjectRequest callerRequest, String address, final String callerTag) {
         ///api/v2/is_valid_address/?api_key=API_KEY&address=ADDRESS
-
-
         String validate_url =   BLOCKIO_URL_BASE + VALIDATE_ADDRESS + BITCOIN_TESTNET_API_KEY
                                 + "&address=" + address;
 
+        Response.Listener<JSONObject> callback = new Response.Listener<JSONObject>() {
+            /**
+             * Responses are in the form:
+             * {
+             *   "status" : "success",
+             *   "data" : {
+             *     "network" : "LTC",
+             *     "address" : "xxxxxxxxxxxxxx",
+             *     "is_valid" : false
+             *   }
+             * }
+             * Where the address is the one provided by the user
+             */
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String status = response.getString("status");
+                    JSONObject data = response.getJSONObject("data");
+
+                    if (status == "fail") {
+                        REQUEST_QUEUE.cancelAll(callerTag);
+                        balance_textview.setText("Error: " + data.getString("error_message"));
+                    } else if(!data.getBoolean("is_valid")) {
+                        REQUEST_QUEUE.cancelAll(callerTag);
+                        balance_textview.setText("The provided address is not valid for the current cryptocurrency network.");
+                    }
+                }catch(JSONException json_ex){
+                    json_ex.printStackTrace();
+                    Log.e("validateAddr res", json_ex.getMessage());
+                }
+            }
+
+        };
+        /**
+         * Example error response
+         * {
+         *   "status" : "fail",
+         *   "data" : {
+         *     "error_message" : "Your account is restricted to 10 addresses per network.
+         *     Please go to https://block.io/pricing to review account limits and upgrade to a more
+         *     appropriate plan."
+         *   }
+         * }
+         */
+        Response.ErrorListener onError = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                REQUEST_QUEUE.cancelAll(callerTag);
+                try{
+                    JSONObject errorObject = new JSONObject(new String(error.networkResponse.data));
+                    JSONObject data = errorObject.getJSONObject("data");
+                    balance_textview.setText("Error: " + data.getString("error_message"));
+                }catch (JSONException json_ex){
+                    balance_textview.setText("Error creating new address :(");
+                }
+            }
+
+        };
+
+
+        JsonObjectRequest addressValidateRequest = new JsonObjectRequest(Request.Method.GET, validate_url,
+                null, callback, onError);
+        //Tag requests so that they can be canceled if needed
+        addressValidateRequest.setTag(validateAddressTag);
+
+        REQUEST_QUEUE.add(addressValidateRequest);
+        REQUEST_QUEUE.add(callerRequest);
     }
 
     public void generateNewAddress(View view){
         ///api/v2/get_new_address/?api_key=API_KEY&label=LABEL
-        EditText label_textview = findViewById(R.id.new_addr_label_input);
         String url =   BLOCKIO_URL_BASE + NEW_ADDRESS_QUERY + BITCOIN_TESTNET_API_KEY;
-        String label = label_textview.getText().toString().trim();
-        if(label!=""){
+        String label = label_edittext.getText().toString().trim();
+        if(label.isEmpty()){
+            Log.d("genNewAddress", "no label");
+        }else {
+            Log.d("genNewAddress", "lbl:\'"+label+"\'");
             url+="&label="+label;
         }
-        new makeAddressTask().execute(url);
+        Response.Listener<JSONObject> callback = new Response.Listener<JSONObject>() {
+            /**
+             * Responses are in the form:
+             *      {
+             *         "status" : "success",
+             *             "data" : {
+             *                 "network" : "BTCTEST",
+             *                 "user_id" : 1,
+             *                 "address" : "2N7zAeSRcsEuL1ozNkhbhedeAghe2PPATCq",
+             *                 "label" : "chaxa46"
+             *             }
+             *      }
+             * Where the label is either the one provided by the user, or randomly generated
+             */
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String status = response.getString("status");
+                    JSONObject data = response.getJSONObject("data");
+
+                    if (status == "fail") {
+                        new_addr_textview.setText("Error: " + data.getString("error_message"));
+                    } else {
+                        String result_text = "Address : " + data.getString("address") + "\n"
+                                + "Label: " + data.getString("label");
+                        new_addr_textview.setText(result_text);
+                    }
+                }catch(JSONException json_ex){
+                    json_ex.printStackTrace();
+                    Log.e("genNewAddress res", json_ex.getMessage());
+                }
+            }
+
+        };
+        /**
+         * Example error response
+         * {
+         *   "status" : "fail",
+         *   "data" : {
+         *     "error_message" : "Your account is restricted to 10 addresses per network.
+         *     Please go to https://block.io/pricing to review account limits and upgrade to a more
+         *     appropriate plan."
+         *   }
+         * }
+         */
+        Response.ErrorListener onError = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                try{
+                    JSONObject errorObject = new JSONObject(new String(error.networkResponse.data));
+                    JSONObject data = errorObject.getJSONObject("data");
+                    new_addr_textview.setText("Error: " + data.getString("error_message"));
+                }catch (JSONException json_ex){
+                    new_addr_textview.setText("Error creating new address :(");
+                }finally{
+                    return;
+                }
+            }
+
+        };
+
+        JsonObjectRequest addressGenRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                                                        callback, onError);
+        addressGenRequest.setTag(generateAddressTag);
+        REQUEST_QUEUE.add(addressGenRequest);
     }
 
     public void getAddressBalance(View view){
         ///api/v2/get_address_balance/?api_key=API KEY&addresses=ADDRESS1,ADDRESS2,...
         ///api/v2/get_address_balance/?api_key=API KEY&labels=LABEL1,LABEl2,...
-        //TODO Validate address
-        EditText label_textview = findViewById(R.id.blockchain_addr_input);
         String url =   BLOCKIO_URL_BASE + ADDRESS_BALANCE_QUERY + BITCOIN_TESTNET_API_KEY
-                        + "&addresses=" + label_textview.getText().toString().trim();
+                        + "&addresses=";
+        String address = balance_addr_edittext.getText().toString().trim();
 
-        new getAddressBalanceTask().execute(url);
-    }
-
-    /**
-     * @params  String representing the URL to send the HTTP request to
-     * Make an HTTP request to block.io
-     *
-     * @return String containing a JSON object
-     *
-     */
-    private String makeHttpRequest(String target_URL){
-        try {
-            URL balance_query_URL = new URL(target_URL);
-            Log.d("URL", balance_query_URL.toString());
-            HttpsURLConnection url_connection = (HttpsURLConnection) balance_query_URL.openConnection();
-            BufferedReader connection_reader = new BufferedReader(
-                                                new InputStreamReader(url_connection.getInputStream())
-                                            );
-            StringBuilder string_builder = new StringBuilder();
-
-            String next_line;
-
-            while ((next_line = connection_reader.readLine()) != null ){
-                string_builder.append(next_line+'\n');
-            }
-            Log.d("HttpResponse",string_builder.toString());
-            connection_reader.close();
-            return string_builder.toString();
-
-        } catch (MalformedURLException malformed_ex) {
-            malformed_ex.printStackTrace();
-            Log.e("makeHttpRequest", "Malformed URL");
-            // Toast.makeText(getApplicationContext(),
-            //        "Malformed URL", Toast.LENGTH_SHORT)
-            //       .show();
-            return null;
-        } catch (IOException io_ex) {
-            io_ex.printStackTrace();
-            Log.e("makeHttpRequest", "URL connexion exception");
-            /*Toast.makeText(getApplicationContext(),
-                    "IO error when opening URL connexion.", Toast.LENGTH_SHORT)
-                    .show();*/
-            return null;
+        if(address.isEmpty()){
+            Toast.makeText(getApplicationContext(),
+                    "Please input a blockchain address", Toast.LENGTH_SHORT)
+                    .show();
+            return;
         }
-    }
+        url+=address;
 
-    /**
-     * Task for validating addresses.
-     * Responses are in the form:
-     *  {
-     *   "status" : "success",
-     *   "data" : {
-     *     "network" : "BTCTEST",
-     *     "address" : "asdas",
-     *     "is_valid" : false
-     *   }
-     * }
-     */
-    private class validAddressTask extends AsyncTask<String, Void, String>    {
-
-        @Override
-        protected String doInBackground(String... target_url){
-            //  doInBackground must be called with an array
-            //  Good if we eventually allow for retrieval of multiple balances
-            return  makeHttpRequest(target_url[0]);
-        }
-
-        protected void onPostExecute(String result) {
-            try {
-                if(result!=null){
-                     JSONObject response = new JSONObject(result);
-
-                    /*ArrayList<JSONObject> balances = new ArrayList<>();
-                    for(Iterator<String> iter = jsonBalanceObject.keys();iter.hasNext();){
-                        balances.add(jsonBalanceObject.getJSONObject(iter.next()));
-                    }
-
-                    double balance = balances.get(0).getDouble("final_balance")/SATOSHI_VALUE;
-
-                    addr_balance.setText(String.format("Address balance: %f BTC", balance));*/
-                }
-
-
-            } catch (JSONException json_ex) {
-                json_ex.printStackTrace();
-                Log.e("AsyncHttpTask", "JSON exception");
-                /*Toast.makeText(getApplicationContext(),
-                        "Error when working with JSON.", Toast.LENGTH_SHORT)
-                        .show(); */
-            }
-        }
-    }
-
-    /**
-     * Task for making new addresses.
-     * Responses are in the form:
-     *      {
-     *         "status" : "success",
-     *             "data" : {
-     *                 "network" : "BTCTEST",
-     *                 "user_id" : 1,
-     *                 "address" : "2N7zAeSRcsEuL1ozNkhbhedeAghe2PPATCq",
-     *                 "label" : "chaxa46"
-     *             }
-     *      }
-     * Where the label is either the one provided by the user, or randomly generated
-     */
-    private class makeAddressTask extends AsyncTask<String, Void, String>    {
-
-        @Override
-        protected String doInBackground(String... target_url){
-            //  doInBackground must be called with an array
-            //  Good if we eventually allow for retrieval of multiple balances
-            return  makeHttpRequest(target_url[0]);
-        }
-
-        protected void onPostExecute(String result) {
-            try {
-                if(result!=null){
-                    TextView result_textview = findViewById(R.id.address_text);
-                    JSONObject response = new JSONObject(result);
-
+        Response.Listener<JSONObject> callback = new Response.Listener<JSONObject>() {
+            /**
+             * Responses are in the form:
+             * {
+             *  "status" : "success",
+             *  "data" : {
+                 *  "network" : "BTCTEST",
+                 *  "available_balance" : "0.0",
+                 *  "pending_received_balance" : "0.0",
+                 *  "balances" : [
+                 *      {
+                 *      "user_id" : 0,
+                 *      "label" : "default",
+                 *      "address" : "2N59zrv7nw26txKRiCzdcDDL9JeqJy2pxkw",
+                 *      "available_balance" : "0.00000000",
+                 *      "pending_received_balance" : "0.00000000"
+                 *      }
+             *      ]
+             *  }
+             * }
+             */
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
                     String status = response.getString("status");
                     JSONObject data = response.getJSONObject("data");
 
-                     if(status=="fail"){
-                         result_textview.setText("Error: " + data.getString("error_message"));
-                     }else{
-                         String result_text =   "Address : " + data.getString("address") + "\n"
-                                                + "Label: " +data.getString("label");
-                         result_textview.setText(result_text);
-                     }
-                    /*ArrayList<JSONObject> balances = new ArrayList<>();
-                    for(Iterator<String> iter = jsonBalanceObject.keys();iter.hasNext();){
-                        balances.add(jsonBalanceObject.getJSONObject(iter.next()));
-                    }*/
-                }
-
-
-            } catch (JSONException json_ex) {
-                json_ex.printStackTrace();
-                Log.e("makeAddressTask", json_ex.getMessage());
-                /*Toast.makeText(getApplicationContext(),
-                        "Error when working with JSON.", Toast.LENGTH_SHORT)
-                        .show(); */
-            }
-        }
-    }
-
-    /**
-     * Task for getting the balance of an address.
-     * Responses are in the form:
-     *{
-     *   "status" : "success",
-     *   "data" : {
-     *     "network" : "BTCTEST",
-     *     "available_balance" : "0.0",
-     *     "pending_received_balance" : "0.0",
-     *     "balances" : [
-     *       {
-     *         "user_id" : 0,
-     *         "label" : "default",
-     *         "address" : "2N59zrv7nw26txKRiCzdcDDL9JeqJy2pxkw",
-     *         "available_balance" : "0.00000000",
-     *         "pending_received_balance" : "0.00000000"
-     *       }
-     *     ]
-     *   }
-     * }
-     *
-     */
-    private class getAddressBalanceTask extends AsyncTask<String, Void, String>    {
-        @Override
-        protected String doInBackground(String... target_url){
-            //  doInBackground must be called with an array
-            //  Good if we eventually allow for retrieval of multiple balances
-            return  makeHttpRequest(target_url[0]);
-        }
-
-        protected void onPostExecute(String result) {
-            try {
-                if(result!=null){
-                    TextView result_textview = findViewById(R.id.addr_balance);
-                    JSONObject response = new JSONObject(result);
-
-                    String status = response.getString("status");
-                    JSONObject data = response.getJSONObject("data");
-                    //JSONArray balances = data.getJSONArray("balances");
-                    if(status=="fail"){
-                        result_textview.setText("Error: " + data.getString("error_message"));
-                    }else{
-                        result_textview.setText(String.format("Available Balance: %.2f BTC",
-                                                data.getDouble("available_balance")/SATOSHI_VALUE));
+                    if (status == "fail") {
+                        balance_textview.setText("Error: " + data.getString("error_message"));
+                    } else {
+                        balance_textview.setText(String.format("Available Balance: %.2f BTC",
+                                data.getDouble("available_balance")/SATOSHI_VALUE));
                     }
+                }catch(JSONException json_ex){
+                    json_ex.printStackTrace();
+                    Log.e("genNewAddress res", json_ex.getMessage());
                 }
-            } catch (JSONException json_ex) {
-                json_ex.printStackTrace();
-                Log.e("makeAddressTask", json_ex.getMessage());
-                /*Toast.makeText(getApplicationContext(),
-                        "Error when working with JSON.", Toast.LENGTH_SHORT)
-                        .show(); */
             }
-        }
+
+        };
+        /**
+         * Example error response
+         * {
+         *   "status" : "fail",
+         *   "data" : {
+         *     "error_message" : "Invalid value for parameter ADDRESS provided."
+         *   }
+         * }
+         */
+        Response.ErrorListener onError = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                try{
+                    JSONObject errorObject = new JSONObject(new String(error.networkResponse.data));
+                    JSONObject data = errorObject.getJSONObject("data");
+                    balance_textview.setText("Error: " + data.getString("error_message"));
+                }catch (JSONException json_ex){
+                    balance_textview.setText("Error parsing VolleyError :(");
+                }
+            }
+
+        };
+
+        JsonObjectRequest checkBalanceRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                callback, onError);
+        checkBalanceRequest.setTag(checkBalanceTag);
+        validateAddress(checkBalanceRequest,address,checkBalanceTag);
+
     }
+
+
 }
