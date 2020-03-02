@@ -10,7 +10,7 @@
     tools:context=".CryptocurrencyActivity">
 
     <TableRow
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:gravity="center">
@@ -30,7 +30,22 @@
                 android:textAlignment="center"
                 android:textColor="#03A9F4"
                 android:textSize="56px" />
+
         </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/curr_wallet_balance_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#6CB6EB"
+            android:textColor="#FFFFFF"
+            android:textStyle="italic" />
     </TableRow>
 
     <TableRow

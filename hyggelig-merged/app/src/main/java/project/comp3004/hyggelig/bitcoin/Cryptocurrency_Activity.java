@@ -53,7 +53,7 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class Cryptocurrency_Activity extends AppCompatActivity{
     //https://block.io/docs/basic
-    private static final String BITCOIN_TESTNET_API_KEY = "e650-fcc9-1426-181d";
+    private static final String BITCOIN_TESTNET_API_KEY = "c7fc-7d3f-10f7-930f";
     private static final double SATOSHI_VALUE = 100000000.0;
     private static final String BLOCKIO_URL_BASE = "https://block.io/api/v2/";
     private static final String WALLET_BALANCE_QUERY = "get_balance/?api_key=";
@@ -64,11 +64,13 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
     private final String generateAddressTag = "GA";
     private final String checkBalanceTag = "CB";
     private final String validateAddressTag = "VA";
+    private final String walletBalanceTag = "WB";
 
     private  EditText balance_addr_edittext;
     private  EditText label_edittext;
     private  TextView new_addr_textview;
     private  TextView balance_textview;
+    private  TextView wallet_balance_textview;
 
 
     private static RequestQueue REQUEST_QUEUE = null;
@@ -82,11 +84,78 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         label_edittext = findViewById(R.id.new_addr_label_input);
         new_addr_textview = findViewById(R.id.address_text);
         balance_textview = findViewById(R.id.addr_balance);
+        wallet_balance_textview = findViewById(R.id.curr_wallet_balance_text);
 
+        //Make sure there's a Volley RequestQueue active
         if(REQUEST_QUEUE==null){
             REQUEST_QUEUE=Volley.newRequestQueue(this);
         }
         REQUEST_QUEUE.start();
+
+        getWalletBalance();
+    }
+
+    public void getWalletBalance(){
+
+        String wallet_balance_url =   BLOCKIO_URL_BASE + WALLET_BALANCE_QUERY + BITCOIN_TESTNET_API_KEY;
+
+        Response.Listener<JSONObject> callback = new Response.Listener<JSONObject>() {
+            /**
+             * {
+             *   "status" : "success",
+             *   "data" : {
+             *     "network" : "LTCTEST",
+             *     "available_balance" : "0.25",
+             *     "pending_received_balance" : "0.2"
+             *   }
+             * }
+             */
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String status = response.getString("status");
+                    JSONObject data = response.getJSONObject("data");
+
+                    if (status.equals("fail")) {
+                        wallet_balance_textview.setText("Error: " +
+                                data.getString("error_message"));
+                    }else{
+                        wallet_balance_textview.setText(
+                                String.format("Current Wallet Balance: %s \u20BF (%s pending)",
+                                        data.getString("available_balance"),
+                                        data.getString("pending_received_balance"))
+                        );
+                    }
+                }catch(JSONException json_ex){
+                    json_ex.printStackTrace();
+                    Log.e("getWallet res", json_ex.getMessage());
+                }
+            }
+
+        };
+
+        Response.ErrorListener onError = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                try{
+                    JSONObject errorObject = new JSONObject(new String(error.networkResponse.data));
+                    JSONObject data = errorObject.getJSONObject("data");
+                    wallet_balance_textview.setText("Error: " + data.getString("error_message"));
+                }catch (JSONException json_ex){
+                    wallet_balance_textview.setText("");
+                }
+            }
+
+        };
+
+
+        JsonObjectRequest walletBalanceRequest = new JsonObjectRequest(Request.Method.GET, wallet_balance_url,
+                null, callback, onError);
+
+        //Tag requests so that they can be canceled if needed
+        walletBalanceRequest.setTag(walletBalanceTag);
+
+        REQUEST_QUEUE.add(walletBalanceRequest);
     }
 
     public void validateAddress (JsonObjectRequest callerRequest, String address, final String callerTag) {
@@ -113,12 +182,13 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
                     String status = response.getString("status");
                     JSONObject data = response.getJSONObject("data");
 
-                    if (status == "fail") {
+                    if (status.equals("fail")) {
                         REQUEST_QUEUE.cancelAll(callerTag);
                         balance_textview.setText("Error: " + data.getString("error_message"));
                     } else if(!data.getBoolean("is_valid")) {
                         REQUEST_QUEUE.cancelAll(callerTag);
-                        balance_textview.setText("The provided address is not valid for the current cryptocurrency network.");
+                        balance_textview.setText("The provided address is not valid for the current " +
+                                "cryptocurrency network.");
                     }
                 }catch(JSONException json_ex){
                     json_ex.printStackTrace();
@@ -193,7 +263,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
                     String status = response.getString("status");
                     JSONObject data = response.getJSONObject("data");
 
-                    if (status == "fail") {
+                    if (status.equals("fail")) {
                         new_addr_textview.setText("Error: " + data.getString("error_message"));
                     } else {
                         String result_text = "Address : " + data.getString("address") + "\n"
@@ -282,7 +352,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
                     String status = response.getString("status");
                     JSONObject data = response.getJSONObject("data");
 
-                    if (status == "fail") {
+                    if (status.equals("fail")) {
                         balance_textview.setText("Error: " + data.getString("error_message"));
                     } else {
                         balance_textview.setText(String.format("Available Balance: %.2f BTC",
