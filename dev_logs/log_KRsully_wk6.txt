@@ -11,7 +11,7 @@ Feb 29		- Component Diagram Consolidation			[2.5 hrs]
 Mar 1		- D2 Deliverable Writing
 		- Merge Troubleshooting
 		- Creation of Main Menu					
-		- still writing D2 (more to come)			[2.5 hrs]
+		- Cryptocurrency Activity Layout Improvements		[4 hrs]
 		
 ______________________________________________________
-Total hours:		8 hours
+Total hours:		9.5 hours

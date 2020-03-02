@@ -39,4 +39,6 @@
     <string name="mainmenu_help_text">Help</string>
     <string name="encryption_text">Encryption</string>
     <string name="cryptocurrency_test">Cryptocurrency</string>
+    <string name="tab_generate_address">Get Address</string>
+    <string name="tab_check_balance">Check Balances</string>
 </resources>

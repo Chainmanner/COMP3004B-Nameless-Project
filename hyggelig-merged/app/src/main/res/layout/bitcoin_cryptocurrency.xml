@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".CryptocurrencyActivity">
 
+    <LinearLayout
+        android:layout_width="409dp"
+        android:layout_height="212dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="1dp"></LinearLayout>
+
     <Button
         android:id="@+id/blockchain_addr_query"
         android:layout_width="wrap_content"
@@ -40,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/new_addr_label_input"
-        app:layout_constraintTop_toBottomOf="@+id/result_text" />
+        app:layout_constraintTop_toBottomOf="@+id/address_text" />
 
     <EditText
         android:id="@+id/blockchain_addr_input"
@@ -90,7 +98,7 @@
         app:layout_constraintTop_toBottomOf="@+id/blockchain_addr_input" />
 
     <TextView
-        android:id="@+id/result_text"
+        android:id="@+id/address_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="128dp"

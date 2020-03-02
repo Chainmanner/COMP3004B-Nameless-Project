@@ -58,7 +58,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bitcoin_cryptocurrency);
+        setContentView(R.layout.bitcoin_cryptocurrency_linearlayout);
 
     }
 
@@ -86,7 +86,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         ///api/v2/get_address_balance/?api_key=API KEY&addresses=ADDRESS1,ADDRESS2,...
         ///api/v2/get_address_balance/?api_key=API KEY&labels=LABEL1,LABEl2,...
         //TODO Validate address
-        EditText label_textview = findViewById(R.id.new_addr_label_input);
+        EditText label_textview = findViewById(R.id.blockchain_addr_input);
         String url =   BLOCKIO_URL_BASE + ADDRESS_BALANCE_QUERY + BITCOIN_TESTNET_API_KEY
                         + "&addresses=" + label_textview.getText().toString().trim();
 
@@ -209,7 +209,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         protected void onPostExecute(String result) {
             try {
                 if(result!=null){
-                    TextView result_textview = findViewById(R.id.result_text);
+                    TextView result_textview = findViewById(R.id.address_text);
                     JSONObject response = new JSONObject(result);
 
                     String status = response.getString("status");
