@@ -55,17 +55,7 @@
         <!-- Bitcoin and Help -->
         <!-- TODO: Separate these! -->
         <activity
-            android:name="project.comp3004.hyggelig.bitcoin.Bitcoin_MainActivity"
-            android:label="Password Utilities"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
             android:name="project.comp3004.hyggelig.bitcoin.Cryptocurrency_Activity"
-            android:label="Password Utilities"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name="project.comp3004.hyggelig.bitcoin.DisplayMessageActivity"
             android:label="Password Utilities"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

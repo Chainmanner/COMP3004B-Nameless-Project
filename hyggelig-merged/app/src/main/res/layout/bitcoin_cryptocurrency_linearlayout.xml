@@ -4,104 +4,150 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:clipChildren="true"
     android:orientation="vertical"
     tools:context=".CryptocurrencyActivity">
 
     <TableRow
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/hyggeligLogo"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="hyggelig"
-            android:textAlignment="center"
-            android:textColor="#03A9F4"
-            android:textSize="56px" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/hyggeligLogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="hyggelig"
+                android:textAlignment="center"
+                android:textColor="#03A9F4"
+                android:textSize="56px" />
+        </LinearLayout>
     </TableRow>
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:clipChildren="true"
         android:gravity="center">
 
-        <EditText
-            android:id="@+id/blockchain_addr_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_blockchain_address"
-            android:inputType="textPersonName"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/blockchain_addr_query"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#039BE5"
-            android:onClick="getAddressBalance"
-            android:text="@string/show_blockchain_addr_balance"
-            android:textColor="#FFFFFF" />
+            <EditText
+                android:id="@+id/blockchain_addr_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:hint="@string/enter_blockchain_address"
+                android:inputType="none"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/blockchain_addr_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:background="#039BE5"
+                android:onClick="getAddressBalance"
+                android:text="@string/show_blockchain_addr_balance"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
     </TableRow>
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/addr_balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#039BE5"
-            android:textSize="36sp"
-            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/addr_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#039BE5"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
     </TableRow>
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:clipChildren="true"
         android:gravity="center">
 
-        <EditText
-            android:id="@+id/new_addr_label_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/add_label_hint"
-            android:inputType="textPersonName"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/new_addr_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#039BE5"
-            android:onClick="generateNewAddress"
-            android:text="@string/new_addr_button_text"
-            android:textColor="#FFFFFF" />
+            <EditText
+                android:id="@+id/new_addr_label_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:hint="@string/add_label_hint"
+                android:inputType="textPersonName"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/new_addr_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:background="#039BE5"
+                android:onClick="generateNewAddress"
+                android:text="@string/new_addr_button_text"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
     </TableRow>
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.2">
 
-        <TextView
-            android:id="@+id/address_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:scrollHorizontally="true"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textIsSelectable="true"
-            android:textSize="36sp"
-            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/address_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollHorizontally="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textIsSelectable="true"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
     </TableRow>
 
 </TableLayout>

@@ -1,0 +1,9 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 7: Mar 2 - Mar 8
+
+Mar 2	- Refactoring Crypto Activity to use Volley
+		
+______________________________________________________
+Total hours:		
