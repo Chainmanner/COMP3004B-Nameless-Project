@@ -28,19 +28,20 @@ public class PublicKey {
 	Input:
 		args - These are the input arguments provided by the caller
 			[0]: this is the name cipher to be used, must be an integer value
-				0: HashAlgorithm.SHA512
-				1: HashAlgorithm.SHA384
-				2: HashAlgorithm.SHA256
-				3: HashAlgorithm.SHA1
-				4: HashAlgorithm.MD5
-				5: HashAlgorithm.WHIRLPOOL
-				6: HashAlgorithm.RIPEMD128
-				7: HashAlgorithm.RIPEMD160
-				8: HashAlgorithm.RIPEMD256
-				9: HashAlgorithm.MD2
-				10: HashAlgorithm.MD4
-				11: HashAlgorithm.MD5
-				12: HashAlgorithm.NONE
+				0: AES_128
+				1: AES_192
+				2: AES_256
+				3: TWOFISH
+				4: BLOWFISH
+				5: CAST5
+				6: DES
+				7: IDEA
+				8: SAFER
+				9: TRIPLE_DES
+				10: CAMELLIA_128
+				11: CAMELLIA_192
+				12: CAMELLIA_256
+				13: NONE
 			[1]: this the users id
 			[2]: this is the users private key password
 			[3]: checks if output is ASCII or Binary, must be a boolean value (i.e. "true")
@@ -75,8 +76,8 @@ public class PublicKey {
 		KeyStore keyStoreObject = new KeyStore(args[4], args[2]);
 		
 		//symmetric key algorithm being which can be selected from by the caller
-		String[] cyphers = new String[] {CypherAlgorithm.AES_128, CypherAlgorithm.AES_192,
-			CypherAlgorithm.AES_256, CypherAlgorithm.CAST5,
+		String[] cyphers = new String[] {CypherAlgorithm.AES_128,
+			CypherAlgorithm.AES_192, CypherAlgorithm.AES_256,
 			CypherAlgorithm.TWOFISH, CypherAlgorithm.BLOWFISH,
 			CypherAlgorithm.CAST5, CypherAlgorithm.DES,
 			CypherAlgorithm.IDEA, CypherAlgorithm.SAFER,
