@@ -1,12 +1,16 @@
 package project.comp3004.hyggelig.encryptiontools;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,9 +31,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.Arrays;
 
+import project.comp3004.hyggelig.aes.aes;
+import project.comp3004.hyggelig.publickey.PublicKey;
 import project.comp3004.hyggelig.R;
 
 import static android.provider.MediaStore.EXTRA_OUTPUT;
@@ -460,7 +472,84 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     private boolean encryptFile()
     {
         // TODO: Make this work.
-        alertError("You followed the correct steps, but encryption is NYI.");
+        //alertError("You followed the correct steps, but encryption is NYI.");
+        if ( targetFileURI == null )
+            return false;
+        if ( password == null ) // We need this for the symmetric encryption password.
+            return false;
+
+        // Why the fuck is it so complicated to just open a file and get its size? What the hell, Google?
+        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+        if ( theCursor == null )
+            return false;
+        theCursor.moveToFirst();
+        String path = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+        theCursor.close();
+
+        byte[] contents = new byte[size];
+        try
+        {
+            /*File targetFile = new File(targetFileURI.getPath());
+            contents = new byte[(int)targetFile.length()];
+            FileInputStream fileIS = new FileInputStream(targetFile);
+            fileIS.read(contents);
+            fileIS.close();*/
+            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+            if ( fileIS == null )
+            {
+                Log.w("hyggelig", "null InputStream");
+                alertError("null InputStream");
+                return false;
+            }
+            fileIS.read(contents);
+            fileIS.close();
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+            alertError("Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
+
+        byte[] encBytes;
+        // TODO: Goddamn it, Android, stop making me do this complicated shit. It's not funny.
+        Uri targetPath = Uri.parse(targetFileURI.getPath() + ".hyg");
+        if ( symmetricEncrypt )
+        {
+            try
+            {
+                encBytes = aes.encrypt(contents, 256, password.getText().toString());
+
+                /*FileOutputStream fileOS = new FileOutputStream(targetPath);
+                fileOS.write(encBytes);
+                fileOS.close();*/
+                OutputStream fileOS = instance.getContentResolver().openOutputStream(targetPath);
+                fileOS.write(encBytes);
+                fileOS.close();
+            }
+            catch (Exception e)
+            {
+                Log.w("hyggelig", "Error while encrypting the file! " + e.getMessage());
+                alertError("Error while encrypting the file! " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+        else
+        {
+            // TODO: Asymmetric encryption.
+        }
+
+        Log.w("hyggelig", "File written successfully to " + targetPath + "!");
+        new AlertDialog.Builder(instance)
+                .setTitle("Success")
+                .setMessage("File written successfully to " + targetPath + "!")
+                .setNegativeButton(android.R.string.ok, null)
+                .show();
         return true;
     }
 

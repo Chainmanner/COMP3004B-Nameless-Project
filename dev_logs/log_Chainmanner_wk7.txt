@@ -1,0 +1,14 @@
+Student: Gabriel Valachi
+ID: 101068875
+Last updated Sunday March 8, 2020.
+
+Tasks:
+	- Edited the merged project so that everybody could run and compile it. (1 hour)
+	- Attempted to implement symmetric encryption with the Encryption Tools. (1 hour)
+		- Failed due to difficulties creating new files.
+	- No other significant progress.
+
+Next Steps:
+	- Get my part for Deliverable 3 done.
+	- Finish the Encryption Tools UI.
+	- When done with the Encryption Tools, help implement the Google Drive backup system, if necessary.

@@ -237,7 +237,7 @@ public class aes {
     } //END decrypt
 
 
-	// Gabriel: Overloading the above functions so that we can en/decrypt straight from an application.
+	// Gabriel: Overloading the above two functions so that we can en/decrypt straight from an application.
 	// Gabriel: Android's pretty picky sometimes about who's writing to which file, among other things.
 	// Gabriel: FIXME: Implemented quickly; not audited.
 	public static byte[] encrypt(byte[] data, int bits, String password) throws Exception{
