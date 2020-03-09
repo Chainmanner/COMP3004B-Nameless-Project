@@ -4,6 +4,14 @@ COMP3004B
 Week 7: Mar 2 - Mar 8
 
 Mar 2	- Refactoring Crypto Activity to use Volley
-		
+		- GUI improvements
+		- Wallet Balance Check Implementation								[3 hrs]
+Mar 7
+		- Creating Cryptocurrency Activity subsystem architecture diagram 	[1.5 hrs]
+Mar 8
+		- Creating Help Activity subsystem architecture diagram
+		- Creating Microservices Architecture diagram
+		- Writing overall architecture description
+		- Writing Cryptocurrency architecture description					[3 hrs]
 ______________________________________________________
 Total hours:		
