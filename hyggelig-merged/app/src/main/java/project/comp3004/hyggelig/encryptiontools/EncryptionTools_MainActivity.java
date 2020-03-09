@@ -5,19 +5,46 @@ import androidx.appcompat.app.AppCompatActivity;
 //import android.content.Intent;
 import android.os.Bundle;
 //import android.util.Log;
+import java.io.File;
+
 import project.comp3004.hyggelig.R;
 
 
 public class EncryptionTools_MainActivity extends AppCompatActivity {
+
+    private String outputDirPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encryptiontools_navframe);
 
-        // Unfortunately, we may need to store temporary files.
-        //File tempFolder = new File(this.getApplicationContext().getFilesDir(), "temp");
-        //tempFolder.mkdirs();
-        //Log.w("hyggelig", this.getApplicationContext().getFilesDir().getAbsolutePath());
+        // Hackish method of creating the output directories on the main external storage directory.
+        // It works on my phone, at least, but use with caution.
+        File outputDir = getApplicationContext().getExternalFilesDir("nothing");
+        if ( outputDir != null )
+        {
+            // First, create the path to the directory.
+            outputDirPath = outputDir.getAbsolutePath();
+            outputDirPath = outputDirPath.substring(0, outputDirPath.indexOf("Android"));
+            outputDirPath += "Hyggelig/EncryptionTools/";
+
+            // Then, actually create the directory and subdirectories.
+            File allOutputDir = new File( outputDirPath );
+            allOutputDir.mkdirs();
+            File encOutputDir = new File(outputDirPath + "EncryptOutput/");
+            encOutputDir.mkdirs();
+            File decOutputDir = new File( outputDirPath + "DecryptOutput/");
+            decOutputDir.mkdirs();
+            File signOutputDir = new File( outputDirPath + "SignOutput/");
+            signOutputDir.mkdirs();
+            File verifyOutputDir = new File( outputDirPath + "VerifiedFiles/");
+            verifyOutputDir.mkdirs();
+        }
+    }
+
+    protected String getOutputDirPath()
+    {
+        return outputDirPath;
     }
 }

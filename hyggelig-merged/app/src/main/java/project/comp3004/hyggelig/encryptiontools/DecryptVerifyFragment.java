@@ -2,8 +2,10 @@ package project.comp3004.hyggelig.encryptiontools;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import javax.crypto.BadPaddingException;
+
 import project.comp3004.hyggelig.R;
+import project.comp3004.hyggelig.aes.aes;
 
 public class DecryptVerifyFragment extends Fragment implements AdapterView.OnItemSelectedListener
 {
@@ -54,6 +63,8 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
     private Uri targetFileURI;
 
+    private String outputDirPath;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -74,6 +85,8 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
                     Navigation.findNavController(v).popBackStack();
                 }
             });
+
+            outputDirPath = instance.getOutputDirPath();
         }
 
         RadioButton dec_radio = theView.findViewById(R.id.dec_radio);
@@ -157,6 +170,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
         if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
+        if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
 
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
         //Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
@@ -178,6 +192,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
         if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
+        if (privkey_row != null) privkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
 
         if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
@@ -296,8 +311,86 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
     private boolean decryptFile()
     {
-        // TODO: Make this work.
-        alertError("You followed the correct steps, but decryption is NYI.");
+        if ( targetFileURI == null )
+            return false;
+        if ( password == null ) // We need this for the symmetric encryption password.
+            return false;
+
+        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+        if ( theCursor == null )
+            return false;
+        theCursor.moveToFirst();
+        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+        theCursor.close();
+
+        // Fetch the file to be decrypted.
+        byte[] contents = new byte[size];
+        try
+        {
+            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+            if ( fileIS == null )
+            {
+                Log.w("hyggelig", "null InputStream");
+                alertError("null InputStream");
+                return false;
+            }
+            fileIS.read(contents);
+            fileIS.close();
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+            alertError("Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
+
+        // Now decrypt the file and save it.
+        byte[] encBytes;
+        String encOutPath = outputDirPath + "DecryptOutput/";
+        String newName = name;
+        if ( newName.contains(".hyg") ) // Strip off the .hyg extension if we have it.
+            newName = newName.substring(0, newName.indexOf(".hyg"));
+        if ( symmetricDecrypt )
+        {
+            try
+            {
+                encBytes = aes.decrypt(contents, 256, password.getText().toString());
+
+                FileOutputStream fileOS = new FileOutputStream(encOutPath + newName);
+                fileOS.write(encBytes);
+                fileOS.close();
+            }
+            catch (BadPaddingException e)   // This usually happens in the case of an incorrect password.
+            {
+                Log.w("hyggelig", "Incorrect password");
+                alertError("Incorrect password");
+                e.printStackTrace();
+                return false;
+            }
+            catch (Exception e)
+            {
+                Log.w("hyggelig", "Error while decrypting the file! " + e.getMessage());
+                alertError("Error while decrypting the file! " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+        else
+        {
+            // TODO: Asymmetric decryption.
+        }
+
+        Log.w("hyggelig", "File decrypted and written successfully to " + encOutPath + newName + ".hyg" + "!");
+        new AlertDialog.Builder(instance)
+                .setTitle("Success")
+                .setMessage("File decrypted and written successfully to " + encOutPath + newName + "!")
+                .setNegativeButton(android.R.string.ok, null)
+                .show();
+
         return true;
     }
 

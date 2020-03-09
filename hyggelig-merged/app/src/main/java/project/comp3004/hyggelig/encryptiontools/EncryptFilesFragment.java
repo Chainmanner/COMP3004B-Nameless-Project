@@ -1,14 +1,12 @@
 package project.comp3004.hyggelig.encryptiontools;
 
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
@@ -31,17 +29,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.Arrays;
 
 import project.comp3004.hyggelig.aes.aes;
-import project.comp3004.hyggelig.publickey.PublicKey;
 import project.comp3004.hyggelig.R;
 
 import static android.provider.MediaStore.EXTRA_OUTPUT;
@@ -96,7 +90,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     // The file we'll be working on.
     private Uri targetFileURI;
 
-    private File baseExternDir;
+    private String outputDirPath;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,7 +114,9 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 }
             });
 
-            baseExternDir = instance.getApplicationContext().getExternalFilesDir("temp");
+            // Import the output directory path from the Activity's variable.
+            outputDirPath = instance.getOutputDirPath();
+
         }
 
         RadioButton enc_radio = theView.findViewById(R.id.enc_radio);
@@ -391,16 +388,17 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
     // Opens a camera program to have the user take a picture.
     // Why the hell does using this sometimes terminate the app?
+    // FIXME: Fix this.
     private void takePicture() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // TODO: I'll have to do this later, because I've had it with this. Programming for Android is absurdly complicated.
-        File tempFolder = new File(baseExternDir, "temp");
+        File tempFolder = new File(outputDirPath, "temp");
         File img = new File(tempFolder, "temp-pic.jpg");
         Uri imgURI = Uri.fromFile(img);
         takePictureIntent.putExtra(EXTRA_OUTPUT, imgURI); // TODO: Maybe give the user the option to avoid saving the file, and instead use a low-res thumbnail.
         takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (instance != null && takePictureIntent.resolveActivity(instance.getPackageManager()) != null)
-            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);
+            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);*/
     }
 
     // Opens a camera program to have the user record a video.
@@ -483,7 +481,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if ( theCursor == null )
             return false;
         theCursor.moveToFirst();
-        String path = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
         int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
         theCursor.close();
 
@@ -516,18 +514,14 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
 
         byte[] encBytes;
-        // TODO: Goddamn it, Android, stop making me do this complicated shit. It's not funny.
-        Uri targetPath = Uri.parse(targetFileURI.getPath() + ".hyg");
+        String encOutPath = outputDirPath + "EncryptOutput/";
         if ( symmetricEncrypt )
         {
             try
             {
                 encBytes = aes.encrypt(contents, 256, password.getText().toString());
 
-                /*FileOutputStream fileOS = new FileOutputStream(targetPath);
-                fileOS.write(encBytes);
-                fileOS.close();*/
-                OutputStream fileOS = instance.getContentResolver().openOutputStream(targetPath);
+                FileOutputStream fileOS = new FileOutputStream(encOutPath + name + ".hyg");
                 fileOS.write(encBytes);
                 fileOS.close();
             }
@@ -544,10 +538,10 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             // TODO: Asymmetric encryption.
         }
 
-        Log.w("hyggelig", "File written successfully to " + targetPath + "!");
+        Log.w("hyggelig", "File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!");
         new AlertDialog.Builder(instance)
                 .setTitle("Success")
-                .setMessage("File written successfully to " + targetPath + "!")
+                .setMessage("File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!")
                 .setNegativeButton(android.R.string.ok, null)
                 .show();
         return true;

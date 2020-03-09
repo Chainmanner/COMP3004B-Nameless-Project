@@ -197,7 +197,7 @@ public class aes {
 		//get an instances of PBKDF2 key maker
 		SecretKeyFactory keyFactor = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		//input the user password data
-		PBEKeySpec specifications = new PBEKeySpec(password.toCharArray(), salt, 8192, 256);
+		PBEKeySpec specifications = new PBEKeySpec(password.toCharArray(), salt, 8192, bits);   // Gabriel: Key size is no longer a constant.
 		//generate a hash
 		SecretKey tempKey = keyFactor.generateSecret(specifications);
 		//convert hash to AES hash
