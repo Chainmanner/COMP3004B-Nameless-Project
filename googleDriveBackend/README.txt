@@ -29,3 +29,6 @@ Version this was made under:
 	OpenJDK Runtime Environment (build 1.8.0_242-8u242-b08-0ubuntu3~16.04-b08)
 	OpenJDK 64-Bit Server VM (build 25.242-b08, mixed mode)
 	Ubuntu 16.04.6 LTS
+Test google account:
+	Was integrated with the following google account: testusercomp3004@gmail.com
+	Password: testPassword
