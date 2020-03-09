@@ -1,0 +1,33 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday March 2: 
+  None
+Tuesday March 3: 
+  None
+Wednesday March 4: [1.5 Hours]
+  Teem meeting: [1.5 Hours]
+	We discussed our plans for final implementations
+	We discussed upcoming deliverables
+	I will be writing the google drive backend
+	I will also be writing the help descriptions for the various functions within the application
+	Determined I will be using the google drive backend API
+Thursday March 5:
+  None
+Friday March 6 :
+  None
+Saturday March 7 : [3 Hours]
+  Determined how to install the google drive backend API, and proceeded to setup the framework: [3 Hours]
+	From linux terminal, must install gradle and the latest version of java
+	We need to download json credentials from google drive, then populate the application using the griddle commands
+	Commands used to generate the application are within README.txt of the googleDriveBackend folder
+Sunday March 8: [7 Hours]
+  Setup the google drive API: [7 Hours]
+	Very difficult to figure this out
+	Watched various tutorials, read online documentation, and saw examples
+	Implemented a working upload, download, and metadata viewer for a test google drive account
+	This allows us to connect to our google drive from within our application in order to upload and download files
+		This can be plugged into the android application to allow for google drive backups and uploads
+  Google drive deletion not yet implemented
+Total Time this Week (so far):
+  [11.5 Hours]
