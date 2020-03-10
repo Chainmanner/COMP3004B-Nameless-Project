@@ -98,8 +98,8 @@ public class DriveQuickstart {
 		//getFiles();
 		
 		//to download a file from the google drive, use the following command
-		//fileToFind = "Getting started";
-		//downloadFilesByName();
+		fileToFind = "Getting started";
+		downloadFilesByName();
 		//Alternatively, if the file id is already known, you can use the following
 		//downloadFiles(ID_VARIABLE);
 		//all downloaded files appear in the Download folder in the working directory
