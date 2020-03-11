@@ -30,15 +30,18 @@
         android:overScrollMode="ifContentScrolls">
 
         <com.google.android.material.tabs.TabLayout
+            android:id="@+id/keyTypeRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <com.google.android.material.tabs.TabItem
+                android:id="@+id/showPublicKeys"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Public" />
 
             <com.google.android.material.tabs.TabItem
+                android:id="@+id/showPrivateKeys"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Private" />
@@ -46,6 +49,7 @@
         </com.google.android.material.tabs.TabLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/keyList"
             android:layout_width="match_parent"
             android:layout_height="512dp"
             android:isScrollContainer="true">
@@ -53,11 +57,12 @@
         </androidx.recyclerview.widget.RecyclerView>
 
         <TableRow
+            android:id="@+id/options_row"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/importKeys"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
@@ -65,7 +70,7 @@
                 android:text="Import Key(s)" />
 
             <Button
-                android:id="@+id/button6"
+                android:id="@+id/generateKeypair"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"

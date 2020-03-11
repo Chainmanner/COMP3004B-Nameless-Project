@@ -19,8 +19,6 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
         // NOTE: The "false" here is VERY important.
         View theView = inflater.inflate(R.layout.encryptiontools_main, container, false);
 
-        // TODO: All buttons must be clickable.
-
         theView.findViewById(R.id.encryptFiles).setOnClickListener( new View.OnClickListener()
                                                                     {
                                                                         @Override
@@ -43,6 +41,15 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
                                                                     }
         );
 
+        theView.findViewById(R.id.keyring).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_encryptionToolsMainMenuFragment3_to_keyringFragment);
+            }
+        });
+
+        // TODO: Navigate to private folder layout.
+
         // This adds a back button.
         Toolbar toolbar = theView.findViewById(R.id.toolbar);
         ((EncryptionTools_MainActivity)getActivity()).setSupportActionBar(toolbar);
@@ -51,12 +58,13 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
             ((EncryptionTools_MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((EncryptionTools_MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        // FIXME: Disabled for now due to crashes when using it.
+        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {   // This actually makes the back button go back.
                 Navigation.findNavController(v).popBackStack();
             }
-        });
+        });*/
 
         return theView;
     }

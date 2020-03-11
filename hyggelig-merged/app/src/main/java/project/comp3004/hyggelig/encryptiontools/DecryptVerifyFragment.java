@@ -71,23 +71,20 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
         View theView = inflater.inflate(R.layout.encryptiontools_decrypt_file_layout, container, false);
 
         Toolbar toolbar = theView.findViewById(R.id.toolbar);
-        instance = (EncryptionTools_MainActivity) getActivity();
-        if (instance != null) {
-            instance.setSupportActionBar(toolbar);
-            if (instance.getSupportActionBar() != null) {
-                instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
-                instance.getSupportActionBar().setTitle("Encrypt a File");
-            }
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        instance = (EncryptionTools_MainActivity)getActivity();
+        instance.setSupportActionBar(toolbar);
+        if (instance.getSupportActionBar() != null) {
+            instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            instance.getSupportActionBar().setTitle("Decrypt/Verify a File");
+        }
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {   // This actually makes the back button go back.
                     Navigation.findNavController(v).popBackStack();
                 }
             });
-
-            outputDirPath = instance.getOutputDirPath();
-        }
+        outputDirPath = instance.getOutputDirPath();
 
         RadioButton dec_radio = theView.findViewById(R.id.dec_radio);
         if ( dec_radio != null ) dec_radio.setOnClickListener(new View.OnClickListener() {

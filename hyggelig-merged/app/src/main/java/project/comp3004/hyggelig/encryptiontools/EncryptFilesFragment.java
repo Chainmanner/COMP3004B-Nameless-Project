@@ -100,24 +100,21 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         // This adds a back button.
         Toolbar toolbar = theView.findViewById(R.id.toolbar);
         instance = (EncryptionTools_MainActivity) getActivity();
-        if (instance != null) {
-            instance.setSupportActionBar(toolbar);
-            if (instance.getSupportActionBar() != null) {
-                instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
-                instance.getSupportActionBar().setTitle("Encrypt a File");
-            }
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        instance.setSupportActionBar(toolbar);
+        if (instance.getSupportActionBar() != null) {
+            instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            instance.getSupportActionBar().setTitle("Encrypt/Sign a File");
+        }
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {   // This actually makes the back button go back.
                     Navigation.findNavController(v).popBackStack();//.navigate(R.id.action_encryptFilesFragment2_to_encryptionToolsMainMenuFragment3);
                 }
             });
 
-            // Import the output directory path from the Activity's variable.
-            outputDirPath = instance.getOutputDirPath();
-
-        }
+        // Import the output directory path from the Activity's variable.
+        outputDirPath = instance.getOutputDirPath();
 
         RadioButton enc_radio = theView.findViewById(R.id.enc_radio);
         if (enc_radio != null) enc_radio.setOnClickListener(new View.OnClickListener() {
