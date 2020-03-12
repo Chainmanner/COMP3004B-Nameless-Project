@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 //import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 //import android.util.Log;
 import java.io.File;
 
@@ -13,6 +14,9 @@ import project.comp3004.hyggelig.R;
 public class EncryptionTools_MainActivity extends AppCompatActivity {
 
     private String outputDirPath;
+    private String pubkeysPath;
+    private String privkeysPath;
+    private String privfolderPath;  // TODO: This is currently of no use.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,15 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
             signOutputDir.mkdirs();
             File verifyOutputDir = new File( outputDirPath + "VerifiedFiles/");
             verifyOutputDir.mkdirs();
+
+            String privatePath = this.getFilesDir().getAbsolutePath();
+            Log.w("hyggelig", privatePath);
+            pubkeysPath = privatePath + "/pubkeys/";
+            new File(pubkeysPath).mkdirs();
+            privkeysPath = privatePath + "/privkeys/";
+            new File(privkeysPath).mkdirs();
+
+            // TODO
         }
     }
 

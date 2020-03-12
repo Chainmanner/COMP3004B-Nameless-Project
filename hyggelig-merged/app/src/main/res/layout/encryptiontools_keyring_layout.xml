@@ -51,7 +51,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/keyList"
             android:layout_width="match_parent"
-            android:layout_height="512dp"
+            android:layout_height="480dp"
             android:isScrollContainer="true">
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -62,7 +62,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/importKeys"
+                android:id="@+id/importKey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
