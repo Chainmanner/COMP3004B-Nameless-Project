@@ -20,21 +20,29 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.didisoft.pgp.KeyPairInformation;
 import com.google.android.material.tabs.TabItem;
 
 import com.didisoft.pgp.KeyStore;
+import com.google.android.material.tabs.TabLayout;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class KeyringFragment extends Fragment {
 
     private EncryptionTools_MainActivity instance;
 
-    private TabItem publicKeys;
-    private TabItem privateKeys;
+    //private TabItem publicKeys;
+    //private TabItem privateKeys;
+    private TabLayout keyTypeRow;
 
     private RecyclerView keyList;
 
@@ -60,12 +68,12 @@ public class KeyringFragment extends Fragment {
             }
         });
 
-        publicKeys = theView.findViewById(R.id.showPublicKeys);
+        /*publicKeys = theView.findViewById(R.id.showPublicKeys);
         if ( publicKeys != null )
             publicKeys.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showPublicKeys();
+                    showPublicKeys(v);
                 }
             });
         privateKeys = theView.findViewById(R.id.showPrivateKeys);
@@ -73,9 +81,35 @@ public class KeyringFragment extends Fragment {
             privateKeys.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showPrivateKeys();
+                    showPrivateKeys(v);
                 }
-            });
+            });*/
+        keyTypeRow = theView.findViewById(R.id.keyTypeRow);
+        if ( keyTypeRow != null )
+        	keyTypeRow.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+				@Override
+				public void onTabSelected(TabLayout.Tab tab) {
+					switch ( tab.getPosition() )
+					{
+						case 0:	// PUBLIC
+							showPublicKeys(tab.parent.getRootView());
+							break;
+						case 1:	// PRIVATE
+							showPrivateKeys(tab.parent.getRootView());
+							break;
+					}
+				}
+
+				@Override
+				public void onTabUnselected(TabLayout.Tab tab) {
+
+				}
+
+				@Override
+				public void onTabReselected(TabLayout.Tab tab) {
+
+				}
+			});
 
         importKey = theView.findViewById(R.id.importKey);
         if ( importKey != null )
@@ -94,17 +128,92 @@ public class KeyringFragment extends Fragment {
                 }
             });
 
+		RecyclerView theRecycler = theView.findViewById(R.id.keyList);
+		theRecycler.setVerticalScrollBarEnabled(true);
+		theRecycler.setLayoutManager(new LinearLayoutManager(instance.getApplicationContext()));
+		theRecycler.setAdapter(new KeysAdapter(null, false));
+
+        showPublicKeys(theView);
+
         return theView;
     }
 
-    private void showPublicKeys()
+    private void showPublicKeys(View v)
     {
-        // TODO
+    	Log.w("hyggelig", "showPublicKeys");
+    	String pubkeyDirPath = instance.getFilesDir().getAbsolutePath() + "/pubkeys/";
+        File pubkeyDir = new File(pubkeyDirPath);
+        if ( !pubkeyDir.isDirectory() )
+		{
+			Log.w("hyggelig", pubkeyDir.getAbsolutePath() + " somehow is not a directory");
+			return;
+		}
+        if ( pubkeyDir.list().length == 0 )
+		{
+			Log.w("hyggelig", "No files in " + pubkeyDir.getAbsolutePath());
+		}
+
+		int dirSize = pubkeyDir.list().length;
+        KeyStore tempStore = new KeyStore();
+        KeyPairInformation[] showThese = new KeyPairInformation[dirSize];
+        int i = 0;
+        for ( String curName : pubkeyDir.list() )
+		{
+			Log.w("hyggelig", curName);
+			try
+			{
+				showThese[i] = tempStore.importPublicKey(pubkeyDirPath + curName)[0];
+				i++;
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+
+		KeysAdapter theAdapter = new KeysAdapter(showThese, false);
+		RecyclerView theRecycler = v.findViewById(R.id.keyList);
+		theRecycler.swapAdapter(theAdapter, true);
+		theRecycler.getAdapter().notifyDataSetChanged();
     }
 
-    private void showPrivateKeys()
+    private void showPrivateKeys(View v)
     {
-        // TODO
+    	Log.w("hyggelig", "showPrivateKeys");
+		String privkeyDirPath = instance.getFilesDir().getAbsolutePath() + "/privkeys/";
+		File privkeyDir = new File(privkeyDirPath);
+		if ( !privkeyDir.isDirectory() )
+		{
+			Log.w("hyggelig", privkeyDir.getAbsolutePath() + " somehow is not a directory");
+			return;
+		}
+		if ( privkeyDir.list().length == 0 )
+		{
+			Log.w("hyggelig", "No files in " + privkeyDir.getAbsolutePath());
+		}
+
+		int dirSize = privkeyDir.list().length;
+		KeyStore tempStore = new KeyStore();
+		KeyPairInformation[] showThese = new KeyPairInformation[dirSize];
+		int i = 0;
+		for ( String curName : privkeyDir.list() )
+		{
+			Log.w("hyggelig", curName);
+			try
+			{
+				showThese[i] = tempStore.importPrivateKey(privkeyDirPath + curName)[i];
+				i++;
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+
+		KeysAdapter theAdapter = new KeysAdapter(showThese, true);
+		RecyclerView theRecycler = v.findViewById(R.id.keyList);
+		theRecycler.swapAdapter(theAdapter, true);
+		theRecycler.getAdapter().notifyDataSetChanged();
     }
 
     private void importKeyPrompt()
@@ -137,6 +246,7 @@ public class KeyringFragment extends Fragment {
 
 			// Copy the file over.
 			byte[] keyContents = new byte[filesize];
+			String outFilePath = instance.getFilesDir().getAbsolutePath();
 			try
 			{
 				InputStream fileIS = instance.getContentResolver().openInputStream(targetURI);
@@ -148,15 +258,38 @@ public class KeyringFragment extends Fragment {
 				fileIS.read(keyContents);
 				fileIS.close();
 
-				// TODO: Determine what type of key this is.
+				String keyContentsString = new String(keyContents, "ASCII");
+				Log.w("hyggelig", keyContentsString);	// FIXME: REMOVE WHEN DONE
+				if ( keyContentsString.contains("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+						&& keyContentsString.contains("-----END PGP PUBLIC KEY BLOCK-----") )
+				{
+					outFilePath += "/pubkeys/";
+				}
+				else if ( keyContentsString.contains("-----BEGIN PGP PRIVATE KEY BLOCK-----")
+						&& keyContentsString.contains("-----END PGP PRIVATE KEY BLOCK-----") )
+				{
+					outFilePath += "/privkeys/";
+				}
+				else
+				{
+					throw new Exception("File is not an OpenPGP key or is in an invalid format");
+				}
+				outFilePath += filename;
+
+				File newFile = new File(outFilePath);
+				newFile.createNewFile();
+				FileOutputStream fileOS = new FileOutputStream(newFile);
+				fileOS.write(keyContents);
+				fileOS.close();
 			}
 			catch ( Exception e )
 			{
 				Log.w("hyggelig", "Error while copying key file! " + e.getMessage());
 				e.printStackTrace();
+				return;
 			}
 
-
+			Log.w("hyggelig", "File " + outFilePath + " written successfully");
 		}
 	}
 
@@ -198,6 +331,11 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder
     public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
     {
         KeyPairInformation current = keyPairs[position];
+        if ( current == null )
+		{
+			Log.w("hyggelig", "current is null!");
+			return;
+		}
 
         TextView keyName = holder.itemView.findViewById(R.id.keyName);
         if ( keyName != null )
@@ -210,7 +348,7 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder
 			}
             else
             {
-                finalName += "[" + (showSecretKeys ? "pub" : "priv") + "] ";
+                finalName += "[" + (showSecretKeys ? "priv" : "pub") + "] ";
                 finalName += "[" + current.getAlgorithm() + "] ";
             }
             finalName += current.getUserID();
@@ -237,6 +375,6 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder
     @Override
     public int getItemCount()
     {
-        return keyPairs.length;
+        return keyPairs == null ? 0 : keyPairs.length;
     }
 }
