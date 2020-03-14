@@ -16,11 +16,6 @@ import project.comp3004.hyggelig.help.HelpListFrag.HelpTopicListContent.HelpTopi
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link HelpTopic} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRecyclerViewAdapter.ViewHolder> {
 
     private final List<HelpTopic> mValues;
@@ -68,12 +63,8 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.help_topic);
+            mContentView = view.findViewById(R.id.help_topic);
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
-        }
     }
 }
