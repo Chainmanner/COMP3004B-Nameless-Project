@@ -1,5 +1,7 @@
 research on architecture styles and pipe & filter diagrams for d3 deliverale [ 1.5 hours]
 draw pipe and filter diagram for passwords subsystem [45 mins] 
 describe and explain why password manager subsystem implements pipe and filter and is designed the way it is [1 hour]
+draw UML class diagram for password subsystem D3 [1 hour]
+draw sequence diagram for generating a password [1 hour]
 ---------------------------------------------------------------------------------------------------------------------------
-total time: 
+total time: 5.5 hours
