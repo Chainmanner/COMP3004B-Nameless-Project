@@ -1,16 +1,20 @@
 package project.comp3004.hyggelig.encryptiontools;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -21,14 +25,21 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.didisoft.pgp.KeyPairInformation;
+import com.didisoft.pgp.KeyStore;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 
 import project.comp3004.hyggelig.R;
 import project.comp3004.hyggelig.aes.aes;
+import project.comp3004.hyggelig.publickey.PublicKey;
 
 public class DecryptVerifyFragment extends Fragment implements AdapterView.OnItemSelectedListener
 {
@@ -44,6 +55,9 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
     // The public/private key selected in the respective Spinner, depending on if we're encrypting or signing.
     private int selectedKey = 0;
+    // Just like in EncryptFilesFragment, we need to know the paths of the keys.
+    private String[] pubkeys;
+    private String[] privkeys;
 
     private TableRow getfile_row;
     private TableRow enc_cipher_row;
@@ -141,6 +155,76 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
                     pickFile();
                 }
             });
+
+        // Get the filenames of the public and private keys, then populate the key names in the Spinners.
+        KeyStore tempStore = new KeyStore();
+        File pubkeysDir = new File(instance.getPubkeysPath());
+        if ( pubkeysDir.list() != null )    // Public keys
+        {
+            String[] pubkey_candidates = pubkeysDir.list().clone();
+            List<String> pubkeyPaths = new ArrayList<>();
+            pubkeyPaths.add("NONE");    // This is just to keep the two ArrayLists having equal elements, to make indexing items a bit easier.
+            List<String> pubkeyContents = new ArrayList<>();
+            pubkeyContents.add("Select a Key");
+            KeyPairInformation current;
+            // Only add in keys that are not expired or revoked.
+            for ( String curFile : pubkey_candidates )
+            {
+                try
+                {
+                    current = tempStore.importPublicKey(instance.getPubkeysPath() + curFile)[0];
+                    if ( !current.isRevoked() && !current.isExpired() )
+                    {
+                        pubkeyPaths.add(curFile);
+                        pubkeyContents.add(current.getUserID());
+                    }
+                }
+                catch ( Exception e )
+                {
+                    Log.w("hyggelig", "Error importing public key: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            pubkeys = new String[pubkeyPaths.size()];
+            pubkeyPaths.toArray(pubkeys);
+            Log.w("hyggelig", Arrays.toString(pubkeys));
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, pubkeyContents);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            pubkey.setAdapter(adapter);
+        }
+        tempStore = new KeyStore();
+        File privkeysDir = new File(instance.getPrivkeysPath());
+        if ( privkeysDir.list() != null )   // Private keys
+        {
+            String[] privkey_candidates = privkeysDir.list().clone();
+            List<String> privkeyPaths = new ArrayList<>();
+            privkeyPaths.add("NONE");
+            List<String> privkeyContents = new ArrayList<>();
+            privkeyContents.add("Select a Key");
+            KeyPairInformation current;
+            // No need to revoke private keys, so here we'll just import the files.
+            // TODO: FILTER OUT SIGN-ONLY KEYS!
+            for ( String curFile : privkey_candidates )
+            {
+                try
+                {
+                    current = tempStore.importPrivateKey(instance.getPrivkeysPath() + curFile)[0];
+                    privkeyPaths.add(curFile);
+                    privkeyContents.add(current.getUserID());
+                }
+                catch ( Exception e )
+                {
+                    Log.w("hyggelig", "Error importing private key: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            privkeys = new String[privkeyPaths.size()];
+            privkeyPaths.toArray(privkeys);
+            Log.w("hyggelig", Arrays.toString(privkeys));
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, privkeyContents);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            privkey.setAdapter(adapter);
+        }
 
         execute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,7 +390,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
         }
     }
 
-    private boolean decryptFile()
+    private boolean decryptFile(String keyPassword)
     {
         if ( targetFileURI == null )
             return false;
@@ -378,7 +462,33 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
         }
         else
         {
-            // TODO: Asymmetric decryption.
+            try
+            {
+                // Since Android doesn't like me using file paths very much, we're gonna need to make a temporary file.
+                File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/dec_temp");
+                tempFile.createNewFile();
+                FileOutputStream tempFileOS = new FileOutputStream(tempFile);
+                tempFileOS.write(contents);
+                tempFileOS.close();
+
+                String[] params = {tempFile.getAbsolutePath(), instance.getPrivkeysPath() + privkeys[selectedKey], keyPassword, encOutPath + newName};
+                int returnStatus = PublicKey.decrypt(params);
+                tempFile.delete();
+                switch (returnStatus)
+                {
+                    case 0:
+                        break;
+                    case -1:
+                        throw new Exception("Not enough arguments");
+                }
+            }
+            catch ( Exception e )
+            {
+                Log.w("hyggelig", "Error while decrypting the file! " + e.getMessage());
+                alertError("Error while decrypting the file! " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
         }
 
         Log.w("hyggelig", "File decrypted and written successfully to " + encOutPath + newName + ".hyg" + "!");
@@ -433,7 +543,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
                     }
                     else    // Password filled in; attempt to decrypt.
                     {
-                        decryptFile();
+                        decryptFile("");
                     }
                 }
             }
@@ -445,8 +555,23 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
                 }
                 else
                 {
-                    alertError("You did fine, but asymmetric decryption is NYI.");
-                    // TODO
+                    // Get the private key's password.
+                    final EditText keyPassPrompt = new EditText(instance);
+                    keyPassPrompt.setHint("BLANK = NO KEY PASSWORD");
+                    keyPassPrompt.setGravity(Gravity.CENTER_HORIZONTAL);
+                    keyPassPrompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
+                            .setTitle("Enter Private Key Password")
+                            .setView(keyPassPrompt)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Go ahead with the decryption.
+                                    decryptFile(keyPassPrompt.getText().toString());
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null);
+                    dialog.show();
                 }
             }
         }

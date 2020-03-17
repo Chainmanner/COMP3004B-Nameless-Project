@@ -1,0 +1,17 @@
+Student: Gabriel Valachi
+ID: 101068875
+Last updated Tuesday March 17, 2020.
+
+Tasks:
+	- Public key encryption and decryption has now been implemented. (2 hours)
+		- Compatible with GnuPG.
+
+Next Steps:
+	- Implement signing and verification.
+	- Implement the private folder.
+	- Finish up the other unimplemented features:
+		- Inputting a picture straight from the camera
+		- Inputting a video straight from the camera
+		- Generating keypairs
+		- Viewing more details about imported keys
+			- This is, by common sense, supposed to be implemented. However, since we didn't explicitly promise it, this is a slighly lower priority.

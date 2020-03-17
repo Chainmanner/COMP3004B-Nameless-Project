@@ -68,22 +68,6 @@ public class KeyringFragment extends Fragment {
             }
         });
 
-        /*publicKeys = theView.findViewById(R.id.showPublicKeys);
-        if ( publicKeys != null )
-            publicKeys.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showPublicKeys(v);
-                }
-            });
-        privateKeys = theView.findViewById(R.id.showPrivateKeys);
-        if ( privateKeys != null )
-            privateKeys.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showPrivateKeys(v);
-                }
-            });*/
         keyTypeRow = theView.findViewById(R.id.keyTypeRow);
         if ( keyTypeRow != null )
         	keyTypeRow.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -141,7 +125,7 @@ public class KeyringFragment extends Fragment {
     private void showPublicKeys(View v)
     {
     	Log.w("hyggelig", "showPublicKeys");
-    	String pubkeyDirPath = instance.getFilesDir().getAbsolutePath() + "/pubkeys/";
+    	String pubkeyDirPath = instance.getPubkeysPath();
         File pubkeyDir = new File(pubkeyDirPath);
         if ( !pubkeyDir.isDirectory() )
 		{
@@ -180,7 +164,7 @@ public class KeyringFragment extends Fragment {
     private void showPrivateKeys(View v)
     {
     	Log.w("hyggelig", "showPrivateKeys");
-		String privkeyDirPath = instance.getFilesDir().getAbsolutePath() + "/privkeys/";
+		String privkeyDirPath = instance.getPrivkeysPath();
 		File privkeyDir = new File(privkeyDirPath);
 		if ( !privkeyDir.isDirectory() )
 		{
@@ -246,7 +230,7 @@ public class KeyringFragment extends Fragment {
 
 			// Copy the file over.
 			byte[] keyContents = new byte[filesize];
-			String outFilePath = instance.getFilesDir().getAbsolutePath();
+			String outFilePath = "";
 			try
 			{
 				InputStream fileIS = instance.getContentResolver().openInputStream(targetURI);
@@ -263,12 +247,12 @@ public class KeyringFragment extends Fragment {
 				if ( keyContentsString.contains("-----BEGIN PGP PUBLIC KEY BLOCK-----")
 						&& keyContentsString.contains("-----END PGP PUBLIC KEY BLOCK-----") )
 				{
-					outFilePath += "/pubkeys/";
+					outFilePath = instance.getPubkeysPath();
 				}
 				else if ( keyContentsString.contains("-----BEGIN PGP PRIVATE KEY BLOCK-----")
 						&& keyContentsString.contains("-----END PGP PRIVATE KEY BLOCK-----") )
 				{
-					outFilePath += "/privkeys/";
+					outFilePath += instance.getPrivkeysPath();
 				}
 				else
 				{

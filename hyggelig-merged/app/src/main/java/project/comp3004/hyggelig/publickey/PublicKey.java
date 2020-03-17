@@ -72,8 +72,9 @@ public class PublicKey {
 		args - These are the input arguments provided by the caller
 			[0]: this is the name of the file to be encrypted
 			[1]: this is the name of the key file to use
-			[2]: this is the name of the password for the key
-			[3]: this is the name of the user ID for the recipient
+			Gabriel: NOT APPLICABLE:
+				[2]: this is the name of the password for the key
+				[3]: this is the name of the user ID for the recipient
 			[4]: this represents the name of the newly encrypted output file being produced
 			[5]: checks if output is ASCII or Binary, must be a boolean value (i.e. "true")
 			[6]: checks if integrity checking information should be added for GnuPG compatibility, must be a boolean value
@@ -84,7 +85,7 @@ public class PublicKey {
 	*/
 	public static int encrypt(String args[]) throws Exception {
 		//make a keystore memory object to contain the public and private keys
-		KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
+		//KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
 		//check if input is of the correct length
 		if (args.length != 7) {
 			//return negative one error
@@ -96,7 +97,8 @@ public class PublicKey {
 			return -2;
 		} //END IF
 
-		pgpEntryPoint.encryptFile(args[0], keyStoreObject, args[3], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
+		//pgpEntryPoint.encryptFile(args[0], keyStoreObject, args[3], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
+		pgpEntryPoint.encryptFile(args[0], args[1], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
 		return 0; //return zero for success
 	} //END entryPoint
 
@@ -116,7 +118,7 @@ public class PublicKey {
 	*/
 	public static int decrypt(String args[]) throws Exception {
 		//make a keystore memory object to contain the public and private keys
-		KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
+		//KeyStore keyStoreObject = new KeyStore(args[1], args[2]);
 		//check if input is of the correct length
 		if (args.length != 4) {
 			//return negative one for error
@@ -124,7 +126,8 @@ public class PublicKey {
 		} //END IF
 		
 		//decrypt the file
-		pgpEntryPoint.decryptFile(args[0], keyStoreObject, args[2], args[3]);
+		//pgpEntryPoint.decryptFile(args[0], keyStoreObject, args[2], args[3]);
+		pgpEntryPoint.decryptFile(args[0], args[1], args[2], args[3]);
 		return 0; //return zero for success
 	} //END decrypt
 	

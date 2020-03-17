@@ -13,10 +13,10 @@ import project.comp3004.hyggelig.R;
 
 public class EncryptionTools_MainActivity extends AppCompatActivity {
 
-    protected String outputDirPath;
-    protected String pubkeysPath;
-    protected String privkeysPath;
-    protected String privfolderPath;  // TODO: This is currently of no use.
+    private String outputDirPath;
+    private String pubkeysPath;
+    private String privkeysPath;
+    private String privfolderPath;  // TODO: This is currently of no use.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,5 +59,17 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
     protected String getOutputDirPath()
     {
         return outputDirPath;
+    }
+    protected String getPubkeysPath()
+    {
+        return pubkeysPath;
+    }
+    protected String getPrivkeysPath()
+    {
+        return privkeysPath;
+    }
+    protected String getPrivateFolderPath()
+    {
+        return privfolderPath;
     }
 }
