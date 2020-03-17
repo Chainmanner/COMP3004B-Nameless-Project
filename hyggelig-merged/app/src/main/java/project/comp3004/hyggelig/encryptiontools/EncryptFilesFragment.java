@@ -31,6 +31,7 @@ import androidx.navigation.Navigation;
 
 import com.didisoft.pgp.KeyPairInformation;
 import com.didisoft.pgp.KeyStore;
+import com.didisoft.pgp.exceptions.NoPublicKeyFoundException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,6 +71,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
     // We're also gonna need the filename of the selected key for quick access.
     private String[] pubkeys;
     private String[] privkeys;
+
+    private boolean deleteOriginalFile = false;
 
     // TODO: Move ALL references to UI elements as class references, because there's no guarantee we'll always find them.
     private TableRow filetype_row;
@@ -255,6 +258,15 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             privkey.setAdapter(adapter);
         }
 
+        if ( deleteOrig != null )
+            deleteOrig.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteOriginalFile = !deleteOriginalFile;
+                    Log.w("hyggelig", "deleteOriginalFile = " + deleteOriginalFile);
+                }
+            });
+
         execute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,7 +298,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
 
         if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
-        if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
+        //if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
         //Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
         if (enc_cipher != null)
             handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
@@ -607,7 +619,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 String[] params = {tempFile.getAbsolutePath(), instance.getPubkeysPath() + pubkeys[selectedKey], "N/A", "N/A", encOutPath + name + ".hyg", "false", "true"};
                 int returnStatus = PublicKey.encrypt(params);
                 tempFile.delete();
-                switch (returnStatus)
+                switch (returnStatus)   // NOTE: These are programmer errors.
                 {
                     case 0:
                         break;
@@ -616,6 +628,13 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                     case -2:
                         throw new Exception("Badly-formatted arguments");
                 }
+            }
+            catch ( NoPublicKeyFoundException e )
+            {
+                Log.w("hyggelig", "No public key found in this source. Is it a sign-only key?");
+                alertError("No public key found in this source. Is it a sign-only key?");
+                e.printStackTrace();
+                return false;
             }
             catch ( Exception e )
             {
@@ -632,6 +651,17 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 .setMessage("File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!")
                 .setNegativeButton(android.R.string.ok, null)
                 .show();
+
+        // Delete the original file if the user asked to.
+        // FIXME: This just doesn't work.
+        /*if ( deleteOriginalFile )
+        {
+            Log.w("hyggelig", targetFileURI.getPath());
+            File fileToDelete = new File(targetFileURI.getPath());
+            fileToDelete.delete();
+            handleSpanners(this.getView(), 0, R.id.filetype);   // Deselect the deleted file.
+        }*/
+
         return true;
     }
 
