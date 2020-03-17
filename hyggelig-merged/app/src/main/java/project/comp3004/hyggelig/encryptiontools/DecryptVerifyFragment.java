@@ -203,7 +203,6 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
             privkeyContents.add("Select a Key");
             KeyPairInformation current;
             // No need to revoke private keys, so here we'll just import the files.
-            // TODO: FILTER OUT SIGN-ONLY KEYS!
             for ( String curFile : privkey_candidates )
             {
                 try
@@ -276,7 +275,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
         if (privkey_row != null) privkey_row.setVisibility(View.GONE);
         if (password_row != null) password_row.setVisibility(View.GONE);
 
-        if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
+        //if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
         //Spinner sign_algo = v.findViewById(R.id.sign_algo);
         if (sign_algo != null)
             handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
@@ -503,7 +502,93 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
     private boolean verifyFile()
     {
-        alertError("You followed the correct steps, but verification is NYI.");
+        if ( targetFileURI == null )
+            return false;
+
+        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+        if ( theCursor == null )
+            return false;
+        theCursor.moveToFirst();
+        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+        theCursor.close();
+
+        byte[] contents = new byte[size];
+        try
+        {
+            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+            if ( fileIS == null )
+            {
+                Log.w("hyggelig", "null InputStream");
+                alertError("null InputStream");
+                return false;
+            }
+            fileIS.read(contents);
+            fileIS.close();
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+            alertError("Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        // This part actually does the signing.
+        String signOutPath = instance.getOutputDirPath() + "VerifiedFiles/";
+        String newName = name;
+        if ( newName.contains(".hyg-sign") ) // Strip off the .hyg-sign extension if we have it.
+            newName = newName.substring(0, newName.indexOf(".hyg-sign"));
+        int result;
+        try
+        {
+            // We'll need to create a temporary file, since Android doesn't like it when we use file paths.
+            File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/sign_temp");
+            tempFile.createNewFile();
+            FileOutputStream tempFileOS = new FileOutputStream(tempFile);
+            tempFileOS.write(contents);
+            tempFileOS.close();
+
+            result = PublicKey.verify(tempFile.getAbsolutePath(), instance.getPubkeysPath() + pubkeys[selectedKey],signOutPath + newName);
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while signing the file! " + e.getMessage());
+            alertError("Error while signing the file! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        String status = "";
+        String additionalInfo = "";
+        switch (result)
+        {
+            case 0:
+                status = "Success! Valid Signature";
+                additionalInfo = "The signature is valid. ";
+                break;
+            case -1:
+                status = "Error: Broken Signature";
+                additionalInfo = "The signature has been forged, or the data has been corrupted. ";
+                break;
+            case -2:
+                status = "Error: Public Key Mismatch";
+                additionalInfo = "Selected public key does not correspond to signing private key. ";
+                break;
+            case -3:
+                status = "Error: No Signature";
+                additionalInfo = "This file does not contain a signature. ";
+                break;
+        }
+        Log.w("hyggelig", status);
+        Log.w("hyggelig", additionalInfo);
+        Log.w("hyggelig", "File extracted and written to " + signOutPath + newName);
+        new AlertDialog.Builder(instance)
+                .setTitle(status)
+                .setMessage(additionalInfo + "File extracted and written to " + signOutPath + newName)
+                .setNegativeButton(android.R.string.ok, null)
+                .show();
+
         return true;
     }
 
@@ -583,8 +668,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
             }
             else
             {
-                alertError("You did fine, but the rest of this dialog is NYI until we can fetch public keys.");
-                // TODO
+                verifyFile();
             }
         }
     }

@@ -5,9 +5,11 @@ Last updated Tuesday March 17, 2020.
 Tasks:
 	- Public key encryption and decryption has now been implemented. (2 hours)
 		- Compatible with GnuPG.
+	- Signing and verifying has been implemented. (1 hour)
+		- RSA compatible with GnuPG.
+		- DSA sign-only keys don't seem to be compatible.
 
 Next Steps:
-	- Implement signing and verification.
 	- Implement the private folder.
 	- Finish up the other unimplemented features:
 		- Inputting a picture straight from the camera

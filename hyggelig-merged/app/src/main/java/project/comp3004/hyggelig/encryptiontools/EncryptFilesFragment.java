@@ -203,7 +203,6 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 try
                 {
                     current = tempStore.importPublicKey(instance.getPubkeysPath() + curFile)[0];
-                    // TODO: FILTER OUT SIGN-ONLY KEYS!
                     if ( !current.isRevoked() && !current.isExpired() )
                     {
                         pubkeyPaths.add(curFile);
@@ -537,14 +536,12 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
     private boolean encryptFile()
     {
-        // TODO: Make this work.
-        //alertError("You followed the correct steps, but encryption is NYI.");
         if ( targetFileURI == null )
             return false;
-        if ( password == null ) // We need this for the symmetric encryption password.
+        if ( symmetricEncrypt && password == null ) // We need this for the symmetric encryption password.
             return false;
 
-        // Why the fuck is it so complicated to just open a file and get its size? What the hell, Google?
+        // Why is it so complicated to just open a file and get its size? What the hell, Google?
         Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
         if ( theCursor == null )
             return false;
@@ -556,11 +553,6 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         byte[] contents = new byte[size];
         try
         {
-            /*File targetFile = new File(targetFileURI.getPath());
-            contents = new byte[(int)targetFile.length()];
-            FileInputStream fileIS = new FileInputStream(targetFile);
-            fileIS.read(contents);
-            fileIS.close();*/
             InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
             if ( fileIS == null )
             {
@@ -643,10 +635,67 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
         return true;
     }
 
-    private boolean signFile()
+    private boolean signFile(String keyPass)
     {
-        // TODO: Make this work.
-        alertError("You followed the correct steps, but signing is NYI.");
+        if ( targetFileURI == null )
+            return false;
+
+        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+        if ( theCursor == null )
+            return false;
+        theCursor.moveToFirst();
+        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+        theCursor.close();
+
+        byte[] contents = new byte[size];
+        try
+        {
+            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+            if ( fileIS == null )
+            {
+                Log.w("hyggelig", "null InputStream");
+                alertError("null InputStream");
+                return false;
+            }
+            fileIS.read(contents);
+            fileIS.close();
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+            alertError("Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        // This part actually does the signing.
+        String signOutPath = instance.getOutputDirPath() + "SignOutput/";
+        try
+        {
+            // We'll need to create a temporary file, since Android doesn't like it when we use file paths.
+            File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/sign_temp");
+            tempFile.createNewFile();
+            FileOutputStream tempFileOS = new FileOutputStream(tempFile);
+            tempFileOS.write(contents);
+            tempFileOS.close();
+
+            PublicKey.sign(tempFile.getAbsolutePath(), instance.getPrivkeysPath() + privkeys[selectedKey], keyPass, signOutPath + name + ".hyg-sign", true);
+        }
+        catch ( Exception e )
+        {
+            Log.w("hyggelig", "Error while signing the file! " + e.getMessage());
+            alertError("Error while signing the file! " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        Log.w("hyggelig", "File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!");
+        new AlertDialog.Builder(instance)
+                .setTitle("Success")
+                .setMessage("File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!")
+                .setNegativeButton(android.R.string.ok, null)
+                .show();
         return true;
     }
 
@@ -659,8 +708,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
                 .show();
     }
 
-    // TODO: When encryption and signing are available, finish this up.
-    // TODO: Also, react to the checkbox asking if the user wants to delete the original.
+    // TODO: React to the checkbox asking if the user wants to delete the original.
     private void executeAction()
     {
         Log.w("hyggelig", "executeAction");
@@ -738,8 +786,23 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             }
             else
             {
-                alertError("You did fine, but the rest of this dialog is NYI until we can fetch private keys.");
-                // TODO
+                // Get the private key's password.
+                final EditText keyPassPrompt = new EditText(instance);
+                keyPassPrompt.setHint("BLANK = NO KEY PASSWORD");
+                keyPassPrompt.setGravity(Gravity.CENTER_HORIZONTAL);
+                keyPassPrompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
+                        .setTitle("Enter Private Key Password")
+                        .setView(keyPassPrompt)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Go ahead with the decryption.
+                                signFile(keyPassPrompt.getText().toString());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null);
+                dialog.show();
             }
         }
     }

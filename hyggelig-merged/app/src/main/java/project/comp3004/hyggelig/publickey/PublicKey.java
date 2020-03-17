@@ -130,6 +130,43 @@ public class PublicKey {
 		pgpEntryPoint.decryptFile(args[0], args[1], args[2], args[3]);
 		return 0; //return zero for success
 	} //END decrypt
+
+	// Gabriel: Signs a file and stores it in the file referred to by outputPath.
+	// Args:
+	//	inputPath - Input file path.
+	//	privkeyPath - Path to the private key.
+	//	privkeyPassword - Private key's password; leave blank ("") if there is none.
+	//	outputPath - Path to store the signed file at.
+	//	asciiArmor - Use Base64-encoded output instead of binary.
+	// Throws an exception on failure.
+	public static void sign(String inputPath, String privkeyPath, String privkeyPassword, String outputPath, boolean asciiArmor) throws Exception
+	{
+		pgpEntryPoint.signFile(inputPath, privkeyPath, privkeyPassword, outputPath, asciiArmor);
+	}
+
+	// Gabriel: Verifies a file's signature and extracts its contents to the file referred to by outputPath.
+	// Args:
+	//	inputPath - Input signed file path.
+	//	pubkeyPath - Path to the sender's public key.
+	//	outputPath - Path to store the verified file, with the signature and compression stripped.
+	// Returns:
+	//	0 if the message has a valid signature
+	//	-1 if the message is corrupted or the signature is forged
+	//	-2 if the signature does not match the provided public key
+	//	-3 if there was no signature to begin with
+	// Throws an exception on file system failure or other errors of similar nature.
+	public static int verify(String inputPath, String pubkeyPath, String outputPath) throws Exception
+	{
+		SignatureCheckResult result = pgpEntryPoint.verifyAndExtract(inputPath, pubkeyPath, outputPath);
+		if ( result == SignatureCheckResult.SignatureVerified )
+			return 0;
+		else if ( result == SignatureCheckResult.SignatureBroken )
+			return -1;
+		else if ( result == SignatureCheckResult.PublicKeyNotMatching )
+			return -2;
+		else	// result == SignatureCheckResult.NoSignatureFound
+			return -3;
+	}
 	
 	/*
 	Name:
