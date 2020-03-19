@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,6 +50,8 @@ public class KeyringFragment extends Fragment {
     private Button importKey;
     private Button generateKeypair;
 
+    private boolean showingSecretKeys = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -77,21 +80,23 @@ public class KeyringFragment extends Fragment {
 					{
 						case 0:	// PUBLIC
 							showPublicKeys(tab.parent.getRootView());
+							showingSecretKeys = false;
 							break;
 						case 1:	// PRIVATE
 							showPrivateKeys(tab.parent.getRootView());
+							showingSecretKeys = true;
 							break;
 					}
 				}
 
 				@Override
 				public void onTabUnselected(TabLayout.Tab tab) {
-
+					// Nothing to do here.
 				}
 
 				@Override
 				public void onTabReselected(TabLayout.Tab tab) {
-
+					// Nothing to do here.
 				}
 			});
 
@@ -112,10 +117,10 @@ public class KeyringFragment extends Fragment {
                 }
             });
 
-		RecyclerView theRecycler = theView.findViewById(R.id.keyList);
-		theRecycler.setVerticalScrollBarEnabled(true);
-		theRecycler.setLayoutManager(new LinearLayoutManager(instance.getApplicationContext()));
-		theRecycler.setAdapter(new KeysAdapter(null, false));
+		keyList = theView.findViewById(R.id.keyList);
+		keyList.setVerticalScrollBarEnabled(true);
+		keyList.setLayoutManager(new LinearLayoutManager(instance.getApplicationContext()));
+		keyList.setAdapter(new KeysAdapter(null, false));
 
         showPublicKeys(theView);
 
@@ -155,10 +160,10 @@ public class KeyringFragment extends Fragment {
 			}
 		}
 
+        Log.w("hyggelig", Arrays.toString(pubkeyDir.list()));
 		KeysAdapter theAdapter = new KeysAdapter(showThese, false);
-		RecyclerView theRecycler = v.findViewById(R.id.keyList);
-		theRecycler.swapAdapter(theAdapter, true);
-		theRecycler.getAdapter().notifyDataSetChanged();
+		keyList.swapAdapter(theAdapter, true);
+		keyList.getAdapter().notifyDataSetChanged();
     }
 
     private void showPrivateKeys(View v)
@@ -185,7 +190,7 @@ public class KeyringFragment extends Fragment {
 			Log.w("hyggelig", curName);
 			try
 			{
-				showThese[i] = tempStore.importPrivateKey(privkeyDirPath + curName)[i];
+				showThese[i] = tempStore.importPrivateKey(privkeyDirPath + curName)[0];
 				i++;
 			}
 			catch ( Exception e )
@@ -194,10 +199,10 @@ public class KeyringFragment extends Fragment {
 			}
 		}
 
+		Log.w("hyggelig", Arrays.toString(privkeyDir.list()));
 		KeysAdapter theAdapter = new KeysAdapter(showThese, true);
-		RecyclerView theRecycler = v.findViewById(R.id.keyList);
-		theRecycler.swapAdapter(theAdapter, true);
-		theRecycler.getAdapter().notifyDataSetChanged();
+		keyList.swapAdapter(theAdapter, true);
+		keyList.getAdapter().notifyDataSetChanged();
     }
 
     private void importKeyPrompt()
@@ -274,6 +279,11 @@ public class KeyringFragment extends Fragment {
 			}
 
 			Log.w("hyggelig", "File " + outFilePath + " written successfully");
+			// Refresh the list of keys.
+			if ( showingSecretKeys )
+				showPrivateKeys(this.getView());
+			else
+				showPublicKeys(this.getView());
 		}
 	}
 
@@ -319,6 +329,16 @@ class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder
 		{
 			Log.w("hyggelig", "current is null!");
 			return;
+		}
+
+		ConstraintLayout theLayout = holder.itemView.findViewById(R.id.constraint_layout);
+        if ( position % 2 == 0 )
+		{
+			theLayout.setBackgroundColor(Color.LTGRAY);
+		}
+        else
+		{
+			theLayout.setBackgroundColor(Color.WHITE);
 		}
 
         TextView keyName = holder.itemView.findViewById(R.id.keyName);

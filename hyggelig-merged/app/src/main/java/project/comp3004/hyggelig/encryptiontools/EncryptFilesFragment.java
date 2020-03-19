@@ -1,3 +1,5 @@
+// TODO: See https://developer.android.com/training/camera/cameradirect#java for a possible way on directly getting camera data.
+
 package project.comp3004.hyggelig.encryptiontools;
 
 import android.app.AlertDialog;
@@ -26,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -51,609 +54,613 @@ import static android.provider.MediaStore.EXTRA_OUTPUT;
 // TODO: When this is done, clean it up for God's sake.
 public class EncryptFilesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    private EncryptionTools_MainActivity instance;
+	private EncryptionTools_MainActivity instance;
 
-    // Custom intent codes
-    private final int SELECT_FILE = 0;
-    private final int TAKE_PICTURE = 1;
-    private final int RECORD_VIDEO = 2;
+	// Custom intent codes
+	private final int SELECT_FILE = 0;
+	private final int TAKE_PICTURE = 1;
+	private final int RECORD_VIDEO = 2;
 
-    // Encrypt/sign modes
-    private final boolean MODE_ENCRYPT = false;
-    private final boolean MODE_SIGN = true;
-    private boolean execMode;
+	// Encrypt/sign modes
+	private final boolean MODE_ENCRYPT = false;
+	private final boolean MODE_SIGN = true;
+	private boolean execMode;
 
-    // Encryption type - true if symmetric, false if asymmetric (public key).
-    private boolean symmetricEncrypt;
+	// Encryption type - true if symmetric, false if asymmetric (public key).
+	private boolean symmetricEncrypt;
 
-    // The public/private key selected in the respective Spinner, depending on if we're encrypting or signing.
-    private int selectedKey = 0;
-    // We're also gonna need the filename of the selected key for quick access.
-    private String[] pubkeys;
-    private String[] privkeys;
+	// The public/private key selected in the respective Spinner, depending on if we're encrypting or signing.
+	private int selectedKey = 0;
+	// We're also gonna need the filename of the selected key for quick access.
+	private String[] pubkeys;
+	private String[] privkeys;
 
-    private boolean deleteOriginalFile = false;
+	private boolean deleteOriginalFile = false;
 
-    // TODO: Move ALL references to UI elements as class references, because there's no guarantee we'll always find them.
-    private TableRow filetype_row;
-    private TableRow getfile_row;
-    private TableRow preview_row;
-    private TableRow enc_cipher_row;
-    private TableRow sign_algo_row;
-    private TableRow pubkey_row;
-    private TableRow privkey_row;
-    private TableRow password_row;  // TODO: Give the option to generate a password.
-    private TableRow deleteorig_row;
-    private TableRow execute_row;
+	// TODO: Move ALL references to UI elements as class references, because there's no guarantee we'll always find them.
+	private TableRow filetype_row;
+	private TableRow getfile_row;
+	private TableRow preview_row;
+	private TableRow enc_cipher_row;
+	private TableRow sign_algo_row;
+	private TableRow pubkey_row;
+	private TableRow privkey_row;
+	private TableRow password_row;  // TODO: Give the option to generate a password.
+	private TableRow deleteorig_row;
+	private TableRow execute_row;
 
-    private Spinner enc_cipher;
-    private Spinner pubkey;
-    private Spinner sign_algo;
-    private Spinner privkey;
+	private Spinner enc_cipher;
+	private Spinner pubkey;
+	private Spinner sign_algo;
+	private Spinner privkey;
 
-    private Button getfile;
-    private Button execute;
+	private Button getfile;
+	private Button execute;
 
-    private ImageView preview;
+	private ImageView preview;
 
-    private EditText password;
+	private EditText password;
 
-    private CheckBox deleteOrig;
+	private CheckBox deleteOrig;
 
-    // The file we'll be working on.
-    private Uri targetFileURI;
+	// The file we'll be working on.
+	private Uri targetFileURI;
 
-    private String outputDirPath;
+	private String outputDirPath;
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View theView = inflater.inflate(R.layout.encryptiontools_encrypt_files_layout, container, false);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View theView = inflater.inflate(R.layout.encryptiontools_encrypt_files_layout, container, false);
 
-        // This adds a back button.
-        Toolbar toolbar = theView.findViewById(R.id.toolbar);
-        instance = (EncryptionTools_MainActivity) getActivity();
-        instance.setSupportActionBar(toolbar);
-        if (instance.getSupportActionBar() != null) {
-            instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
-            instance.getSupportActionBar().setTitle("Encrypt/Sign a File");
-        }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {   // This actually makes the back button go back.
-                    Navigation.findNavController(v).popBackStack();//.navigate(R.id.action_encryptFilesFragment2_to_encryptionToolsMainMenuFragment3);
-                }
-            });
+		// This adds a back button.
+		Toolbar toolbar = theView.findViewById(R.id.toolbar);
+		instance = (EncryptionTools_MainActivity) getActivity();
+		instance.setSupportActionBar(toolbar);
+		if (instance.getSupportActionBar() != null) {
+			instance.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
+			instance.getSupportActionBar().setTitle("Encrypt/Sign a File");
+		}
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {   // This actually makes the back button go back.
+				Navigation.findNavController(v).popBackStack();//.navigate(R.id.action_encryptFilesFragment2_to_encryptionToolsMainMenuFragment3);
+			}
+		});
 
-        // Import the output directory path from the Activity's variable.
-        outputDirPath = instance.getOutputDirPath();
+		// Import the output directory path from the Activity's variable.
+		outputDirPath = instance.getOutputDirPath();
 
-        RadioButton enc_radio = theView.findViewById(R.id.enc_radio);
-        if (enc_radio != null) enc_radio.setOnClickListener(new View.OnClickListener() {
-                                                                @Override
-                                                                public void onClick(View v) {
-                                                                    showEncryptionOptions(v);
-                                                                }
-                                                            }
-        );
-        RadioButton sign_radio = theView.findViewById(R.id.sign_radio);
-        if (enc_radio != null) sign_radio.setOnClickListener(new View.OnClickListener() {
-                                                                 @Override
-                                                                 public void onClick(View v) {
-                                                                     showSigningOptions(v);
-                                                                 }
-                                                             }
-        );
+		RadioButton enc_radio = theView.findViewById(R.id.enc_radio);
+		if (enc_radio != null) enc_radio.setOnClickListener(new View.OnClickListener() {
+																@Override
+																public void onClick(View v) {
+																	showEncryptionOptions(v);
+																}
+															}
+		);
+		RadioButton sign_radio = theView.findViewById(R.id.sign_radio);
+		if (enc_radio != null) sign_radio.setOnClickListener(new View.OnClickListener() {
+																 @Override
+																 public void onClick(View v) {
+																	 showSigningOptions(v);
+																 }
+															 }
+		);
 
-        filetype_row = theView.findViewById(R.id.filetype_row);
-        getfile_row = theView.findViewById(R.id.getfile_row);
-        preview_row = theView.findViewById(R.id.preview_row);
-        enc_cipher_row = theView.findViewById(R.id.enc_cipher_row);
-        sign_algo_row = theView.findViewById(R.id.sign_algo_row);
-        pubkey_row = theView.findViewById(R.id.pubkey_row);
-        privkey_row = theView.findViewById(R.id.privkey_row);
-        password_row = theView.findViewById(R.id.password_row);
-        deleteorig_row = theView.findViewById(R.id.deleteorig_row);
-        execute_row = theView.findViewById(R.id.execute_row);
+		filetype_row = theView.findViewById(R.id.filetype_row);
+		getfile_row = theView.findViewById(R.id.getfile_row);
+		preview_row = theView.findViewById(R.id.preview_row);
+		enc_cipher_row = theView.findViewById(R.id.enc_cipher_row);
+		sign_algo_row = theView.findViewById(R.id.sign_algo_row);
+		pubkey_row = theView.findViewById(R.id.pubkey_row);
+		privkey_row = theView.findViewById(R.id.privkey_row);
+		password_row = theView.findViewById(R.id.password_row);
+		deleteorig_row = theView.findViewById(R.id.deleteorig_row);
+		execute_row = theView.findViewById(R.id.execute_row);
 
-        enc_cipher = theView.findViewById(R.id.enc_cipher);
-        pubkey = theView.findViewById(R.id.pubkey);
-        sign_algo = theView.findViewById(R.id.sign_algo);
-        privkey = theView.findViewById(R.id.privkey);
+		enc_cipher = theView.findViewById(R.id.enc_cipher);
+		pubkey = theView.findViewById(R.id.pubkey);
+		sign_algo = theView.findViewById(R.id.sign_algo);
+		privkey = theView.findViewById(R.id.privkey);
 
-        getfile = theView.findViewById(R.id.getfile);
-        execute = theView.findViewById(R.id.execute);
+		getfile = theView.findViewById(R.id.getfile);
+		execute = theView.findViewById(R.id.execute);
 
-        preview = theView.findViewById(R.id.preview);
+		preview = theView.findViewById(R.id.preview);
 
-        password = theView.findViewById(R.id.password);
+		password = theView.findViewById(R.id.password);
 
-        deleteOrig = theView.findViewById(R.id.deleteorig);
+		deleteOrig = theView.findViewById(R.id.deleteorig);
 
-        if (filetype_row != null) filetype_row.setVisibility(View.GONE);
-        if (getfile_row != null) getfile_row.setVisibility(View.GONE);
-        if (preview_row != null) preview_row.setVisibility(View.GONE);
-        if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
-        if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
-        if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
-        if (privkey_row != null) privkey_row.setVisibility(View.GONE);
-        if (password_row != null) password_row.setVisibility(View.GONE);
-        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
-        if (execute_row != null) execute_row.setVisibility(View.GONE);
+		if (filetype_row != null) filetype_row.setVisibility(View.GONE);
+		if (getfile_row != null) getfile_row.setVisibility(View.GONE);
+		if (preview_row != null) preview_row.setVisibility(View.GONE);
+		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
+		if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
+		if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
+		if (privkey_row != null) privkey_row.setVisibility(View.GONE);
+		if (password_row != null) password_row.setVisibility(View.GONE);
+		if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
+		if (execute_row != null) execute_row.setVisibility(View.GONE);
 
-        Spinner filetype_menu = theView.findViewById(R.id.filetype);
-        if (filetype_menu != null) filetype_menu.setOnItemSelectedListener(this);
-        if (enc_cipher != null) enc_cipher.setOnItemSelectedListener(this);
-        //if (sign_algo != null) sign_algo.setOnItemSelectedListener(this);
-        if (pubkey != null) pubkey.setOnItemSelectedListener(this);
-        if (privkey != null) privkey.setOnItemSelectedListener(this);
+		Spinner filetype_menu = theView.findViewById(R.id.filetype);
+		if (filetype_menu != null) filetype_menu.setOnItemSelectedListener(this);
+		if (enc_cipher != null) enc_cipher.setOnItemSelectedListener(this);
+		//if (sign_algo != null) sign_algo.setOnItemSelectedListener(this);
+		if (pubkey != null) pubkey.setOnItemSelectedListener(this);
+		if (privkey != null) privkey.setOnItemSelectedListener(this);
 
-        // Get the filenames of the public and private keys, then populate the key names in the Spinners.
-        KeyStore tempStore = new KeyStore();
-        File pubkeysDir = new File(instance.getPubkeysPath());
-        if ( pubkeysDir.list() != null )    // Public keys
-        {
-            String[] pubkey_candidates = pubkeysDir.list().clone();
-            List<String> pubkeyPaths = new ArrayList<>();
-            pubkeyPaths.add("NONE");    // This is just to keep the two ArrayLists having equal elements, to make indexing items a bit easier.
-            List<String> pubkeyContents = new ArrayList<>();
-            pubkeyContents.add("Select a Key");
-            KeyPairInformation current;
-            // Only add in keys that are not expired or revoked.
-            for ( String curFile : pubkey_candidates )
-            {
-                try
-                {
-                    current = tempStore.importPublicKey(instance.getPubkeysPath() + curFile)[0];
-                    if ( !current.isRevoked() && !current.isExpired() )
-                    {
-                        pubkeyPaths.add(curFile);
-                        pubkeyContents.add(current.getUserID());
-                    }
-                }
-                catch ( Exception e )
-                {
-                    Log.w("hyggelig", "Error importing public key: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-            pubkeys = new String[pubkeyPaths.size()];
-            pubkeyPaths.toArray(pubkeys);
-            Log.w("hyggelig", Arrays.toString(pubkeys));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, pubkeyContents);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            pubkey.setAdapter(adapter);
-        }
-        tempStore = new KeyStore();
-        File privkeysDir = new File(instance.getPrivkeysPath());
-        if ( privkeysDir.list() != null )   // Private keys
-        {
-            String[] privkey_candidates = privkeysDir.list().clone();
-            List<String> privkeyPaths = new ArrayList<>();
-            privkeyPaths.add("NONE");
-            List<String> privkeyContents = new ArrayList<>();
-            privkeyContents.add("Select a Key");
-            KeyPairInformation current;
-            // No need to revoke private keys, so here we'll just import the files.
-            for ( String curFile : privkey_candidates )
-            {
-                try
-                {
-                    current = tempStore.importPrivateKey(instance.getPrivkeysPath() + curFile)[0];
-                    privkeyPaths.add(curFile);
-                    privkeyContents.add(current.getUserID());
-                }
-                catch ( Exception e )
-                {
-                    Log.w("hyggelig", "Error importing private key: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-            privkeys = new String[privkeyPaths.size()];
-            privkeyPaths.toArray(privkeys);
-            Log.w("hyggelig", Arrays.toString(privkeys));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, privkeyContents);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            privkey.setAdapter(adapter);
-        }
+		// Get the filenames of the public and private keys, then populate the key names in the Spinners.
+		KeyStore tempStore = new KeyStore();
+		File pubkeysDir = new File(instance.getPubkeysPath());
+		if ( pubkeysDir.list() != null )    // Public keys
+		{
+			String[] pubkey_candidates = pubkeysDir.list().clone();
+			List<String> pubkeyPaths = new ArrayList<>();
+			pubkeyPaths.add("NONE");    // This is just to keep the two ArrayLists having equal elements, to make indexing items a bit easier.
+			List<String> pubkeyContents = new ArrayList<>();
+			pubkeyContents.add("Select a Key");
+			KeyPairInformation current;
+			// Only add in keys that are not expired or revoked.
+			for ( String curFile : pubkey_candidates )
+			{
+				try
+				{
+					current = tempStore.importPublicKey(instance.getPubkeysPath() + curFile)[0];
+					if ( !current.isRevoked() && !current.isExpired() )
+					{
+						pubkeyPaths.add(curFile);
+						pubkeyContents.add(current.getUserID());
+					}
+				}
+				catch ( Exception e )
+				{
+					Log.w("hyggelig", "Error importing public key: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			pubkeys = new String[pubkeyPaths.size()];
+			pubkeyPaths.toArray(pubkeys);
+			Log.w("hyggelig", Arrays.toString(pubkeys));
+			ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, pubkeyContents);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			pubkey.setAdapter(adapter);
+		}
+		tempStore = new KeyStore();
+		File privkeysDir = new File(instance.getPrivkeysPath());
+		if ( privkeysDir.list() != null )   // Private keys
+		{
+			String[] privkey_candidates = privkeysDir.list().clone();
+			List<String> privkeyPaths = new ArrayList<>();
+			privkeyPaths.add("NONE");
+			List<String> privkeyContents = new ArrayList<>();
+			privkeyContents.add("Select a Key");
+			KeyPairInformation current;
+			// No need to revoke private keys, so here we'll just import the files.
+			for ( String curFile : privkey_candidates )
+			{
+				try
+				{
+					current = tempStore.importPrivateKey(instance.getPrivkeysPath() + curFile)[0];
+					privkeyPaths.add(curFile);
+					privkeyContents.add(current.getUserID());
+				}
+				catch ( Exception e )
+				{
+					Log.w("hyggelig", "Error importing private key: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			privkeys = new String[privkeyPaths.size()];
+			privkeyPaths.toArray(privkeys);
+			Log.w("hyggelig", Arrays.toString(privkeys));
+			ArrayAdapter<String> adapter = new ArrayAdapter<>(instance, android.R.layout.simple_spinner_item, privkeyContents);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			privkey.setAdapter(adapter);
+		}
 
-        if ( deleteOrig != null )
-            deleteOrig.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteOriginalFile = !deleteOriginalFile;
-                    Log.w("hyggelig", "deleteOriginalFile = " + deleteOriginalFile);
-                }
-            });
+		if ( deleteOrig != null )
+			deleteOrig.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					deleteOriginalFile = !deleteOriginalFile;
+					Log.w("hyggelig", "deleteOriginalFile = " + deleteOriginalFile);
+				}
+			});
 
-        execute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executeAction();
-            }
-        });
+		execute.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				executeAction();
+			}
+		});
 
-        return theView;
-    }
+		return theView;
+	}
 
-    // Shows options that are applicable to both encryption and signing.
-    private void showMutualOptions(View v) {
-        Log.w("hyggelig", "showMutualOptions");
-        //TableRow filetype_row = v.findViewById(R.id.filetype_row);
-        if (filetype_row != null) filetype_row.setVisibility(View.VISIBLE);
-        //TableRow getfile_row = v.findViewById(R.id.getfile_row);
-        if (getfile_row != null) getfile_row.setVisibility(View.VISIBLE);
-        if (execute_row != null) execute_row.setVisibility(View.VISIBLE);
-    }
+	// Shows options that are applicable to both encryption and signing.
+	private void showMutualOptions(View v) {
+		Log.w("hyggelig", "showMutualOptions");
+		//TableRow filetype_row = v.findViewById(R.id.filetype_row);
+		if (filetype_row != null) filetype_row.setVisibility(View.VISIBLE);
+		//TableRow getfile_row = v.findViewById(R.id.getfile_row);
+		if (getfile_row != null) getfile_row.setVisibility(View.VISIBLE);
+		if (execute_row != null) execute_row.setVisibility(View.VISIBLE);
+	}
 
-    // Show the options applicable for encrypting data.
-    private void showEncryptionOptions(View v) {
-        Log.w("hyggelig", "showEncryptionOptions");
+	// Show the options applicable for encrypting data.
+	private void showEncryptionOptions(View v) {
+		Log.w("hyggelig", "showEncryptionOptions");
 
-        //initAndHideAllOptions(v);
-        showMutualOptions(v);
+		//initAndHideAllOptions(v);
+		showMutualOptions(v);
 
-        if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
-        if (privkey_row != null) privkey_row.setVisibility(View.GONE);
+		if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
+		if (privkey_row != null) privkey_row.setVisibility(View.GONE);
 
-        if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
-        //if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
-        //Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
-        if (enc_cipher != null)
-            handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
-        //if ( password_row != null ) password_row.setVisibility(View.VISIBLE);
+		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
+		//if (deleteorig_row != null) deleteorig_row.setVisibility(View.VISIBLE);
+		//Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
+		if (enc_cipher != null)
+			handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
+		//if ( password_row != null ) password_row.setVisibility(View.VISIBLE);
 
-        if ( execute != null )
-            execMode = MODE_ENCRYPT;
+		if ( execute != null )
+			execMode = MODE_ENCRYPT;
 
-        selectedKey = 0;
-    }
+		selectedKey = 0;
+	}
 
-    // Show the options applicable for signing data.
-    private void showSigningOptions(View v) {
-        Log.w("hyggelig", "showSigningOptions");
-        //initAndHideAllOptions(v);
-        showMutualOptions(v);
+	// Show the options applicable for signing data.
+	private void showSigningOptions(View v) {
+		Log.w("hyggelig", "showSigningOptions");
+		//initAndHideAllOptions(v);
+		showMutualOptions(v);
 
-        if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
-        if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
-        if (password_row != null) password_row.setVisibility(View.GONE);
-        if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
+		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
+		if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
+		if (password_row != null) password_row.setVisibility(View.GONE);
+		if (deleteorig_row != null) deleteorig_row.setVisibility(View.GONE);
 
-        //if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
-        //Spinner sign_algo = v.findViewById(R.id.sign_algo);
-        //if (sign_algo != null)
-        //    handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
-        if (privkey_row != null) privkey_row.setVisibility(View.VISIBLE);
+		//if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
+		//Spinner sign_algo = v.findViewById(R.id.sign_algo);
+		//if (sign_algo != null)
+		//    handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
+		if (privkey_row != null) privkey_row.setVisibility(View.VISIBLE);
 
-        if ( execute != null )
-            execMode = MODE_SIGN;
+		if ( execute != null )
+			execMode = MODE_SIGN;
 
-        selectedKey = 0;
-    }
+		selectedKey = 0;
+	}
 
-    // Makes the UI react to the options selected in spinners.
-    // For example, if a symmetric cipher is shown, hide the public key spinner and show the password prompt.
-    private void handleSpanners(View v, int position, int ID) {
-        Log.w("hyggelig", "handleSpanners");
-        Log.w("hyggelig", "pos " + position);
-        Log.w("hyggelig", "id " + ID);
-        switch (ID) {
-            // File type
-            case (R.id.filetype): {
-                Log.w("hyggelig", "filetype");
-                if ( getfile != null )
-                    getfile.setText("Click here to select...");
-                targetFileURI = null;   // Clear this out just to be safe.
+	// Makes the UI react to the options selected in spinners.
+	// For example, if a symmetric cipher is shown, hide the public key spinner and show the password prompt.
+	private void handleSpanners(View v, int position, int ID) {
+		Log.w("hyggelig", "handleSpanners");
+		Log.w("hyggelig", "pos " + position);
+		Log.w("hyggelig", "id " + ID);
+		switch (ID) {
+			// File type
+			case (R.id.filetype): {
+				Log.w("hyggelig", "filetype");
+				if ( getfile != null )
+					getfile.setText("Click here to select...");
+				targetFileURI = null;   // Clear this out just to be safe.
 
-                if (position == 0) {
-                    if (getfile != null)
-                        getfile.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                pickFile();
-                            }
-                        });
-                } else if (position == 1) {
-                    if (getfile != null)
-                        getfile.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                takePicture();
-                            }
-                        });
-                } else if (position == 2) {
-                    if (getfile != null)
-                        getfile.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                recordVideo();
-                            }
-                        });
-                }
-            }
-            break;
-            // Encryption ciphers
-            case (R.id.enc_cipher): {
-                Log.w("hyggelig", "enc_cipher");
+				if (position == 0) {
+					if (getfile != null)
+						getfile.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								pickFile();
+							}
+						});
+				} else if (position == 1) {
+					if (getfile != null)
+						getfile.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								takePicture();
+							}
+						});
+				} else if (position == 2) {
+					if (getfile != null)
+						getfile.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								recordVideo();
+							}
+						});
+				}
+			}
+			break;
+			// Encryption ciphers
+			case (R.id.enc_cipher): {
+				Log.w("hyggelig", "enc_cipher");
 
-                // Symmetric - show password prompt
-                if (position == 0) {
-                    Log.w("hyggelig", "pos 0");
+				// Symmetric - show password prompt
+				if (position == 0) {
+					Log.w("hyggelig", "pos 0");
 
-                    symmetricEncrypt = true;
+					symmetricEncrypt = true;
 
-                    if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
+					if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
 
-                    if (password_row != null) password_row.setVisibility(View.VISIBLE);
+					if (password_row != null) password_row.setVisibility(View.VISIBLE);
 
-                    selectedKey = 0;
-                }
-                // Asymmetric - hide password prompt and populate keys
-                else if (position == 1) {
-                    Log.w("hyggelig", "pos 1");
+					selectedKey = 0;
+				}
+				// Asymmetric - hide password prompt and populate keys
+				else if (position == 1) {
+					Log.w("hyggelig", "pos 1");
 
-                    symmetricEncrypt = false;
+					symmetricEncrypt = false;
 
-                    if (password_row != null) password_row.setVisibility(View.GONE);
+					if (password_row != null) password_row.setVisibility(View.GONE);
 
-                    if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
+					if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
 
-                    selectedKey = 0;
-                }
-            }
-            break;
-            // Public key selection
-            case (R.id.pubkey): {
-                Log.w("hyggelig", "pubkey = " + position);
-                selectedKey = position;
-            }
-            break;
-            // Signing algorithm
-            // DELETED: Why did I think this was a good idea?
-            /*case (R.id.sign_algo): {
-                Log.w("hyggelig", "sign_algo");
+					selectedKey = 0;
+				}
+			}
+			break;
+			// Public key selection
+			case (R.id.pubkey): {
+				Log.w("hyggelig", "pubkey = " + position);
+				selectedKey = position;
+			}
+			break;
+			// Private key selection
+			case (R.id.privkey): {
+				Log.w("hyggelig", "privkey = " + position);
+				selectedKey = position;
+			}
+			break;
+		}
+	}
 
-                if (privkey_row != null) privkey_row.setVisibility(View.VISIBLE);
+	// For the spinners (drop-down menus).
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+		Log.w("hyggelig", "onItemSelected");
+		Log.w("hyggelig", "actual pos " + position);
+		handleSpanners(v, position, parent.getId());
+	}
 
-                // RSA
-                if (position == 0) {
-                    Log.w("hyggelig", "pos 0");
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// Nothing to do here.
+	}
 
-                    // TODO: Get RSA private keys.
-                }
-                // DSA
-                else if (position == 1) {
-                    Log.w("hyggelig", "pos 1");
+	// Open a file manager to have the user select a file.
+	private void pickFile() {
+		Intent pickFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+		pickFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+		pickFileIntent.setType("*/*");
+		pickFileIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, "true");
+		// Need to make sure we actually have something that can handle this action.
+		if (instance != null && pickFileIntent.resolveActivity(instance.getPackageManager()) != null)
+			startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), SELECT_FILE);
+	}
 
-                    // TODO: Get DSA private keys.
-                }
-            }
-            break;*/
-            // Private key selection
-            case (R.id.privkey): {
-                Log.w("hyggelig", "privkey = " + position);
-                selectedKey = position;
-            }
-            break;
-        }
-    }
-
-    // For the spinners (drop-down menus).
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-        Log.w("hyggelig", "onItemSelected");
-        Log.w("hyggelig", "actual pos " + position);
-        handleSpanners(v, position, parent.getId());
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Nothing to do here.
-    }
-
-    // Open a file manager to have the user select a file.
-    private void pickFile() {
-        Intent pickFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        pickFileIntent.setType("*/*");
-        pickFileIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, "true");
-        // Need to make sure we actually have something that can handle this action.
-        if (instance != null && pickFileIntent.resolveActivity(instance.getPackageManager()) != null)
-            startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), SELECT_FILE);
-    }
-
-    // Opens a camera program to have the user take a picture.
-    // Why the hell does using this sometimes terminate the app?
-    // FIXME: Fix this.
-    private void takePicture() {
-        /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	// Opens a camera program to have the user take a picture.
+	// Why the hell does using this sometimes terminate the app?
+	// FIXME: Fix this.
+	private void takePicture() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // TODO: I'll have to do this later, because I've had it with this. Programming for Android is absurdly complicated.
-        File tempFolder = new File(outputDirPath, "temp");
+        File tempFolder = new File(instance.getExternalFilesDir("temp").getAbsolutePath());
+        tempFolder.mkdirs();
         File img = new File(tempFolder, "temp-pic.jpg");
-        Uri imgURI = Uri.fromFile(img);
+        try {
+			img.createNewFile();
+		}
+        catch ( Exception e )
+		{
+			Log.w("hyggelig", "uh oh");
+			return;
+		}
+        Uri imgURI = FileProvider.getUriForFile(instance, "project.comp3004.hyggelig.encryptiontools.EncryptFilesFragment", img);
         takePictureIntent.putExtra(EXTRA_OUTPUT, imgURI); // TODO: Maybe give the user the option to avoid saving the file, and instead use a low-res thumbnail.
         takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (instance != null && takePictureIntent.resolveActivity(instance.getPackageManager()) != null)
-            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);*/
-    }
+            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);
+	}
 
-    // Opens a camera program to have the user record a video.
-    private void recordVideo() {
-        Intent recordVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        recordVideoIntent.putExtra(EXTRA_OUTPUT, "temp-vid");
-        if (instance != null && recordVideoIntent.resolveActivity(instance.getPackageManager()) != null)
-            startActivityForResult(Intent.createChooser(recordVideoIntent, "Select a Camera App"), RECORD_VIDEO);
-    }
+	// Opens a camera program to have the user record a video.
+	private void recordVideo() {
+		Intent recordVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		recordVideoIntent.putExtra(EXTRA_OUTPUT, "temp-vid");
+		if (instance != null && recordVideoIntent.resolveActivity(instance.getPackageManager()) != null)
+			startActivityForResult(Intent.createChooser(recordVideoIntent, "Select a Camera App"), RECORD_VIDEO);
+	}
 
-    // Responds primarily to the file choosing Intents.
-    // TODO: Make use of handleSpanners() because sometimes, the activity is reset, even though the result is returned.
-    @Override
-    public void onActivityResult(int requestcode, int resultcode, Intent resultIntent) {
-        Log.w("hyggelig", "onActivityResult - invoked");
+	// Responds primarily to the file choosing Intents.
+	// TODO: Make use of handleSpanners() because sometimes, the activity is reset, even though the result is returned.
+	@Override
+	public void onActivityResult(int requestcode, int resultcode, Intent resultIntent) {
+		Log.w("hyggelig", "onActivityResult - invoked");
 
-        if (resultIntent != null)
-            Log.w("hyggelig", "" + resultIntent.getData());
-        else
-            Log.w("hyggelig", "resultIntent is null");
+		if (resultIntent != null)
+			Log.w("hyggelig", "resultIntent: " + resultIntent.getData());
+		else
+			Log.w("hyggelig", "resultIntent is null");
 
-        // TODO: Incomplete.
-        // Operate only if we got back a URI.
-        if (resultIntent != null) {
-            Bundle extras = resultIntent.getExtras();
-            switch (requestcode) {
-                case SELECT_FILE:
-                    Log.w("hyggelig", "SELECT_FILE");
-                    if (preview_row != null)
-                        preview_row.setVisibility(View.GONE);
-                    Log.w("hyggelig", "" + resultIntent.getData());
-                    targetFileURI = resultIntent.getData();
-                    if ( getfile != null )
-                        getfile.setText("File selected!");
-                    // TODO: If the file selected is an image, preview it.
-                    break;
-                case TAKE_PICTURE:  // TODO - Make this work somehow.
-                    Log.w("hyggelig", "TAKE_PICTURE");
-                    if (preview_row != null)
-                        preview_row.setVisibility(View.VISIBLE);
-                    if (extras != null) {
-                        Bitmap thumbnail;// = MediaStore.Images.Media.getBitmap(instance.getContentResolver(), (Uri)extras.get(EXTRA_OUTPUT));//(Bitmap)extras.get("data");
-                        try {
-                            thumbnail = MediaStore.Images.Media.getBitmap(instance.getApplicationContext().getContentResolver(), (Uri) extras.get(EXTRA_OUTPUT));
-                            if (thumbnail != null)
-                                Log.w("hyggelig", "data = " + extras);
-                            if (preview != null)
-                                preview.setImageBitmap(thumbnail);
-                        } catch (FileNotFoundException e) {
-                            Log.w("hyggelig", "file not found");
-                        } catch (IOException e) {
-                            Log.w("hyggelig", "oh no");
-                        }
-                    } else {
-                        Log.w("hyggelig", "TAKEN PICTURE RETURNED NULL");
-                    }
-                    break;
-                case RECORD_VIDEO:  // TODO
-                    Log.w("hyggelig", "RECORD_VIDEO");
-                    break;
-                default:
-                    Log.w("hyggelig", "good lord! What did you do?");
-                    break;
-            }
-        }
+		// TODO: Incomplete.
+		switch (requestcode) {
+			case SELECT_FILE:
+				Log.w("hyggelig", "SELECT_FILE");
+				if (preview_row != null)
+					preview_row.setVisibility(View.GONE);
+				Log.w("hyggelig", "" + resultIntent.getData());
+				targetFileURI = resultIntent.getData();
+				if ( getfile != null )
+					getfile.setText("File selected!");
+				// TODO: If the file selected is an image, preview it.
+				break;
+			case TAKE_PICTURE:  // TODO - Make this work somehow.
+				Log.w("hyggelig", "TAKE_PICTURE");
+				if (preview_row != null)
+					preview_row.setVisibility(View.VISIBLE);
+				/*if (extras != null) {
+					Bitmap thumbnail;// = MediaStore.Images.Media.getBitmap(instance.getContentResolver(), (Uri)extras.get(EXTRA_OUTPUT));//(Bitmap)extras.get("data");
+					try {
+						thumbnail = MediaStore.Images.Media.getBitmap(instance.getApplicationContext().getContentResolver(), (Uri)extras.get(EXTRA_OUTPUT));
+						if (thumbnail != null)
+							Log.w("hyggelig", "data = " + extras);
+						if (preview != null)
+							preview.setImageBitmap(thumbnail);
+					} catch (FileNotFoundException e) {
+						Log.w("hyggelig", "file not found");
+					} catch (IOException e) {
+						Log.w("hyggelig", "oh no");
+					} catch (Exception e) {
+						Log.w("hyggelig", "What the hell?");
+					}
+				} else {
+					Log.w("hyggelig", "TAKEN PICTURE RETURNED NULL");
+				}*/
+				// TODO: This isn't optimal.
+				Bitmap thumbnail;
+				try
+				{
+					File tempFolder = new File(instance.getExternalFilesDir("temp").getAbsolutePath());
+					File img = new File(tempFolder, "temp-pic.jpg");
+					Uri imgURI = FileProvider.getUriForFile(instance, "project.comp3004.hyggelig.encryptiontools.EncryptFilesFragment", img);
 
-        super.onActivityResult(requestcode, resultcode, resultIntent);
-    }
+					thumbnail = MediaStore.Images.Media.getBitmap(instance.getApplicationContext().getContentResolver(), imgURI);
+					if (preview != null)
+						preview.setImageBitmap(thumbnail);
+				}
+				catch ( Exception e )
+				{
+					Log.w("hyggelig", "Error while working on taken picture");
+					e.printStackTrace();
+					return;
+				}
+				break;
+			case RECORD_VIDEO:  // TODO
+				Log.w("hyggelig", "RECORD_VIDEO");
+				break;
+			default:
+				Log.w("hyggelig", "good lord! What did you do?");
+				break;
+		}
 
-    private boolean encryptFile()
-    {
-        if ( targetFileURI == null )
-            return false;
-        if ( symmetricEncrypt && password == null ) // We need this for the symmetric encryption password.
-            return false;
+		super.onActivityResult(requestcode, resultcode, resultIntent);
+	}
 
-        // Why is it so complicated to just open a file and get its size? What the hell, Google?
-        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
-        if ( theCursor == null )
-            return false;
-        theCursor.moveToFirst();
-        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
-        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
-        theCursor.close();
+	private boolean encryptFile()
+	{
+		if ( targetFileURI == null )
+			return false;
+		if ( symmetricEncrypt && password == null ) // We need this for the symmetric encryption password.
+			return false;
 
-        byte[] contents = new byte[size];
-        try
-        {
-            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
-            if ( fileIS == null )
-            {
-                Log.w("hyggelig", "null InputStream");
-                alertError("null InputStream");
-                return false;
-            }
-            fileIS.read(contents);
-            fileIS.close();
-        }
-        catch ( Exception e )
-        {
-            Log.w("hyggelig", "Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
-            alertError("Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+		// Why is it so complicated to just open a file and get its size? What the hell, Google?
+		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+		if ( theCursor == null )
+			return false;
+		theCursor.moveToFirst();
+		String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+		theCursor.close();
 
-        Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
+		byte[] contents = new byte[size];
+		try
+		{
+			InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			if ( fileIS == null )
+			{
+				Log.w("hyggelig", "null InputStream");
+				alertError("null InputStream");
+				return false;
+			}
+			fileIS.read(contents);
+			fileIS.close();
+		}
+		catch ( Exception e )
+		{
+			Log.w("hyggelig", "Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+			alertError("Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 
-        byte[] encBytes;
-        String encOutPath = outputDirPath + "EncryptOutput/";
-        if ( symmetricEncrypt )
-        {
-            try
-            {
-                encBytes = aes.encrypt(contents, 256, password.getText().toString());
+		Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
 
-                FileOutputStream fileOS = new FileOutputStream(encOutPath + name + ".hyg");
-                fileOS.write(encBytes);
-                fileOS.close();
-            }
-            catch (Exception e)
-            {
-                Log.w("hyggelig", "Error while encrypting the file! " + e.getMessage());
-                alertError("Error while encrypting the file! " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-        }
-        else
-        {
-            try
-            {
-                // Since Android doesn't like me using file paths very much, we're gonna need to make a temporary file.
-                File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/enc_temp");
-                tempFile.createNewFile();
-                FileOutputStream tempFileOS = new FileOutputStream(tempFile);
-                tempFileOS.write(contents);
-                tempFileOS.close();
+		byte[] encBytes;
+		String encOutPath = outputDirPath + "EncryptOutput/";
+		if ( symmetricEncrypt )
+		{
+			try
+			{
+				encBytes = aes.encrypt(contents, 256, password.getText().toString());
 
-                String[] params = {tempFile.getAbsolutePath(), instance.getPubkeysPath() + pubkeys[selectedKey], "N/A", "N/A", encOutPath + name + ".hyg", "false", "true"};
-                int returnStatus = PublicKey.encrypt(params);
-                tempFile.delete();
-                switch (returnStatus)   // NOTE: These are programmer errors.
-                {
-                    case 0:
-                        break;
-                    case -1:
-                        throw new Exception("Not enough arguments");
-                    case -2:
-                        throw new Exception("Badly-formatted arguments");
-                }
-            }
-            catch ( NoPublicKeyFoundException e )
-            {
-                Log.w("hyggelig", "No public key found in this source. Is it a sign-only key?");
-                alertError("No public key found in this source. Is it a sign-only key?");
-                e.printStackTrace();
-                return false;
-            }
-            catch ( Exception e )
-            {
-                Log.w("hyggelig", "Error while encrypting the file! " + e.getMessage());
-                alertError("Error while encrypting the file! " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-        }
+				FileOutputStream fileOS = new FileOutputStream(encOutPath + name + ".hyg");
+				fileOS.write(encBytes);
+				fileOS.close();
+			}
+			catch (Exception e)
+			{
+				Log.w("hyggelig", "Error while encrypting the file! " + e.getMessage());
+				alertError("Error while encrypting the file! " + e.getMessage());
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else
+		{
+			try
+			{
+				// Since Android doesn't like me using file paths very much, we're gonna need to make a temporary file.
+				File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/enc_temp");
+				tempFile.createNewFile();
+				FileOutputStream tempFileOS = new FileOutputStream(tempFile);
+				tempFileOS.write(contents);
+				tempFileOS.close();
 
-        Log.w("hyggelig", "File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!");
-        new AlertDialog.Builder(instance)
-                .setTitle("Success")
-                .setMessage("File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!")
-                .setNegativeButton(android.R.string.ok, null)
-                .show();
+				String[] params = {tempFile.getAbsolutePath(), instance.getPubkeysPath() + pubkeys[selectedKey], "N/A", "N/A", encOutPath + name + ".hyg", "false", "true"};
+				int returnStatus = PublicKey.encrypt(params);
+				tempFile.delete();
+				switch (returnStatus)   // NOTE: These are programmer errors.
+				{
+					case 0:
+						break;
+					case -1:
+						throw new Exception("Not enough arguments");
+					case -2:
+						throw new Exception("Badly-formatted arguments");
+				}
+			}
+			catch ( NoPublicKeyFoundException e )
+			{
+				Log.w("hyggelig", "No public key found in this source. Is it a sign-only key?");
+				alertError("No public key found in this source. Is it a sign-only key?");
+				e.printStackTrace();
+				return false;
+			}
+			catch ( Exception e )
+			{
+				Log.w("hyggelig", "Error while encrypting the file! " + e.getMessage());
+				alertError("Error while encrypting the file! " + e.getMessage());
+				e.printStackTrace();
+				return false;
+			}
+		}
 
-        // Delete the original file if the user asked to.
-        // FIXME: This just doesn't work.
+		Log.w("hyggelig", "File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!");
+		new AlertDialog.Builder(instance)
+				.setTitle("Success")
+				.setMessage("File encrypted and written successfully to " + encOutPath + name + ".hyg" + "!")
+				.setNegativeButton(android.R.string.ok, null)
+				.show();
+
+		// Delete the original file if the user asked to.
+		// FIXME: This just doesn't work.
         /*if ( deleteOriginalFile )
         {
             Log.w("hyggelig", targetFileURI.getPath());
@@ -662,178 +669,178 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
             handleSpanners(this.getView(), 0, R.id.filetype);   // Deselect the deleted file.
         }*/
 
-        return true;
-    }
+		return true;
+	}
 
-    private boolean signFile(String keyPass)
-    {
-        if ( targetFileURI == null )
-            return false;
+	private boolean signFile(String keyPass)
+	{
+		if ( targetFileURI == null )
+			return false;
 
-        Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
-        if ( theCursor == null )
-            return false;
-        theCursor.moveToFirst();
-        String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
-        int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
-        theCursor.close();
+		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+		if ( theCursor == null )
+			return false;
+		theCursor.moveToFirst();
+		String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
+		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
+		theCursor.close();
 
-        byte[] contents = new byte[size];
-        try
-        {
-            InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
-            if ( fileIS == null )
-            {
-                Log.w("hyggelig", "null InputStream");
-                alertError("null InputStream");
-                return false;
-            }
-            fileIS.read(contents);
-            fileIS.close();
-        }
-        catch ( Exception e )
-        {
-            Log.w("hyggelig", "Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
-            alertError("Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+		byte[] contents = new byte[size];
+		try
+		{
+			InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			if ( fileIS == null )
+			{
+				Log.w("hyggelig", "null InputStream");
+				alertError("null InputStream");
+				return false;
+			}
+			fileIS.read(contents);
+			fileIS.close();
+		}
+		catch ( Exception e )
+		{
+			Log.w("hyggelig", "Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+			alertError("Error while working on " + targetFileURI.getPath() + "! " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 
-        // This part actually does the signing.
-        String signOutPath = instance.getOutputDirPath() + "SignOutput/";
-        try
-        {
-            // We'll need to create a temporary file, since Android doesn't like it when we use file paths.
-            File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/sign_temp");
-            tempFile.createNewFile();
-            FileOutputStream tempFileOS = new FileOutputStream(tempFile);
-            tempFileOS.write(contents);
-            tempFileOS.close();
+		// This part actually does the signing.
+		String signOutPath = instance.getOutputDirPath() + "SignOutput/";
+		try
+		{
+			// We'll need to create a temporary file, since Android doesn't like it when we use file paths.
+			File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/sign_temp");
+			tempFile.createNewFile();
+			FileOutputStream tempFileOS = new FileOutputStream(tempFile);
+			tempFileOS.write(contents);
+			tempFileOS.close();
 
-            PublicKey.sign(tempFile.getAbsolutePath(), instance.getPrivkeysPath() + privkeys[selectedKey], keyPass, signOutPath + name + ".hyg-sign", true);
-        }
-        catch ( Exception e )
-        {
-            Log.w("hyggelig", "Error while signing the file! " + e.getMessage());
-            alertError("Error while signing the file! " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+			PublicKey.sign(tempFile.getAbsolutePath(), instance.getPrivkeysPath() + privkeys[selectedKey], keyPass, signOutPath + name + ".hyg-sign", true);
+		}
+		catch ( Exception e )
+		{
+			Log.w("hyggelig", "Error while signing the file! " + e.getMessage());
+			alertError("Error while signing the file! " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
 
-        Log.w("hyggelig", "File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!");
-        new AlertDialog.Builder(instance)
-                .setTitle("Success")
-                .setMessage("File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!")
-                .setNegativeButton(android.R.string.ok, null)
-                .show();
-        return true;
-    }
+		Log.w("hyggelig", "File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!");
+		new AlertDialog.Builder(instance)
+				.setTitle("Success")
+				.setMessage("File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!")
+				.setNegativeButton(android.R.string.ok, null)
+				.show();
+		return true;
+	}
 
-    private void alertError(String msg)
-    {
-        new AlertDialog.Builder(instance)
-                .setTitle("Error")
-                .setMessage(msg)
-                .setNegativeButton(android.R.string.ok, null)
-                .show();
-    }
+	private void alertError(String msg)
+	{
+		new AlertDialog.Builder(instance)
+				.setTitle("Error")
+				.setMessage(msg)
+				.setNegativeButton(android.R.string.ok, null)
+				.show();
+	}
 
-    // TODO: React to the checkbox asking if the user wants to delete the original.
-    private void executeAction()
-    {
-        Log.w("hyggelig", "executeAction");
-        Log.w("hyggelig", "mode = " + execMode);
+	// TODO: React to the checkbox asking if the user wants to delete the original.
+	private void executeAction()
+	{
+		Log.w("hyggelig", "executeAction");
+		Log.w("hyggelig", "mode = " + execMode);
 
-        if ( targetFileURI == null )
-        {
-            Log.w("hyggelig", "no file URI provided");
-            alertError("No file selected");
-            return;
-        }
+		if ( targetFileURI == null )
+		{
+			Log.w("hyggelig", "no file URI provided");
+			alertError("No file selected");
+			return;
+		}
 
-        if ( execMode == MODE_ENCRYPT ) // Encryption, could be symmetric or asymmetric.
-        {
-            if ( symmetricEncrypt )
-            {
-                if ( password != null )
-                {
-                    final String encPass = password.getText().toString();
-                    Log.w("hyggelig", "password = " + encPass); // FIXME: REMOVE WHEN DONE
-                    if ( encPass.equals("") )   // Blank password.
-                    {
-                        alertError("No password provided");
-                    }
-                    else    // Password filled in; reprompt.
-                    {
-                        final EditText reprompt = new EditText(instance);
-                        reprompt.setHint("KEEP THIS SECRET");
-                        reprompt.setGravity(Gravity.CENTER_HORIZONTAL);
-                        reprompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
-                                .setTitle("Re-enter Password")
-                                .setView(reprompt)
-                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String repromptPass = reprompt.getText().toString();
-                                        Log.w("hyggelig", "reprompt = " + repromptPass);  // FIXME: REMOVE WHEN DONE
-                                        if ( repromptPass.equals("") )
-                                        {
-                                            alertError("No password re-entered");
-                                        }
-                                        else if ( !repromptPass.equals(encPass) )
-                                        {
-                                            alertError("Passwords do not match");
-                                        }
-                                        else    // Passwords match. Do the encryption.
-                                        {
-                                            encryptFile();
-                                        }
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.cancel, null);
-                        dialog.show();
-                    }
-                }
-            }
-            else    // Asymmetric encryption
-            {
-                if ( selectedKey == 0 ) // No key selected.
-                {
-                    alertError("No public key selected");
-                }
-                else
-                {
-                    encryptFile();
-                }
-            }
-        }
-        else if ( execMode == MODE_SIGN )   // Signing.
-        {
-            if ( selectedKey == 0 )
-            {
-                alertError("No private key selected");
-            }
-            else
-            {
-                // Get the private key's password.
-                final EditText keyPassPrompt = new EditText(instance);
-                keyPassPrompt.setHint("BLANK = NO KEY PASSWORD");
-                keyPassPrompt.setGravity(Gravity.CENTER_HORIZONTAL);
-                keyPassPrompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
-                        .setTitle("Enter Private Key Password")
-                        .setView(keyPassPrompt)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Go ahead with the decryption.
-                                signFile(keyPassPrompt.getText().toString());
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null);
-                dialog.show();
-            }
-        }
-    }
+		if ( execMode == MODE_ENCRYPT ) // Encryption, could be symmetric or asymmetric.
+		{
+			if ( symmetricEncrypt )
+			{
+				if ( password != null )
+				{
+					final String encPass = password.getText().toString();
+					Log.w("hyggelig", "password = " + encPass); // FIXME: REMOVE WHEN DONE
+					if ( encPass.equals("") )   // Blank password.
+					{
+						alertError("No password provided");
+					}
+					else    // Password filled in; reprompt.
+					{
+						final EditText reprompt = new EditText(instance);
+						reprompt.setHint("KEEP THIS SECRET");
+						reprompt.setGravity(Gravity.CENTER_HORIZONTAL);
+						reprompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+						AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
+								.setTitle("Re-enter Password")
+								.setView(reprompt)
+								.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										String repromptPass = reprompt.getText().toString();
+										Log.w("hyggelig", "reprompt = " + repromptPass);  // FIXME: REMOVE WHEN DONE
+										if ( repromptPass.equals("") )
+										{
+											alertError("No password re-entered");
+										}
+										else if ( !repromptPass.equals(encPass) )
+										{
+											alertError("Passwords do not match");
+										}
+										else    // Passwords match. Do the encryption.
+										{
+											encryptFile();
+										}
+									}
+								})
+								.setNegativeButton(android.R.string.cancel, null);
+						dialog.show();
+					}
+				}
+			}
+			else    // Asymmetric encryption
+			{
+				if ( selectedKey == 0 ) // No key selected.
+				{
+					alertError("No public key selected");
+				}
+				else
+				{
+					encryptFile();
+				}
+			}
+		}
+		else if ( execMode == MODE_SIGN )   // Signing.
+		{
+			if ( selectedKey == 0 )
+			{
+				alertError("No private key selected");
+			}
+			else
+			{
+				// Get the private key's password.
+				final EditText keyPassPrompt = new EditText(instance);
+				keyPassPrompt.setHint("BLANK = NO KEY PASSWORD");
+				keyPassPrompt.setGravity(Gravity.CENTER_HORIZONTAL);
+				keyPassPrompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				AlertDialog.Builder dialog = new AlertDialog.Builder(instance)
+						.setTitle("Enter Private Key Password")
+						.setView(keyPassPrompt)
+						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// Go ahead with the decryption.
+								signFile(keyPassPrompt.getText().toString());
+							}
+						})
+						.setNegativeButton(android.R.string.cancel, null);
+				dialog.show();
+			}
+		}
+	}
 }

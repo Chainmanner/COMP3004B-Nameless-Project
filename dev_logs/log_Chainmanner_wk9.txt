@@ -8,6 +8,8 @@ Tasks:
 	- Signing and verifying has been implemented. (1 hour)
 		- RSA compatible with GnuPG.
 		- DSA sign-only keys don't seem to be compatible.
+	- Worked on the Private Folder feature. (1 hour)
+		- Not done yet, but I'll get it working before our oral exam on Friday, even if it (along with a few other features) is incomplete. Something's better than nothing.
 
 Next Steps:
 	- Implement the private folder.

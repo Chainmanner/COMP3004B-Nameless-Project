@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:isScrollContainer="true"
     tools:context=".EncryptFilesFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -27,7 +28,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:isScrollContainer="true">
 
         <TableRow
             android:id="@+id/action_row"
