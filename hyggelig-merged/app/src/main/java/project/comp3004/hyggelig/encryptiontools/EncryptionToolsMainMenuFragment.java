@@ -48,9 +48,15 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
             }
         });
 
-        // TODO: Navigate to private folder layout.
+        theView.findViewById(R.id.privateFolder).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_encryptionToolsMainMenuFragment3_to_privateFolderFragment);
+            }
+        });
 
         // This adds a back button.
+
         Toolbar toolbar = theView.findViewById(R.id.toolbar);
         ((EncryptionTools_MainActivity)getActivity()).setSupportActionBar(toolbar);
         if ( ((EncryptionTools_MainActivity)getActivity()).getSupportActionBar() != null )
@@ -58,7 +64,7 @@ public class EncryptionToolsMainMenuFragment extends Fragment {
             ((EncryptionTools_MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((EncryptionTools_MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        // FIXME: Disabled for now due to crashes when using it.
+        // FIXME: Disabled for now due to crashes when using it, since there's nowhere to go back to.
         /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {   // This actually makes the back button go back.

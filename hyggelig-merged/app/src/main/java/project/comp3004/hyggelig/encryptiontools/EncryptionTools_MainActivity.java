@@ -25,10 +25,11 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 
 		// Hackish method of creating the output directories on the main external storage directory.
 		// It works on my phone, at least, but use with caution.
+		// WARNING: Do not change ANY of the directory paths. They're hardcoded for the time being.
 		File outputDir = getApplicationContext().getExternalFilesDir("nothing");
 		if ( outputDir != null )
 		{
-			// First, create the path to the directory.
+			// First, create the path to the output directory.
 			outputDirPath = outputDir.getAbsolutePath();
 			outputDirPath = outputDirPath.substring(0, outputDirPath.indexOf("Android"));
 			outputDirPath += "Hyggelig/EncryptionTools/";
@@ -36,6 +37,7 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 			// Then, actually create the directory and subdirectories.
 			File allOutputDir = new File( outputDirPath );
 			allOutputDir.mkdirs();
+			// Output directories for encryption/decryption and signing/verifying.
 			File encOutputDir = new File(outputDirPath + "EncryptOutput/");
 			encOutputDir.mkdirs();
 			File decOutputDir = new File( outputDirPath + "DecryptOutput/");
@@ -44,19 +46,22 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 			signOutputDir.mkdirs();
 			File verifyOutputDir = new File( outputDirPath + "VerifiedFiles/");
 			verifyOutputDir.mkdirs();
-
-			String privatePath = this.getFilesDir().getAbsolutePath();
-			Log.w("hyggelig", privatePath);
-			pubkeysPath = privatePath + "/pubkeys/";
-			new File(pubkeysPath).mkdirs();
-			privkeysPath = privatePath + "/privkeys/";
-			new File(privkeysPath).mkdirs();
-
-			privfolderPath = privatePath + "/privatefolder/";
-			new File(privfolderPath).mkdirs();
+			// Output directory for stuff coming from the private folder.
+			File privateFolderExportDir = new File(outputDirPath + "PrivateFolderExport/");
+			privateFolderExportDir.mkdirs();
 
 			// TODO: Private folder stuff.
 		}
+
+		String privatePath = this.getFilesDir().getAbsolutePath();
+		Log.w("hyggelig", privatePath);
+		pubkeysPath = privatePath + "/pubkeys/";
+		new File(pubkeysPath).mkdirs();
+		privkeysPath = privatePath + "/privkeys/";
+		new File(privkeysPath).mkdirs();
+
+		privfolderPath = privatePath + "/privatefolder/";
+		new File(privfolderPath).mkdirs();
 	}
 
 	protected String getOutputDirPath()
@@ -75,5 +80,4 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 	{
 		return privfolderPath;
 	}
-	protected String getPrivateFolderPassword() { return ""; }	// TODO
 }

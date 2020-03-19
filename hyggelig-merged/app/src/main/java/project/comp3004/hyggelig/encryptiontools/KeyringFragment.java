@@ -1,3 +1,5 @@
+// TODO: Decouple this class from the cryptography libraries.
+
 package project.comp3004.hyggelig.encryptiontools;
 import project.comp3004.hyggelig.R;
 import project.comp3004.hyggelig.publickey.PublicKey;
@@ -291,94 +293,94 @@ public class KeyringFragment extends Fragment {
     {
         // TODO
     }
-}
 
 
-class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder>
-{
-    private KeyPairInformation[] keyPairs;
-    private boolean showSecretKeys;
+	class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder>
+	{
+		private KeyPairInformation[] keyPairs;
+		private boolean showSecretKeys;
 
-    class ImplementedViewHolder extends RecyclerView.ViewHolder
-    {
-        public ImplementedViewHolder(View v)
-        {
-            super(v);
-        }
-    }
-
-    public KeysAdapter(KeyPairInformation[] theKeyPairs, boolean secrets)
-    {
-        keyPairs = theKeyPairs;
-        showSecretKeys = secrets;
-    }
-
-    @Override
-    public KeysAdapter.ImplementedViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View theView = LayoutInflater.from(parent.getContext()).inflate(R.layout.encryptiontools_keyring_keyitem, parent, false);
-
-        return new KeysAdapter.ImplementedViewHolder(theView);
-    }
-
-    @Override
-    public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
-    {
-        KeyPairInformation current = keyPairs[position];
-        if ( current == null )
+		class ImplementedViewHolder extends RecyclerView.ViewHolder
 		{
-			Log.w("hyggelig", "current is null!");
-			return;
-		}
-
-		ConstraintLayout theLayout = holder.itemView.findViewById(R.id.constraint_layout);
-        if ( position % 2 == 0 )
-		{
-			theLayout.setBackgroundColor(Color.LTGRAY);
-		}
-        else
-		{
-			theLayout.setBackgroundColor(Color.WHITE);
-		}
-
-        TextView keyName = holder.itemView.findViewById(R.id.keyName);
-        if ( keyName != null )
-        {
-            String finalName = "";
-            if ( current.isRevoked() )
-            {
-				finalName += "[REVOKED]";
-				keyName.setTextColor(Color.RED);
+			public ImplementedViewHolder(View v)
+			{
+				super(v);
 			}
-            else
-            {
-                finalName += "[" + (showSecretKeys ? "priv" : "pub") + "] ";
-                finalName += "[" + current.getAlgorithm() + "] ";
-            }
-            finalName += current.getUserID();
-            keyName.setText(finalName);
-        }
+		}
 
-        TextView keyFingerprint = holder.itemView.findViewById(R.id.keyFingerprint);
-        if ( keyFingerprint != null )
-        {
-            keyFingerprint.setText("Fingerprint: " + current.getFingerprint());
-        }
+		public KeysAdapter(KeyPairInformation[] theKeyPairs, boolean secrets)
+		{
+			keyPairs = theKeyPairs;
+			showSecretKeys = secrets;
+		}
 
-        TextView keyExpiration = holder.itemView.findViewById(R.id.keyExpiration);
-        if ( keyExpiration != null )
-        {
-            String finalString = (current.isExpired() ? "Expired " : "Expires ") + "on ";
-            finalString += current.getExpirationDate().toString();
-            if ( current.isExpired() )
-                keyExpiration.setTextColor(Color.RED);
-            keyExpiration.setText(finalString);
-        }
-    }
+		@Override
+		public KeysAdapter.ImplementedViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+		{
+			View theView = LayoutInflater.from(parent.getContext()).inflate(R.layout.encryptiontools_keyring_keyitem, parent, false);
 
-    @Override
-    public int getItemCount()
-    {
-        return keyPairs == null ? 0 : keyPairs.length;
-    }
+			return new KeysAdapter.ImplementedViewHolder(theView);
+		}
+
+		@Override
+		public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
+		{
+			KeyPairInformation current = keyPairs[position];
+			if ( current == null )
+			{
+				Log.w("hyggelig", "current is null!");
+				return;
+			}
+
+			ConstraintLayout theLayout = holder.itemView.findViewById(R.id.constraint_layout);
+			if ( position % 2 == 0 )
+			{
+				theLayout.setBackgroundColor(Color.LTGRAY);
+			}
+			else
+			{
+				theLayout.setBackgroundColor(Color.WHITE);
+			}
+
+			TextView keyName = holder.itemView.findViewById(R.id.keyName);
+			if ( keyName != null )
+			{
+				String finalName = "";
+				if ( current.isRevoked() )
+				{
+					finalName += "[REVOKED]";
+					keyName.setTextColor(Color.RED);
+				}
+				else
+				{
+					finalName += "[" + (showSecretKeys ? "priv" : "pub") + "] ";
+					finalName += "[" + current.getAlgorithm() + "] ";
+				}
+				finalName += current.getUserID();
+				keyName.setText(finalName);
+			}
+
+			TextView keyFingerprint = holder.itemView.findViewById(R.id.keyFingerprint);
+			if ( keyFingerprint != null )
+			{
+				keyFingerprint.setText("Fingerprint: " + current.getFingerprint());
+			}
+
+			TextView keyExpiration = holder.itemView.findViewById(R.id.keyExpiration);
+			if ( keyExpiration != null )
+			{
+				String finalString = (current.isExpired() ? "Expired " : "Expires ") + "on ";
+				finalString += current.getExpirationDate().toString();
+				if ( current.isExpired() )
+					keyExpiration.setTextColor(Color.RED);
+				keyExpiration.setText(finalString);
+			}
+		}
+
+		@Override
+		public int getItemCount()
+		{
+			return keyPairs == null ? 0 : keyPairs.length;
+		}
+	}
 }

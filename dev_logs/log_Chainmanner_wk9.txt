@@ -1,6 +1,6 @@
 Student: Gabriel Valachi
 ID: 101068875
-Last updated Tuesday March 17, 2020.
+Last updated Thursday March 19, 2020.
 
 Tasks:
 	- Public key encryption and decryption has now been implemented. (2 hours)
@@ -8,14 +8,19 @@ Tasks:
 	- Signing and verifying has been implemented. (1 hour)
 		- RSA compatible with GnuPG.
 		- DSA sign-only keys don't seem to be compatible.
-	- Worked on the Private Folder feature. (1 hour)
-		- Not done yet, but I'll get it working before our oral exam on Friday, even if it (along with a few other features) is incomplete. Something's better than nothing.
+	- Implemented the Private Folder feature. (5 hours)
+		- Works exactly as expected so far. Don't think I'll need to come back to this.
+	- Slight refactoring to decouple EncryptFilesFragment and DecryptVerifyFragment from the libraries being used. (1 hour)
+		- KeyringFragment is still coupled.
+
+Total time: 9 hours
 
 Next Steps:
-	- Implement the private folder.
-	- Finish up the other unimplemented features:
+	- Finish up the other unimplemented features, listed below in no particular order. These NEED to be done before we hand in our final deliverable.
+		- Decouple KeyringFragment from the cryptography libraries.
 		- Inputting a picture straight from the camera
 		- Inputting a video straight from the camera
 		- Generating keypairs
 		- Viewing more details about imported keys
 			- This is, by common sense, supposed to be implemented. However, since we didn't explicitly promise it, this is a slighly lower priority.
+	- Complete the last deliverable.

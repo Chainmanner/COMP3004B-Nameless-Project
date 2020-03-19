@@ -157,34 +157,13 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
             });
 
         // Get the filenames of the public and private keys, then populate the key names in the Spinners.
-        KeyStore tempStore = new KeyStore();
         File pubkeysDir = new File(instance.getPubkeysPath());
         if ( pubkeysDir.list() != null )    // Public keys
         {
-            String[] pubkey_candidates = pubkeysDir.list().clone();
             List<String> pubkeyPaths = new ArrayList<>();
-            pubkeyPaths.add("NONE");    // This is just to keep the two ArrayLists having equal elements, to make indexing items a bit easier.
             List<String> pubkeyContents = new ArrayList<>();
-            pubkeyContents.add("Select a Key");
-            KeyPairInformation current;
-            // Only add in keys that are not expired or revoked.
-            for ( String curFile : pubkey_candidates )
-            {
-                try
-                {
-                    current = tempStore.importPublicKey(instance.getPubkeysPath() + curFile)[0];
-                    if ( !current.isRevoked() && !current.isExpired() )
-                    {
-                        pubkeyPaths.add(curFile);
-                        pubkeyContents.add(current.getUserID());
-                    }
-                }
-                catch ( Exception e )
-                {
-                    Log.w("hyggelig", "Error importing public key: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
+            PublicKey.getKeyNamesInDir(pubkeysDir, false, pubkeyPaths, pubkeyContents);
+
             pubkeys = new String[pubkeyPaths.size()];
             pubkeyPaths.toArray(pubkeys);
             Log.w("hyggelig", Arrays.toString(pubkeys));
@@ -192,31 +171,13 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             pubkey.setAdapter(adapter);
         }
-        tempStore = new KeyStore();
         File privkeysDir = new File(instance.getPrivkeysPath());
         if ( privkeysDir.list() != null )   // Private keys
         {
-            String[] privkey_candidates = privkeysDir.list().clone();
             List<String> privkeyPaths = new ArrayList<>();
-            privkeyPaths.add("NONE");
             List<String> privkeyContents = new ArrayList<>();
-            privkeyContents.add("Select a Key");
-            KeyPairInformation current;
-            // No need to revoke private keys, so here we'll just import the files.
-            for ( String curFile : privkey_candidates )
-            {
-                try
-                {
-                    current = tempStore.importPrivateKey(instance.getPrivkeysPath() + curFile)[0];
-                    privkeyPaths.add(curFile);
-                    privkeyContents.add(current.getUserID());
-                }
-                catch ( Exception e )
-                {
-                    Log.w("hyggelig", "Error importing private key: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
+            PublicKey.getKeyNamesInDir(privkeysDir, true, privkeyPaths, privkeyContents);
+
             privkeys = new String[privkeyPaths.size()];
             privkeyPaths.toArray(privkeys);
             Log.w("hyggelig", Arrays.toString(privkeys));
@@ -323,7 +284,8 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
                     selectedKey = 0;
                 }
                 break;
-            case R.id.sign_algo:
+            /*case R.id.sign_algo:
+            // REMOVED: Why did I think this was a good idea?
                 Log.w("hyggelig", "sign_algo");
 
                 if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
@@ -340,7 +302,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
                     // TODO: Get DSA private keys.
                 }
-                break;
+                break;*/
             case R.id.privkey:
             case R.id.pubkey:
                 Log.w("hyggelig", "pub/privkey = " + position);

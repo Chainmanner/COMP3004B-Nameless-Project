@@ -6,6 +6,10 @@ Author Name: Connor Stewart
 
 //imported libraries
 import com.didisoft.pgp.*;
+import com.didisoft.pgp.exceptions.NoPublicKeyFoundException;
+
+import java.io.File;
+import java.util.List;
 
 
 /*
@@ -98,7 +102,16 @@ public class PublicKey {
 		} //END IF
 
 		//pgpEntryPoint.encryptFile(args[0], keyStoreObject, args[3], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
-		pgpEntryPoint.encryptFile(args[0], args[1], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
+		// Gabriel: Added this try-catch in here to avoid looking for a NoPublicKeyFoundException in EncryptFilesFragment, to keep independence from the library.
+		try
+		{
+			pgpEntryPoint.encryptFile(args[0], args[1], args[4], Boolean.parseBoolean(args[5]), Boolean.parseBoolean(args[6]));
+		}
+		catch ( NoPublicKeyFoundException e )
+		{
+			e.printStackTrace();
+			return -3;
+		}
 		return 0; //return zero for success
 	} //END entryPoint
 
@@ -166,6 +179,58 @@ public class PublicKey {
 			return -2;
 		else	// result == SignatureCheckResult.NoSignatureFound
 			return -3;
+	}
+
+	// Gabriel: Lists the user IDs of the keys in a directory.
+	// So far, used by EncryptFilesFragment and DecryptVerifyFragment.
+	// Args:
+	//	keysDir - File representing the directory containing the keys to list names of.
+	//	secretKeys - Set to false if reading public keys, and true if reading private keys.
+	//	out_keyPaths - Output. Will contain the filenames of the keys being read. First element is set to "NONE", to account for prompting the user to select a key.
+	//	out_keyNames - Output. Will contain the user IDs of the keys, in the same order as out_keyPaths. First element is set to "Select a Key", to prompt the user to select a key.
+	// Returns true if the operation was successful, and false if not.
+	//	Key filenames will be returned in out_keyPaths.
+	//	Key user IDs will be returned in out_keyNames.
+	public static boolean getKeyNamesInDir(File keysDir, boolean secretKeys, List<String> out_keyPaths, List<String> out_keyNames)
+	{
+		out_keyPaths.add("NONE");	// This is just to keep the two ArrayLists having equal elements, to make indexing items a bit easier.
+		out_keyNames.add("Select a Key");
+
+		if ( keysDir.list() == null )
+		{
+			return false;
+		}
+		String[] key_candidates = keysDir.list().clone();
+		KeyStore tempStore = new KeyStore();
+		KeyPairInformation current;
+		for ( String curFile : key_candidates )
+		{
+			try
+			{
+				if ( secretKeys )
+				{
+					current = tempStore.importPrivateKey(keysDir.getAbsolutePath() + "/" + curFile)[0];
+					out_keyPaths.add(curFile);
+					out_keyNames.add(current.getUserID());
+				}
+				else
+				{
+					current = tempStore.importPublicKey(keysDir.getAbsolutePath() + "/" + curFile)[0];
+					if ( !current.isRevoked() && !current.isExpired() )
+					{
+						out_keyPaths.add(curFile);
+						out_keyNames.add(current.getUserID());
+					}
+				}
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		return true;
 	}
 	
 	/*
