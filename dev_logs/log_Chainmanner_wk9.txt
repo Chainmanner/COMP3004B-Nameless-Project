@@ -10,14 +10,12 @@ Tasks:
 		- DSA sign-only keys don't seem to be compatible.
 	- Implemented the Private Folder feature. (5 hours)
 		- Works exactly as expected so far. Don't think I'll need to come back to this.
-	- Slight refactoring to decouple EncryptFilesFragment and DecryptVerifyFragment from the libraries being used. (1 hour)
-		- KeyringFragment is still coupled.
+	- Slight refactoring to decouple EncryptFilesFragment, DecryptVerifyFragment, and KeyringFragment from the libraries being used. (2 hours)
 
-Total time: 9 hours
+Total time: 10 hours
 
 Next Steps:
 	- Finish up the other unimplemented features, listed below in no particular order. These NEED to be done before we hand in our final deliverable.
-		- Decouple KeyringFragment from the cryptography libraries.
 		- Inputting a picture straight from the camera
 		- Inputting a video straight from the camera
 		- Generating keypairs

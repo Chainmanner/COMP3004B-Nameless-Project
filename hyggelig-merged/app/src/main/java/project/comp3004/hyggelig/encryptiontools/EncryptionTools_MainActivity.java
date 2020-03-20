@@ -49,8 +49,6 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 			// Output directory for stuff coming from the private folder.
 			File privateFolderExportDir = new File(outputDirPath + "PrivateFolderExport/");
 			privateFolderExportDir.mkdirs();
-
-			// TODO: Private folder stuff.
 		}
 
 		String privatePath = this.getFilesDir().getAbsolutePath();

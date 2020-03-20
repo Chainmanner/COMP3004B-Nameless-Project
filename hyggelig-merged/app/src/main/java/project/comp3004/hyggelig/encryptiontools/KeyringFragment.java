@@ -26,10 +26,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.didisoft.pgp.KeyPairInformation;
-import com.google.android.material.tabs.TabItem;
-
-import com.didisoft.pgp.KeyStore;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
@@ -144,26 +140,7 @@ public class KeyringFragment extends Fragment {
 			Log.w("hyggelig", "No files in " + pubkeyDir.getAbsolutePath());
 		}
 
-		int dirSize = pubkeyDir.list().length;
-        KeyStore tempStore = new KeyStore();
-        KeyPairInformation[] showThese = new KeyPairInformation[dirSize];
-        int i = 0;
-        for ( String curName : pubkeyDir.list() )
-		{
-			Log.w("hyggelig", curName);
-			try
-			{
-				showThese[i] = tempStore.importPublicKey(pubkeyDirPath + curName)[0];
-				i++;
-			}
-			catch ( Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-
-        Log.w("hyggelig", Arrays.toString(pubkeyDir.list()));
-		KeysAdapter theAdapter = new KeysAdapter(showThese, false);
+		KeysAdapter theAdapter = new KeysAdapter(pubkeyDir.list(), false);
 		keyList.swapAdapter(theAdapter, true);
 		keyList.getAdapter().notifyDataSetChanged();
     }
@@ -183,26 +160,7 @@ public class KeyringFragment extends Fragment {
 			Log.w("hyggelig", "No files in " + privkeyDir.getAbsolutePath());
 		}
 
-		int dirSize = privkeyDir.list().length;
-		KeyStore tempStore = new KeyStore();
-		KeyPairInformation[] showThese = new KeyPairInformation[dirSize];
-		int i = 0;
-		for ( String curName : privkeyDir.list() )
-		{
-			Log.w("hyggelig", curName);
-			try
-			{
-				showThese[i] = tempStore.importPrivateKey(privkeyDirPath + curName)[0];
-				i++;
-			}
-			catch ( Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-
-		Log.w("hyggelig", Arrays.toString(privkeyDir.list()));
-		KeysAdapter theAdapter = new KeysAdapter(showThese, true);
+		KeysAdapter theAdapter = new KeysAdapter(privkeyDir.list(), true);
 		keyList.swapAdapter(theAdapter, true);
 		keyList.getAdapter().notifyDataSetChanged();
     }
@@ -291,13 +249,14 @@ public class KeyringFragment extends Fragment {
 
     private void generateKeypairDialog(View v)
     {
+    	Log.w("hyggelig", "generateKeypairDialog");
         // TODO
     }
 
 
 	class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder>
 	{
-		private KeyPairInformation[] keyPairs;
+		private String[] keyPairs;
 		private boolean showSecretKeys;
 
 		class ImplementedViewHolder extends RecyclerView.ViewHolder
@@ -308,9 +267,9 @@ public class KeyringFragment extends Fragment {
 			}
 		}
 
-		public KeysAdapter(KeyPairInformation[] theKeyPairs, boolean secrets)
+		public KeysAdapter(String[] theKeys, boolean secrets)
 		{
-			keyPairs = theKeyPairs;
+			keyPairs = theKeys;
 			showSecretKeys = secrets;
 		}
 
@@ -325,10 +284,20 @@ public class KeyringFragment extends Fragment {
 		@Override
 		public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
 		{
-			KeyPairInformation current = keyPairs[position];
-			if ( current == null )
+			String curFile = keyPairs[position];
+
+			String[] keyInfo;	// See PublicKey.getKeyInfo() for info on the contents of this.
+			try
 			{
-				Log.w("hyggelig", "current is null!");
+				if ( showSecretKeys )
+					keyInfo = PublicKey.getKeyInfo(instance.getPrivkeysPath() + curFile, true);
+				else
+					keyInfo = PublicKey.getKeyInfo(instance.getPubkeysPath() + curFile, false);
+			}
+			catch ( Exception e )
+			{
+				Log.w("hyggelig", "Error while trying to get key file info: " + e.getMessage());
+				e.printStackTrace();
 				return;
 			}
 
@@ -346,7 +315,7 @@ public class KeyringFragment extends Fragment {
 			if ( keyName != null )
 			{
 				String finalName = "";
-				if ( current.isRevoked() )
+				if ( keyInfo[5].equals("true") )
 				{
 					finalName += "[REVOKED]";
 					keyName.setTextColor(Color.RED);
@@ -354,24 +323,24 @@ public class KeyringFragment extends Fragment {
 				else
 				{
 					finalName += "[" + (showSecretKeys ? "priv" : "pub") + "] ";
-					finalName += "[" + current.getAlgorithm() + "] ";
+					finalName += "[" + keyInfo[2] + "] ";
 				}
-				finalName += current.getUserID();
+				finalName += keyInfo[0];
 				keyName.setText(finalName);
 			}
 
 			TextView keyFingerprint = holder.itemView.findViewById(R.id.keyFingerprint);
 			if ( keyFingerprint != null )
 			{
-				keyFingerprint.setText("Fingerprint: " + current.getFingerprint());
+				keyFingerprint.setText("Fingerprint: " + keyInfo[1]);
 			}
 
 			TextView keyExpiration = holder.itemView.findViewById(R.id.keyExpiration);
 			if ( keyExpiration != null )
 			{
-				String finalString = (current.isExpired() ? "Expired " : "Expires ") + "on ";
-				finalString += current.getExpirationDate().toString();
-				if ( current.isExpired() )
+				String finalString = (keyInfo[4].equals("true") ? "Expired " : "Expires ") + "on ";
+				finalString += keyInfo[3];
+				if ( keyInfo[4].equals("true") )
 					keyExpiration.setTextColor(Color.RED);
 				keyExpiration.setText(finalString);
 			}

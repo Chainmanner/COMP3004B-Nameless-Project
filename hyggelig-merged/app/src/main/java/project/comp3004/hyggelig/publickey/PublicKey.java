@@ -232,6 +232,43 @@ public class PublicKey {
 
 		return true;
 	}
+
+	// Gabriel: Gets information about a key file.
+	// Args:
+	//	filePath - Path to the key file.
+	//	secretKey - Set to false if the key file is a public key, and true if it's a private key.
+	// Returns a string array with the following:
+	//	[0] - User ID
+	//	[1] - Key fingerprint
+	//	[2] - Key algorithm
+	//	[3] - Key expiry date (blank = none)
+	//	[4] - Has this key expired? Set to "true" if so.
+	//	[5] - Has this key been revoked? Set to "true" if so.
+	// Throws an exception on system failure.
+	public static String[] getKeyInfo(String filePath, boolean secretKey) throws Exception
+	{
+		String[] output = new String[6];
+
+		KeyStore tempStore = new KeyStore();
+		KeyPairInformation keyInfo;
+		if ( secretKey )
+		{
+			keyInfo = tempStore.importPrivateKey(filePath)[0];
+		}
+		else
+		{
+			keyInfo = tempStore.importPublicKey(filePath)[0];
+		}
+
+		output[0] = keyInfo.getUserID();
+		output[1] = keyInfo.getFingerprint();
+		output[2] = keyInfo.getAlgorithm();
+		output[3] = keyInfo.getExpirationDate().toString();
+		output[4] = "" + keyInfo.isExpired();
+		output[5] = "" + keyInfo.isRevoked();
+
+		return output;
+	}
 	
 	/*
 	Name:
