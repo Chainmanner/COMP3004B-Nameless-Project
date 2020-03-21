@@ -7,14 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.database.Cursor;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -70,6 +73,7 @@ public class PasswordManager extends AppCompatActivity {
                 setContentView(R.layout.password_viewpasswords_layout);
                 ListView listView = findViewById(R.id.passwordListView);
                 List<String> list1 = new ArrayList<>();
+                HashMap<String,String> passDictionary = new HashMap<>();
                 Cursor data = passwordDb.getAllData();
                 if(data.getCount() == 0) {
                     Toast.makeText(PasswordManager.this, "The Database is Empty", Toast.LENGTH_SHORT).show();
@@ -77,15 +81,52 @@ public class PasswordManager extends AppCompatActivity {
                 else {
 
                     while(data.moveToNext()) {
-                        String pass = "Password Name: " + data.getString(0) + "\n" + "Password: " + data.getString(1) + "\n";
+                        //String pass = "Password Name: " + data.getString(0) + "\n" + "Password: " + data.getString(1) + "\n";
+                        String pass = "Password Name: " + data.getString(0);
+                        passDictionary.put(data.getString(0),data.getString(1));
                         list1.add(pass);
                         ListAdapter listAdapter = new ArrayAdapter<String>(PasswordManager.this,android.R.layout.simple_list_item_1,list1);
                         listView.setAdapter(listAdapter);
 
                     }
                 }
+                System.out.println(passDictionary);
+                displayListItem(listView,passDictionary);
 
 
+
+            }
+        });
+
+
+
+
+    }
+
+    protected void displayListItem(final ListView pwList, final HashMap<String,String> passDic) {
+
+        pwList.setClickable(true);
+        pwList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object o = pwList.getItemAtPosition(position);
+                String clickedItem = (String)o;
+                clickedItem = clickedItem.substring(14).trim();
+                String password = passDic.get(clickedItem);
+                AlertDialog.Builder builder = new AlertDialog.Builder(PasswordManager.this);
+                final View view_pass_item = getLayoutInflater().inflate(R.layout.view_pass_item,null);
+                builder.setView(view_pass_item);
+                final AlertDialog dialog = builder.create();
+                Button cancel_view_button = view_pass_item.findViewById(R.id.cancel_view);
+                TextView password_item = view_pass_item.findViewById(R.id.password_item);
+                password_item.setText("Password: " + password);
+                cancel_view_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
 

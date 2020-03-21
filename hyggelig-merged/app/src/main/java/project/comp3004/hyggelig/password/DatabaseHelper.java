@@ -7,10 +7,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "password.db";
-    public static final String TABLE_NAME = "password_table";
-    public static final String col_1 = "Name";
-    public static final String col_2 = "Password";
+    private static final String DATABASE_NAME = "password.db";
+    private static final String TABLE_NAME = "password_table";
+    private static final String col_1 = "Name";
+    private static final String col_2 = "Password";
+
     public DatabaseHelper(Context context) {
         super(context,DATABASE_NAME,null,1);
 

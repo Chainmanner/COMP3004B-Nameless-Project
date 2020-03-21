@@ -13,16 +13,22 @@
     <option name="delegatedBuild" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
-    <option name="y" value="-8" />
+    <option name="y" value="23" />
     <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="height" value="812" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -30,6 +36,7 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -37,11 +44,20 @@
               <item name="COMP3004B-Nameless-Project" type="b2602c69:ProjectViewProjectNode" />
               <item name="COMP3004B-Nameless-Project" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="COMP3004B-Nameless-Project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="COMP3004B-Nameless-Project" type="462c0819:PsiDirectoryNode" />
+              <item name="Password" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="COMP3004B-Nameless-Project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="COMP3004B-Nameless-Project" type="462c0819:PsiDirectoryNode" />
+              <item name="password generator code" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -75,10 +91,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="23" width="1936" height="812" extended-state="0" />
     <layout>
       <window_info id="Captures" order="0" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.24183351" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.24177545" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -97,5 +113,8 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Bitcoin_and_Help/app/src/main/res/layout/activity_show_bitcoin_balance.xml" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
   </component>
 </project>
