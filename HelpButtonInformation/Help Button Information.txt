@@ -1,0 +1,56 @@
+---Password Generator:
+Password security relies heavily on the length and composition of the password itself.
+Computer hackers commonly employ a strategy of using a computer program to randomly 'guess' every combination of possible passwords until a secure file is broken into.
+To mitigate the risk of 'brute-force' password attacks, developers commonly use passwords containing rarely used keys, such as the asterisk (*)
+
+Within this application, the password generator can automatically create passwords which are hard for hackers to guess.
+There are four password generation settings:
+	Alphabetical
+	Alphanumerical + Symbols
+	All letters across all languages
+	All possible keys, including keys not accessible by normal keyboards
+Passwords can be generated with a fixed length, and can have a 'header'. For example, say you want winter at the start of a eight digit password, the password generator can generate a password like winter!@#.
+
+---Password Manager:
+The password manager is a tool made to help users navigate all their passwords for all their accounts
+Passwords for the password manager can be imported directly from the password generator for future accounts
+Passwords can be added, removed, and copies from the password manager
+The password manager itself has its own password, which can function as a master password for all your other passwords
+The passwords themselves are stored in a AES encrypted file, which is very hard to crack
+
+--Encryption Tools:
+There are two separate encryption keys available: symmetric key and asymmetric key
+
+Symmetric key encryption is a method of encryption where a password is used to reformat the data within a file to make it unrecognizable.
+A hacker would find it very hard to reformat the data into a recognizable form without knowing the password.
+Symmetric key encryption is very good for storing safe copies of personal files on a personal device.
+However, it is bad if the password ever needs to be shared with someone else, as this posses a vulnerability to attackers.
+
+Asymmetric key encryption is an alternative method of encryption designed for people who need to share encrypted files with each other
+With this method, two files are made. The first is a public key, and the second is a private key.
+The public key can be used by someone else with the application to encrypt a secret message, and the private key can be used to decrypt it.
+Using a public/private key pair, its possible to establish a secure line of communication wherein anyone with a copy of the public key can produce a secret message only someone with the private key can read.
+However, a vulnerability with this approach is that the private key must be kept safe from others. If an attacker gets a copy of the private key, it is easy for them to read all secret messages made with the public keys.
+
+--Encrypted folder
+
+The encrypted folder makes use of symmetric key encryption to create a 'data vault'
+This vault contains copies of all your personal files in a scrambled format
+An attacker would fine it extremely difficult to unscramble the information inside this folder without the password, making it safe.
+
+--maintainability and backups
+
+This application has google drive integration
+This lets us create backups of all your encrypted data on to a google drive so that if your phone is ever lost, your data can be recovered
+The data stored in the google drive is safe to, because its encrypted no one can read the files without knowing the password to unlock them
+
+The google drive functionality allows for sensitive data to be added to, read from, and deleted from the google drive
+
+--bitcoin wallet
+
+This feature makes use of the symmetric key encryption tools
+bitcoins can be send safely from other people with the use of a public key
+the phones local private key can decrypt these bitcoins and store them safely within the symmetrically encrypted bitcoin wallet
+this allows for the safe transfer of bitcoins over the internet and into the phone without any steps being vulnerable to hackers
+
+Also, users can view their bitcoin ledger from the safety of the application. Users can read their bitcoin balance without risking any compromise from attackers.
