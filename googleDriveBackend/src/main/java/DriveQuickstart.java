@@ -53,6 +53,7 @@ public class DriveQuickstart {
 	public static String fileToFind; //the current file we are looking for within the google drive
 	public static String outputFileName = "default"; //the name of any output files we download in the future
 	public static String inputFileName; //this is the name of the file we are looking to download from the google drive
+	public static String fileToDelete; //this is the name of the file we're looking to delete
 	public static String inputFileMIMEType; //this is the meme type of the input file
 
     /**
@@ -98,8 +99,8 @@ public class DriveQuickstart {
 		//getFiles();
 		
 		//to download a file from the google drive, use the following command
-		fileToFind = "Getting started";
-		downloadFilesByName();
+		//fileToFind = "Getting started";
+		//downloadFilesByName();
 		//Alternatively, if the file id is already known, you can use the following
 		//downloadFiles(ID_VARIABLE);
 		//all downloaded files appear in the Download folder in the working directory
@@ -116,7 +117,51 @@ public class DriveQuickstart {
 		inputFileMIMEType = "image/png";
         uploadFiles();
 		*/
+		//tests the deletion method, deletes all files with the given name
+		/*
+		fileToDelete = "photo.jpg";
+		deleteByName();
+		*/
     } //END main
+
+	/*
+	Name:
+		deleteByID
+	Input:
+		fileID - this is the file ID of the google drive file were trying to delete
+	Output:
+		return - integer value 1 represents success
+		Google drive has the given file deleted
+	Description:
+		Deletes a file in the google drive with the ID matching the input string
+	*/
+	public static int deleteByID(String fileID) throws IOException, GeneralSecurityException {
+		//request to delete the file with the given ID, and execute the request
+		service.files().delete(fileID).execute();
+		return 1; //one for success
+	} //END deleteByID
+
+	/*
+	Name:
+		deleteByName
+	Input:
+		fileToDelete - this is the name of the file(s) we are trying to delete
+	Output:
+		return - integer value 1 represents success
+		Google drive has all files with the given name deleted
+	Description:
+		Deletes all files in the google drive with the name matching the input string
+	*/
+	public static int deleteByName() throws IOException, GeneralSecurityException {
+		//get the file metadata
+		getFiles(); //update our local copy of the google drives metadata
+		for (File driveFile : googleDriveMetadata) { //look at the google drives metadata
+			if ((driveFile.getName()).equals(fileToDelete)) { //look for a filename that matches
+				deleteByID(driveFile.getId()); //get the files ID string and delete the file with that ID
+			} //END IF
+		} //END FOR
+		return 1; //one for success
+	} //END deleteByName
 
 	/*
 	Name:
@@ -189,7 +234,7 @@ public class DriveQuickstart {
 	*/
 	public static int uploadFiles() throws IOException, GeneralSecurityException {
 		File fileMetadata = new File(); //create a new file data structure
-		fileMetadata.setName("photo.jpg"); //the name of the file we are to upload
+		fileMetadata.setName(inputFileName); //the name of the file we are to upload
 		java.io.File filePath = new java.io.File("Uploads/" + inputFileName); //the path to the file we wish to upload
 		FileContent mediaContent = new FileContent(inputFileMIMEType, filePath); //this is the MIME type of the file we are uploading
 		File file = service.files().create(fileMetadata, mediaContent).setFields("id").execute(); //create file upload request
@@ -217,11 +262,4 @@ public class DriveQuickstart {
 		} //END TRY
 		return 1; //success code
 	} //END downloadFiles
-	
-	/*
-	Name:
-	Input:
-	Output:
-	Description:
-	*/
 } //END DriveQuickstart
