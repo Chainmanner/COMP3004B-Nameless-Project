@@ -1,0 +1,10 @@
+Kevin Sullivan
+100896774
+COMP3004B
+Week 10: Mar 23 - Mar 30
+
+Mar 23	- Implementing Android Room into Help Activity to connect with DB
+
+
+______________________________________________________
+Total hours:		
