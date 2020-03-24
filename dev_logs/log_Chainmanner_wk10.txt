@@ -14,4 +14,5 @@ Next Steps:
 	- Finish up the other unimplemented features, listed below in no particular order. These need to be done before we hand in our final deliverable.
 		- Inputting a picture or video straight from the camera.
 		- Backing up the Password Manager's DB, possibly also keys and other things, to Google Drive.
+			- This is outside of my jurisdiction (Password Tools are Kavan's job), but if necessary, I can help with this.
 			- We may or may not have enough time for this.
