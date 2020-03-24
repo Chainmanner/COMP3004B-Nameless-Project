@@ -41,8 +41,11 @@ public class PublicKey {
 				4: TWOFISH
 			[1]: this the users id
 			[2]: this is the users private key password
-			[3]: checks if output is ASCII or Binary, must be a boolean value (i.e. "true")
+			[3]: checks if output is ASCII or Binary, must be a boolean value (i.e. "true") (Gabriel: true = ASCII)
 			[4]: this is the name of the new key file being generated
+			[5]: Number of days after which the key expires. (Added by Gabriel)
+			[6]: Directory to store the generated public key. MUST end with a trailing slash. (Added by Gabriel)
+			[7]: Directory to store the generated private key. MUST end with a trailing slash. (Added by Gabriel)
 	Output:
 		Outputs a public key and a private key named to the users specifications
 	Description:
@@ -50,7 +53,7 @@ public class PublicKey {
 	*/
 	public static void generateKeyPair(String[] args) throws Exception {
 		//make a keystore memory object to contain the public and private keys
-		KeyStore keyStoreObject = new KeyStore(args[4], args[2]);
+		KeyStore keyStoreObject = new KeyStore();//new KeyStore(args[4], args[2]);
 		
 		//symmetric key algorithm being which can be selected from by the caller
 		String[] cyphers = new String[] {CypherAlgorithm.AES_128, CypherAlgorithm.AES_192, CypherAlgorithm.AES_256, CypherAlgorithm.CAST5, CypherAlgorithm.TWOFISH};
@@ -62,11 +65,15 @@ public class PublicKey {
 		//cipher the user has chosen
 		String[] cypherAlg = new String[] {cyphers[Integer.parseInt(args[0])]};
 
-		long expiryDate = 0; //no expiry Date
+		long expiryDate = Integer.parseInt(args[5]);//0; //no expiry Date
 		int keySize = 4096; //the key size in bytes
 		
 		//generate the keys
 		keyStoreObject.generateKeyPair(keySize, args[1], keyAlgorithm, args[2], compressionAlg, hashAlg, cypherAlg, expiryDate);
+
+		// Gabriel: Export the keys to disk.
+		keyStoreObject.exportPublicKey(args[6] + args[4] + ".pub", args[1], Boolean.parseBoolean(args[3]));
+		keyStoreObject.exportPrivateKey(args[7] + args[4] + ".priv", args[1], Boolean.parseBoolean(args[3]));
 	} //END generateKeyPair
 	
 	/*
@@ -144,7 +151,7 @@ public class PublicKey {
 		return 0; //return zero for success
 	} //END decrypt
 
-	// Gabriel: Signs a file and stores it in the file referred to by outputPath.
+	// Signs a file and stores it in the file referred to by outputPath.
 	// Args:
 	//	inputPath - Input file path.
 	//	privkeyPath - Path to the private key.
@@ -157,7 +164,7 @@ public class PublicKey {
 		pgpEntryPoint.signFile(inputPath, privkeyPath, privkeyPassword, outputPath, asciiArmor);
 	}
 
-	// Gabriel: Verifies a file's signature and extracts its contents to the file referred to by outputPath.
+	// Verifies a file's signature and extracts its contents to the file referred to by outputPath.
 	// Args:
 	//	inputPath - Input signed file path.
 	//	pubkeyPath - Path to the sender's public key.
@@ -181,7 +188,7 @@ public class PublicKey {
 			return -3;
 	}
 
-	// Gabriel: Lists the user IDs of the keys in a directory.
+	// Lists the user IDs of the keys in a directory.
 	// So far, used by EncryptFilesFragment and DecryptVerifyFragment.
 	// Args:
 	//	keysDir - File representing the directory containing the keys to list names of.
@@ -233,7 +240,7 @@ public class PublicKey {
 		return true;
 	}
 
-	// Gabriel: Gets information about a key file.
+	// Gets information about a key file.
 	// Args:
 	//	filePath - Path to the key file.
 	//	secretKey - Set to false if the key file is a public key, and true if it's a private key.

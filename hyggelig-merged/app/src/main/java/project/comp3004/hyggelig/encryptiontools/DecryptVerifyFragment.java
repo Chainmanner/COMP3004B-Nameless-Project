@@ -284,25 +284,6 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 					selectedKey = 0;
 				}
 				break;
-            /*case R.id.sign_algo:
-            // REMOVED: Why did I think this was a good idea?
-                Log.w("hyggelig", "sign_algo");
-
-                if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
-
-                // RSA
-                if (position == 0) {
-                    Log.w("hyggelig", "pos 0");
-
-                    // TODO: Get RSA private keys.
-                }
-                // DSA
-                else if (position == 1) {
-                    Log.w("hyggelig", "pos 1");
-
-                    // TODO: Get DSA private keys.
-                }
-                break;*/
 			case R.id.privkey:
 			case R.id.pubkey:
 				Log.w("hyggelig", "pub/privkey = " + position);
@@ -554,6 +535,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		return true;
 	}
 
+	// TODO: I really gotta move this into a utilities class or something.
 	private void alertError(String msg)
 	{
 		new AlertDialog.Builder(instance)

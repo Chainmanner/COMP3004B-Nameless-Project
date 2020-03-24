@@ -32,9 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class PrivateFolderFragment extends Fragment
 {
@@ -291,6 +289,7 @@ public class PrivateFolderFragment extends Fragment
 			Navigation.findNavController(this.getView()).popBackStack();
 	}
 
+	// TODO: I really gotta move this into a utilities class or something.
 	private void alertError(String msg)
 	{
 		new AlertDialog.Builder(instance)
@@ -465,17 +464,6 @@ public class PrivateFolderFragment extends Fragment
 
 		super.onStart();
 	}
-
-	// Don't think we need this, but I'm keeping this here just in case I'm proven wrong.
-	/*@Override
-	public void onStop()
-	{
-		Log.w("hyggelig", "onStop");
-
-		// TODO
-
-		super.onStop();
-	}*/
 
 	@Override
 	public void onDestroyView()

@@ -32,10 +32,6 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.didisoft.pgp.KeyPairInformation;
-import com.didisoft.pgp.KeyStore;
-import com.didisoft.pgp.exceptions.NoPublicKeyFoundException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -694,6 +690,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 		return true;
 	}
 
+	// TODO: I really gotta move this into a utilities class or something.
 	private void alertError(String msg)
 	{
 		new AlertDialog.Builder(instance)

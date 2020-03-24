@@ -1,0 +1,14 @@
+Student: Gabriel Valachi
+ID: 101068875
+Last updated Tuesday March 24, 2020.
+
+Tasks:
+	- Key generation now implemented in the Keyring of the Encryption Tools. (2 hours)
+		- Had to make a few edits to PublicKey.generateKeyPair() to accomplish this.
+
+Next Steps:
+	- Complete the last deliverable's documentation.
+	- Finish up the other unimplemented features, listed below in no particular order. These NEED to be done before we hand in our final deliverable.
+		- Exporting and deleting keys
+			- Forget what I said about viewing more details, we don't strictly need that at this time.
+		- Inputting a picture or video straight from the camera.

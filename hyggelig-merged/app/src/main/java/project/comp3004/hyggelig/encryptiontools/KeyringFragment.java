@@ -1,9 +1,10 @@
-// TODO: Decouple this class from the cryptography libraries.
-
 package project.comp3004.hyggelig.encryptiontools;
 import project.comp3004.hyggelig.R;
 import project.comp3004.hyggelig.publickey.PublicKey;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -16,6 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -34,6 +39,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class KeyringFragment extends Fragment {
 
@@ -49,6 +57,10 @@ public class KeyringFragment extends Fragment {
     private Button generateKeypair;
 
     private boolean showingSecretKeys = false;
+
+    // The following are only used by generateKeypairDialog().
+	boolean keyWillExpire = false;
+	long daysAfterToday = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -77,11 +89,11 @@ public class KeyringFragment extends Fragment {
 					switch ( tab.getPosition() )
 					{
 						case 0:	// PUBLIC
-							showPublicKeys(tab.parent.getRootView());
+							showPublicKeys();
 							showingSecretKeys = false;
 							break;
 						case 1:	// PRIVATE
-							showPrivateKeys(tab.parent.getRootView());
+							showPrivateKeys();
 							showingSecretKeys = true;
 							break;
 					}
@@ -111,7 +123,7 @@ public class KeyringFragment extends Fragment {
             generateKeypair.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    generateKeypairDialog(v);
+                    generateKeypairDialog();
                 }
             });
 
@@ -120,12 +132,12 @@ public class KeyringFragment extends Fragment {
 		keyList.setLayoutManager(new LinearLayoutManager(instance.getApplicationContext()));
 		keyList.setAdapter(new KeysAdapter(null, false));
 
-        showPublicKeys(theView);
+        showPublicKeys();
 
         return theView;
     }
 
-    private void showPublicKeys(View v)
+    private void showPublicKeys()
     {
     	Log.w("hyggelig", "showPublicKeys");
     	String pubkeyDirPath = instance.getPubkeysPath();
@@ -145,7 +157,7 @@ public class KeyringFragment extends Fragment {
 		keyList.getAdapter().notifyDataSetChanged();
     }
 
-    private void showPrivateKeys(View v)
+    private void showPrivateKeys()
     {
     	Log.w("hyggelig", "showPrivateKeys");
 		String privkeyDirPath = instance.getPrivkeysPath();
@@ -241,18 +253,155 @@ public class KeyringFragment extends Fragment {
 			Log.w("hyggelig", "File " + outFilePath + " written successfully");
 			// Refresh the list of keys.
 			if ( showingSecretKeys )
-				showPrivateKeys(this.getView());
+				showPrivateKeys();
 			else
-				showPublicKeys(this.getView());
+				showPublicKeys();
 		}
 	}
 
-    private void generateKeypairDialog(View v)
+    private void generateKeypairDialog()
     {
     	Log.w("hyggelig", "generateKeypairDialog");
-        // TODO
+
+    	final Dialog genDialog = new Dialog(instance);
+    	genDialog.setContentView(R.layout.encryptiontools_keyring_genkeys);
+    	genDialog.setCanceledOnTouchOutside(false);
+
+    	final EditText keyFilename = genDialog.findViewById(R.id.keyFilename);
+    	final EditText nameOfUser = genDialog.findViewById(R.id.nameOfUser);
+    	final EditText privKeyPass = genDialog.findViewById(R.id.privKeyPass);
+    	final EditText privKeyConfirm = genDialog.findViewById(R.id.privKeyConfirm);
+
+    	final CheckBox keyWillExpire_checkbox = genDialog.findViewById(R.id.keyWillExpire);
+    	final Button pickDate = genDialog.findViewById(R.id.pickDate);
+    	pickDate.setVisibility(View.GONE);
+    	final TextView pickedDateAndTime = genDialog.findViewById(R.id.pickedDateAndTime);
+    	pickedDateAndTime.setVisibility(View.GONE);
+
+    	final Button generateButton = genDialog.findViewById(R.id.generateButton);
+    	final Button cancelButton = genDialog.findViewById(R.id.cancelButton);
+
+    	keyWillExpire = false;
+    	keyWillExpire_checkbox.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				keyWillExpire = !keyWillExpire;
+				if ( keyWillExpire )
+					pickDate.setVisibility(View.VISIBLE);
+				else
+				{
+					pickDate.setVisibility(View.GONE);
+					pickedDateAndTime.setVisibility(View.GONE);
+				}
+			}
+		});
+
+    	cancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				genDialog.dismiss();
+			}
+		});
+
+    	daysAfterToday = 1;
+		final Calendar selectedDate = Calendar.getInstance();
+    	pickDate.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new DatePickerDialog(
+						instance,
+						new DatePickerDialog.OnDateSetListener() {
+							@Override
+							public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+								// TODO: Check to see if the date is valid, ie. if it's after today.
+								Log.w("hyggelig", year + " " + month + " " + dayOfMonth);
+								selectedDate.set(year, month, dayOfMonth);
+								long difference = selectedDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
+								daysAfterToday = TimeUnit.MILLISECONDS.toDays(difference);
+								daysAfterToday = (daysAfterToday < 1 ? 1 : daysAfterToday);
+								Log.w("hyggelig", "daysAfterToday = " + daysAfterToday);
+								pickedDateAndTime.setText( "Expires: " + selectedDate.getTime().toString() );
+								pickedDateAndTime.setVisibility(View.VISIBLE);
+							}
+						},
+						selectedDate.get(Calendar.YEAR),
+						selectedDate.get(Calendar.MONTH),
+						selectedDate.get(Calendar.DAY_OF_MONTH)
+				).show();
+			}
+		});
+
+    	generateButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String filename = keyFilename.getText().toString();
+				String username = nameOfUser.getText().toString();
+				String password = privKeyPass.getText().toString();
+
+				// TODO: Should also check for invalid characters in the filename. Then again, that'd be handled in the catch block.
+				if ( filename.equals("") )
+				{
+					alertError("Filename field is blank");
+					return;
+				}
+				if ( username.equals("") )
+				{
+					alertError("Username field is blank");
+					return;
+				}
+				if ( !password.equals(privKeyConfirm.getText().toString()) )
+				{
+					alertError("Passwords do not match");
+					return;
+				}
+
+				try
+				{
+					String[] args = {
+							"2",
+							username,
+							password,
+							"true",
+							filename,
+							(keyWillExpire ? "" + daysAfterToday : "0"),
+							instance.getPubkeysPath(),
+							instance.getPrivkeysPath()
+					};
+					PublicKey.generateKeyPair(args);
+				}
+				catch ( Exception e )
+				{
+					Log.w("hyggelig", "Error generating keys: " + e.getMessage());
+					alertError("Error generating keys: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+
+				new AlertDialog.Builder(instance)
+						.setTitle("Success")
+						.setMessage("Keypair for " + username + " generated successfully!")
+						.setNegativeButton(android.R.string.ok, null)
+						.show();
+				genDialog.dismiss();
+				if ( showingSecretKeys )
+					showPrivateKeys();
+				else
+					showPublicKeys();
+			}
+		});
+
+		genDialog.show();
     }
 
+    // TODO: I really gotta move this into a utilities class or something.
+	private void alertError(String msg)
+	{
+		new AlertDialog.Builder(instance)
+				.setTitle("Error")
+				.setMessage(msg)
+				.setNegativeButton(android.R.string.ok, null)
+				.show();
+	}
 
 	class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder>
 	{

@@ -29,7 +29,8 @@
         android:layout_marginTop="64dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:isScrollContainer="true">
+        android:isScrollContainer="true"
+        android:overScrollMode="ifContentScrolls">
 
         <TableRow
             android:id="@+id/action_row"
