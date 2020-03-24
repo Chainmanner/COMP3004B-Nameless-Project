@@ -3,7 +3,8 @@ Kevin Sullivan
 COMP3004B
 Week 10: Mar 23 - Mar 30
 
-Mar 23	- Implementing Android Room into Help Activity to connect with DB
+Mar 23	- Implementing Android Room into Help Activity to connect with DB 
+		- Implementing HelpTextFragment to show HelpPages					[6 hrs]
 
 
 ______________________________________________________

@@ -3,6 +3,8 @@ package project.comp3004.hyggelig.help.HelpListFrag;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.comp3004.hyggelig.help.HelpDB.TopicList;
+
 /**
  * Helper class for providing the help topics to the HelpListFragment
  * Though it currently just provides a List of Strings that show the topics,
@@ -20,18 +22,18 @@ public class HelpTopicListContent {
     public static final List<HelpTopic> ITEMS = new ArrayList<HelpTopic>();
 
 
-    protected static void setTopics(String[] topics){
+    protected static void setTopics(TopicList[] topicList){
         ITEMS.clear();
-        for(String topic: topics){
-            addItem(createHelpTopic(topic));
+        for(TopicList topic: topicList){
+            addTopic(createHelpTopic(topic));
         }
     }
 
-    private static void addItem(HelpTopic item) {
-        ITEMS.add(item);
+    protected static void addTopic(HelpTopic topic) {
+        ITEMS.add(topic);
     }
 
-    private static HelpTopic createHelpTopic(String topic) {
+    private static HelpTopic createHelpTopic(TopicList topic) {
         return new HelpTopic(topic);
     }
 
@@ -42,9 +44,13 @@ public class HelpTopicListContent {
      */
     public static class HelpTopic {
         public final String topic;
+        public final String category;
+        public final int topicID;
 
-        public HelpTopic(String topic) {
-            this.topic = topic;
+        public HelpTopic(TopicList topic) {
+            this.topic = topic.topic;
+            this.topicID = topic.topicID;
+            this.category = topic.category;
         }
 
         @Override
