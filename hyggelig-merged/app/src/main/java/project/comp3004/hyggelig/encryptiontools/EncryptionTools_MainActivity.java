@@ -16,7 +16,7 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 	private String outputDirPath;
 	private String pubkeysPath;
 	private String privkeysPath;
-	private String privfolderPath;  // TODO: This is currently of no use.
+	private String privfolderPath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,21 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 
 		privfolderPath = privatePath + "/privatefolder/";
 		new File(privfolderPath).mkdirs();
+	}
+
+	// If this Activity's gonna be destroyed, let's delete the temporary picture and/or video present for encryption.
+	// Not done in EncryptFilesFragment because it can be destroyed and restored many times.
+	@Override
+	public void onDestroy()
+	{
+		Log.w("hyggelig", "EncryptionTools_MainActivity.onDestroy");
+		super.onDestroy();
+
+		File temp_pic = new File(this.getFilesDir().getAbsolutePath() + "/temp_pic");
+		if ( temp_pic.exists() ) temp_pic.delete();
+
+		File temp_vid = new File(this.getFilesDir().getAbsolutePath() + "/temp_vid");
+		if ( temp_vid.exists() ) temp_vid.delete();
 	}
 
 	protected String getOutputDirPath()

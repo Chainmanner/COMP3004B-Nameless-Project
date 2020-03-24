@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import project.comp3004.hyggelig.aes.aes;
+import project.comp3004.hyggelig.camera.CameraActivity;
 import project.comp3004.hyggelig.R;
 import project.comp3004.hyggelig.publickey.PublicKey;
 
@@ -99,8 +101,10 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
 	private CheckBox deleteOrig;
 
-	// The file we'll be working on.
+	// The file we'll be working on, if the input source is an arbitrary file.
 	private Uri targetFileURI;
+
+	private int targetFileSource;
 
 	private String outputDirPath;
 
@@ -308,6 +312,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 				targetFileURI = null;   // Clear this out just to be safe.
 
 				if (position == 0) {
+					targetFileSource = SELECT_FILE;
 					if (getfile != null)
 						getfile.setOnClickListener(new View.OnClickListener() {
 							@Override
@@ -316,6 +321,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 							}
 						});
 				} else if (position == 1) {
+					targetFileSource = TAKE_PICTURE;
 					if (getfile != null)
 						getfile.setOnClickListener(new View.OnClickListener() {
 							@Override
@@ -324,6 +330,7 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 							}
 						});
 				} else if (position == 2) {
+					targetFileSource = RECORD_VIDEO;
 					if (getfile != null)
 						getfile.setOnClickListener(new View.OnClickListener() {
 							@Override
@@ -403,36 +410,22 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 			startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), SELECT_FILE);
 	}
 
-	// Opens a camera program to have the user take a picture.
-	// Why the hell does using this sometimes terminate the app?
-	// FIXME: Fix this.
+	// Opens CameraActivity to have the user take a picture.
 	private void takePicture() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // TODO: I'll have to do this later, because I've had it with this. Programming for Android is absurdly complicated.
-        File tempFolder = new File(instance.getExternalFilesDir("temp").getAbsolutePath());
-        tempFolder.mkdirs();
-        File img = new File(tempFolder, "temp-pic.jpg");
-        try {
-			img.createNewFile();
-		}
-        catch ( Exception e )
-		{
-			Log.w("hyggelig", "uh oh");
-			return;
-		}
-        Uri imgURI = FileProvider.getUriForFile(instance, "project.comp3004.hyggelig.encryptiontools.EncryptFilesFragment", img);
-        takePictureIntent.putExtra(EXTRA_OUTPUT, imgURI); // TODO: Maybe give the user the option to avoid saving the file, and instead use a low-res thumbnail.
-        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        if (instance != null && takePictureIntent.resolveActivity(instance.getPackageManager()) != null)
-            startActivityForResult(Intent.createChooser(takePictureIntent, "Select a Camera App"), TAKE_PICTURE);
+        Intent takePictureIntent = new Intent(instance, CameraActivity.class);
+        String outPath = instance.getFilesDir().getAbsolutePath() + "/temp_pic";
+        takePictureIntent.putExtra("outPath", outPath);
+        takePictureIntent.putExtra("recordVideo", false);
+        startActivityForResult(takePictureIntent, TAKE_PICTURE);
 	}
 
-	// Opens a camera program to have the user record a video.
+	// Opens CameraActivity to have the user record a video.
 	private void recordVideo() {
-		Intent recordVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-		recordVideoIntent.putExtra(EXTRA_OUTPUT, "temp-vid");
-		if (instance != null && recordVideoIntent.resolveActivity(instance.getPackageManager()) != null)
-			startActivityForResult(Intent.createChooser(recordVideoIntent, "Select a Camera App"), RECORD_VIDEO);
+		Intent recordVideoIntent = new Intent(instance, CameraActivity.class);
+		String outPath = instance.getFilesDir().getAbsolutePath() + "/temp_vid";
+		recordVideoIntent.putExtra("outPath", outPath);
+		recordVideoIntent.putExtra("recordVideo", true);
+		startActivityForResult(recordVideoIntent, RECORD_VIDEO);
 	}
 
 	// Responds primarily to the file choosing Intents.
@@ -458,49 +451,15 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 					getfile.setText("File selected!");
 				// TODO: If the file selected is an image, preview it.
 				break;
-			case TAKE_PICTURE:  // TODO - Make this work somehow.
+			case TAKE_PICTURE:
 				Log.w("hyggelig", "TAKE_PICTURE");
-				if (preview_row != null)
-					preview_row.setVisibility(View.VISIBLE);
-				/*if (extras != null) {
-					Bitmap thumbnail;// = MediaStore.Images.Media.getBitmap(instance.getContentResolver(), (Uri)extras.get(EXTRA_OUTPUT));//(Bitmap)extras.get("data");
-					try {
-						thumbnail = MediaStore.Images.Media.getBitmap(instance.getApplicationContext().getContentResolver(), (Uri)extras.get(EXTRA_OUTPUT));
-						if (thumbnail != null)
-							Log.w("hyggelig", "data = " + extras);
-						if (preview != null)
-							preview.setImageBitmap(thumbnail);
-					} catch (FileNotFoundException e) {
-						Log.w("hyggelig", "file not found");
-					} catch (IOException e) {
-						Log.w("hyggelig", "oh no");
-					} catch (Exception e) {
-						Log.w("hyggelig", "What the hell?");
-					}
-				} else {
-					Log.w("hyggelig", "TAKEN PICTURE RETURNED NULL");
-				}*/
-				// TODO: This isn't optimal.
-				Bitmap thumbnail;
-				try
-				{
-					File tempFolder = new File(instance.getExternalFilesDir("temp").getAbsolutePath());
-					File img = new File(tempFolder, "temp-pic.jpg");
-					Uri imgURI = FileProvider.getUriForFile(instance, "project.comp3004.hyggelig.encryptiontools.EncryptFilesFragment", img);
-
-					thumbnail = MediaStore.Images.Media.getBitmap(instance.getApplicationContext().getContentResolver(), imgURI);
-					if (preview != null)
-						preview.setImageBitmap(thumbnail);
-				}
-				catch ( Exception e )
-				{
-					Log.w("hyggelig", "Error while working on taken picture");
-					e.printStackTrace();
-					return;
-				}
+				if ( getfile != null )
+					getfile.setText("Picture taken!");
 				break;
 			case RECORD_VIDEO:  // TODO
 				Log.w("hyggelig", "RECORD_VIDEO");
+				if ( getfile != null )
+					getfile.setText("Video recorded!");
 				break;
 			default:
 				Log.w("hyggelig", "good lord! What did you do?");
@@ -512,24 +471,45 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
 	private boolean encryptFile()
 	{
-		if ( targetFileURI == null )
+		if ( targetFileSource == SELECT_FILE && targetFileURI == null )
 			return false;
 		if ( symmetricEncrypt && password == null ) // We need this for the symmetric encryption password.
 			return false;
 
-		// Why is it so complicated to just open a file and get its size? What the hell, Google?
-		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
-		if ( theCursor == null )
-			return false;
-		theCursor.moveToFirst();
-		String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
-		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
-		theCursor.close();
+		String name = "";
+		int size = 0;
+		if ( targetFileSource == SELECT_FILE )
+		{
+			// Why is it so complicated to just open a file and get its size? What the hell, Google?
+			Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+			if (theCursor == null)
+				return false;
+			theCursor.moveToFirst();
+			name = theCursor.getString(theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+			size = (int) theCursor.getLong(theCursor.getColumnIndex(OpenableColumns.SIZE));
+			theCursor.close();
+		}
+		else if ( targetFileSource == TAKE_PICTURE )
+		{
+			name = "secret-pic.jpg";
+			size = (int)(new File(instance.getFilesDir().getAbsolutePath() + "/temp_pic")).length();
+		}
+		else if ( targetFileSource == RECORD_VIDEO )
+		{
+			name = "secret-vid.mp4";
+			size = (int)(new File(instance.getFilesDir().getAbsolutePath() + "/temp_vid")).length();
+		}
 
 		byte[] contents = new byte[size];
 		try
 		{
-			InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			InputStream fileIS = null;
+			if ( targetFileSource == SELECT_FILE )
+				fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			else if ( targetFileSource == TAKE_PICTURE )
+				fileIS = new FileInputStream(instance.getFilesDir().getAbsolutePath() + "/temp_pic");
+			else if ( targetFileSource == RECORD_VIDEO )
+				fileIS = new FileInputStream(instance.getFilesDir().getAbsolutePath() + "/temp_vid");
 			if ( fileIS == null )
 			{
 				Log.w("hyggelig", "null InputStream");
@@ -541,8 +521,8 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 		}
 		catch ( Exception e )
 		{
-			Log.w("hyggelig", "Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
-			alertError("Error while attempting to open " + targetFileURI.getPath() + "! " + e.getMessage());
+			Log.w("hyggelig", "Error while attempting to open and read input file! " + e.getMessage());
+			alertError("Error while attempting to open and read input file! " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		}
@@ -613,6 +593,17 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 				.setNegativeButton(android.R.string.ok, null)
 				.show();
 
+		if ( targetFileSource == TAKE_PICTURE )
+		{
+			File temp_pic = new File(instance.getFilesDir().getAbsolutePath() + "/temp_pic");
+			if ( temp_pic.exists() ) temp_pic.delete();
+		}
+		else if ( targetFileSource == RECORD_VIDEO )
+		{
+			File temp_vid = new File(instance.getFilesDir().getAbsolutePath() + "/temp_vid");
+			if ( temp_vid.exists() ) temp_vid.delete();
+		}
+
 		// Delete the original file if the user asked to.
 		// FIXME: This just doesn't work.
         /*if ( deleteOriginalFile )
@@ -628,21 +619,42 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 
 	private boolean signFile(String keyPass)
 	{
-		if ( targetFileURI == null )
+		if ( targetFileSource == SELECT_FILE && targetFileURI == null )
 			return false;
 
-		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
-		if ( theCursor == null )
-			return false;
-		theCursor.moveToFirst();
-		String name = theCursor.getString( theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME) );
-		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
-		theCursor.close();
+		String name = "";
+		int size = 0;
+		if ( targetFileSource == SELECT_FILE )
+		{
+			Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
+			if (theCursor == null)
+				return false;
+			theCursor.moveToFirst();
+			name = theCursor.getString(theCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+			size = (int) theCursor.getLong(theCursor.getColumnIndex(OpenableColumns.SIZE));
+			theCursor.close();
+		}
+		else if ( targetFileSource == TAKE_PICTURE )
+		{
+			name = "secret-pic.jpg";
+			size = (int)(new File(instance.getFilesDir().getAbsolutePath() + "/temp_pic")).length();
+		}
+		else if ( targetFileSource == RECORD_VIDEO )
+		{
+			name = "secret-vid.mp4";
+			size = (int)(new File(instance.getFilesDir().getAbsolutePath() + "/temp_vid")).length();
+		}
 
 		byte[] contents = new byte[size];
 		try
 		{
-			InputStream fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			InputStream fileIS = null;
+			if ( targetFileSource == SELECT_FILE )
+				fileIS = instance.getContentResolver().openInputStream(targetFileURI);
+			else if ( targetFileSource == TAKE_PICTURE )
+				fileIS = new FileInputStream(instance.getFilesDir().getAbsolutePath() + "/temp_pic");
+			else if ( targetFileSource == RECORD_VIDEO )
+				fileIS = new FileInputStream(instance.getFilesDir().getAbsolutePath() + "/temp_vid");
 			if ( fileIS == null )
 			{
 				Log.w("hyggelig", "null InputStream");
@@ -687,6 +699,18 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 				.setMessage("File signed and written successfully to " + signOutPath + name + ".hyg-sign" + "!")
 				.setNegativeButton(android.R.string.ok, null)
 				.show();
+
+		if ( targetFileSource == TAKE_PICTURE )
+		{
+			File temp_pic = new File(instance.getFilesDir().getAbsolutePath() + "/temp_pic");
+			if ( temp_pic.exists() ) temp_pic.delete();
+		}
+		else if ( targetFileSource == RECORD_VIDEO )
+		{
+			File temp_vid = new File(instance.getFilesDir().getAbsolutePath() + "/temp_vid");
+			if ( temp_vid.exists() ) temp_vid.delete();
+		}
+
 		return true;
 	}
 
@@ -700,13 +724,12 @@ public class EncryptFilesFragment extends Fragment implements AdapterView.OnItem
 				.show();
 	}
 
-	// TODO: React to the checkbox asking if the user wants to delete the original.
 	private void executeAction()
 	{
 		Log.w("hyggelig", "executeAction");
 		Log.w("hyggelig", "mode = " + execMode);
 
-		if ( targetFileURI == null )
+		if ( targetFileSource == SELECT_FILE && targetFileURI == null )
 		{
 			Log.w("hyggelig", "no file URI provided");
 			alertError("No file selected");
