@@ -51,10 +51,16 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/keyList"
             android:layout_width="match_parent"
-            android:layout_height="480dp"
+            android:layout_height="450dp"
             android:isScrollContainer="true">
-
         </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Click on a key for options" />
 
         <TableRow
             android:id="@+id/options_row"

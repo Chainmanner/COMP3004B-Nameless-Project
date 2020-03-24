@@ -46,6 +46,9 @@ public class EncryptionTools_MainActivity extends AppCompatActivity {
 			signOutputDir.mkdirs();
 			File verifyOutputDir = new File( outputDirPath + "VerifiedFiles/");
 			verifyOutputDir.mkdirs();
+			// Output directory for exported keys
+			File exportedKeysDir = new File(outputDirPath + "ExportedKeys/");
+			exportedKeysDir.mkdirs();
 			// Output directory for stuff coming from the private folder.
 			File privateFolderExportDir = new File(outputDirPath + "PrivateFolderExport/");
 			privateFolderExportDir.mkdirs();

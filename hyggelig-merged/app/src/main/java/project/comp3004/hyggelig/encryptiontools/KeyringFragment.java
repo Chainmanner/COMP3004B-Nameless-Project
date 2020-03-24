@@ -5,6 +5,7 @@ import project.comp3004.hyggelig.publickey.PublicKey;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -34,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -433,9 +435,10 @@ public class KeyringFragment extends Fragment {
 		@Override
 		public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
 		{
+			final int thePosition = position;	// I'd rather not modify the function declaration.
 			String curFile = keyPairs[position];
 
-			String[] keyInfo;	// See PublicKey.getKeyInfo() for info on the contents of this.
+			final String[] keyInfo;	// See PublicKey.getKeyInfo() for info on the contents of this.
 			try
 			{
 				if ( showSecretKeys )
@@ -459,6 +462,105 @@ public class KeyringFragment extends Fragment {
 			{
 				theLayout.setBackgroundColor(Color.WHITE);
 			}
+
+			theLayout.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					final Dialog opsDialog = new Dialog(instance);
+					opsDialog.setContentView(R.layout.encryptiontools_keyring_keyoptions);
+
+					final TextView storedKeyFilename = opsDialog.findViewById(R.id.storedKeyFilename);
+					storedKeyFilename.setText( "File: " + keyPairs[thePosition] );
+					final TextView keyUser = opsDialog.findViewById(R.id.keyUser);
+					keyUser.setText( "User ID: " + keyInfo[0] );
+
+					final Button exportKeyButton = opsDialog.findViewById(R.id.exportKeyButton);
+					exportKeyButton.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							// Key file from internal storage
+							File importedKey = new File((showSecretKeys ? instance.getPrivkeysPath()
+																		: instance.getPubkeysPath()) + keyPairs[thePosition]);
+							// Output key file
+							File exportedKey = new File(instance.getOutputDirPath() + "ExportedKeys/" + keyPairs[thePosition]);
+
+							try
+							{
+								byte[] keyContents = new byte[(int)importedKey.length()];
+
+								FileInputStream fileIS = new FileInputStream(importedKey);
+								fileIS.read(keyContents);
+								fileIS.close();
+
+								exportedKey.createNewFile();
+								FileOutputStream fileOS = new FileOutputStream(exportedKey);
+								fileOS.write(keyContents);
+								fileOS.close();
+							}
+							catch ( Exception e )
+							{
+								Log.w("hyggelig", "Error while exporting key " + keyPairs[thePosition] + ": " + e.getMessage());
+								alertError("Error while exporting key " + keyPairs[thePosition] + ": " + e.getMessage());
+								e.printStackTrace();
+								return;
+							}
+
+							new AlertDialog.Builder(instance)
+									.setTitle("Success")
+									.setMessage("Key successfully exported to "+ exportedKey.getAbsolutePath() + "!")
+									.setNegativeButton(android.R.string.ok, null)
+									.show();
+							opsDialog.dismiss();
+						}
+					});
+
+					final Button deleteKeyButton = opsDialog.findViewById(R.id.deleteKeyButton);
+					deleteKeyButton.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							new AlertDialog.Builder(instance)
+									.setTitle("Warning")
+									.setMessage("Are you sure you want to delete this key?")
+									.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											File fileToDelete = new File((showSecretKeys ? instance.getPrivkeysPath()
+																							: instance.getPubkeysPath())
+																			+ keyPairs[thePosition]);
+											if ( fileToDelete.delete() )
+											{
+												new AlertDialog.Builder(instance)
+														.setTitle("Success")
+														.setMessage("Key deleted!")
+														.setNegativeButton(android.R.string.ok, null)
+														.show();
+												opsDialog.dismiss();
+
+												if ( showingSecretKeys )
+													showPrivateKeys();
+												else
+													showPublicKeys();
+											}
+											else
+												alertError("Failed to delete specified key due to unknown error");
+										}
+									})
+									.setNegativeButton(android.R.string.no, null)
+									.show();
+						}
+					});
+
+					final Button cancelKeyDialog = opsDialog.findViewById(R.id.cancelKeyDialog);
+					cancelKeyDialog.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							opsDialog.dismiss();
+						}
+					});
+
+					opsDialog.show();
+				}
+			});
 
 			TextView keyName = holder.itemView.findViewById(R.id.keyName);
 			if ( keyName != null )

@@ -5,10 +5,13 @@ Last updated Tuesday March 24, 2020.
 Tasks:
 	- Key generation now implemented in the Keyring of the Encryption Tools. (2 hours)
 		- Had to make a few edits to PublicKey.generateKeyPair() to accomplish this.
+	- Keys can now be exported and/or deleted from the Keyring. (1 hour)
+
+Total time: 3 hours
 
 Next Steps:
 	- Complete the last deliverable's documentation.
-	- Finish up the other unimplemented features, listed below in no particular order. These NEED to be done before we hand in our final deliverable.
-		- Exporting and deleting keys
-			- Forget what I said about viewing more details, we don't strictly need that at this time.
+	- Finish up the other unimplemented features, listed below in no particular order. These need to be done before we hand in our final deliverable.
 		- Inputting a picture or video straight from the camera.
+		- Backing up the Password Manager's DB, possibly also keys and other things, to Google Drive.
+			- We may or may not have enough time for this.
