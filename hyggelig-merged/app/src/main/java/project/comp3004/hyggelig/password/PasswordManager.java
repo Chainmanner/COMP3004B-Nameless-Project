@@ -32,12 +32,14 @@ public class PasswordManager extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.password_manager);
-        passwordDb = new DatabaseHelper(this);
+        passwordDb = new DatabaseHelper(this); //initalize password db
         storePwButton = findViewById(R.id.storePassword);
         viewPwButton = findViewById(R.id.viewPasswords);
+        //event handler for storing password buttion
         storePwButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //create fragment
                 AlertDialog.Builder builder = new AlertDialog.Builder(PasswordManager.this);
                 builder.setTitle("Store Password");
                 final View storepass_layout = getLayoutInflater().inflate(R.layout.password_storepass_popup,null);
@@ -45,6 +47,7 @@ public class PasswordManager extends AppCompatActivity {
                 final AlertDialog dialog = builder.create();
                 Button cancel_button = storepass_layout.findViewById(R.id.cancel_store);
                 Button store_button = storepass_layout.findViewById(R.id.store_pw);
+                //event handlers for fragment
                 cancel_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -62,11 +65,11 @@ public class PasswordManager extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                dialog.show();
+                dialog.show(); //show the fragment
 
             }
         });
-
+        //view password database event handler
         viewPwButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,9 +82,8 @@ public class PasswordManager extends AppCompatActivity {
                     Toast.makeText(PasswordManager.this, "The Database is Empty", Toast.LENGTH_SHORT).show();
                 }
                 else {
-
+                    //populate the ListView
                     while(data.moveToNext()) {
-                        //String pass = "Password Name: " + data.getString(0) + "\n" + "Password: " + data.getString(1) + "\n";
                         String pass = data.getString(0);
                         passDictionary.put(data.getString(0),data.getString(1));
                         list1.add(pass);
@@ -90,7 +92,8 @@ public class PasswordManager extends AppCompatActivity {
 
                     }
                 }
-                System.out.println(passDictionary);
+
+                //show a password on item click
                 displayListItem(listView,passDictionary);
 
 

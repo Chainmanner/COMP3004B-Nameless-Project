@@ -90,8 +90,10 @@ public class PasswordGenerator extends AppCompatActivity {
                     generatedPw = x.getNewPassword(0);
 
                 }
-
+                //display generated password
                 textView.setText("Generated Password: " + generatedPw);
+
+                //storing generated password event handler
                 storePWButton.setVisibility(View.VISIBLE);
                 storePWButton.setOnClickListener(new View.OnClickListener() {
                     @Override
