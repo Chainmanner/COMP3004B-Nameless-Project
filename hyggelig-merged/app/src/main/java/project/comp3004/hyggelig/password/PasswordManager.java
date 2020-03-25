@@ -82,7 +82,7 @@ public class PasswordManager extends AppCompatActivity {
 
                     while(data.moveToNext()) {
                         //String pass = "Password Name: " + data.getString(0) + "\n" + "Password: " + data.getString(1) + "\n";
-                        String pass = "Password Name: " + data.getString(0);
+                        String pass = data.getString(0);
                         passDictionary.put(data.getString(0),data.getString(1));
                         list1.add(pass);
                         ListAdapter listAdapter = new ArrayAdapter<String>(PasswordManager.this,android.R.layout.simple_list_item_1,list1);
@@ -111,7 +111,7 @@ public class PasswordManager extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = pwList.getItemAtPosition(position);
                 String clickedItem = (String)o;
-                clickedItem = clickedItem.substring(14).trim();
+                clickedItem = clickedItem.substring(0).trim();
                 String password = passDic.get(clickedItem);
                 AlertDialog.Builder builder = new AlertDialog.Builder(PasswordManager.this);
                 final View view_pass_item = getLayoutInflater().inflate(R.layout.view_pass_item,null);
