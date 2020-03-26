@@ -7,6 +7,7 @@ Author Name: Connor Stewart
 //imported libraries
 import com.didisoft.pgp.*;
 import com.didisoft.pgp.exceptions.NoPublicKeyFoundException;
+import com.didisoft.pgp.exceptions.WrongPasswordException;
 
 import java.io.File;
 import java.util.List;
@@ -147,7 +148,14 @@ public class PublicKey {
 		
 		//decrypt the file
 		//pgpEntryPoint.decryptFile(args[0], keyStoreObject, args[2], args[3]);
-		pgpEntryPoint.decryptFile(args[0], args[1], args[2], args[3]);
+		try
+		{
+			pgpEntryPoint.decryptFile(args[0], args[1], args[2], args[3]);
+		}
+		catch ( WrongPasswordException e )	// If the password's wrong, notify the user.
+		{
+			return -2;
+		}
 		return 0; //return zero for success
 	} //END decrypt
 
@@ -158,10 +166,20 @@ public class PublicKey {
 	//	privkeyPassword - Private key's password; leave blank ("") if there is none.
 	//	outputPath - Path to store the signed file at.
 	//	asciiArmor - Use Base64-encoded output instead of binary.
-	// Throws an exception on failure.
-	public static void sign(String inputPath, String privkeyPath, String privkeyPassword, String outputPath, boolean asciiArmor) throws Exception
+	// Returns 0 if successful, and -1 if the private key password is incorrect.
+	// Throws an exception on any other failure.
+	public static int sign(String inputPath, String privkeyPath, String privkeyPassword, String outputPath, boolean asciiArmor) throws Exception
 	{
-		pgpEntryPoint.signFile(inputPath, privkeyPath, privkeyPassword, outputPath, asciiArmor);
+		try
+		{
+			pgpEntryPoint.signFile(inputPath, privkeyPath, privkeyPassword, outputPath, asciiArmor);
+		}
+		catch ( WrongPasswordException e )	// If the password's wrong, notify the user.
+		{
+			return -1;
+		}
+
+		return 0;
 	}
 
 	// Verifies a file's signature and extracts its contents to the file referred to by outputPath.

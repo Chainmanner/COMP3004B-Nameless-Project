@@ -8,12 +8,13 @@ Tasks:
 	- Keys can now be exported and/or deleted from the Keyring. (1 hour)
 	- Implemented the ability for the user to directly take a picture/video and encrypt it in the same application. (4 hours)
 		- However, videos that are too big can crash the application. Could add a time limit, but I'm not sure how yet.
+	- Documented the Encryption Tools, plus some minor edits to remove unused/unneeded features. (3 hours)
 
-Total time: 7 hours
+Total time: 10 hours
 
 Next Steps:
 	- Complete the last deliverable.
-		- This, along with a video uploaded to YouTube, are due on March 30 by 09:00.
+		- This, along with a video uploaded to YouTube, are due on April 5.
 	- Finish up the other unimplemented features, listed below in no particular order. These need to be done before we hand in our final deliverable.
 		- Backing up the Password Manager's DB, possibly also keys and other things, to Google Drive.
 			- This is outside of my jurisdiction (Password Tools are Kavan's job), but if necessary, I can help with this.

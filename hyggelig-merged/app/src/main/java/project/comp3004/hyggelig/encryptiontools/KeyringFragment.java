@@ -16,15 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -38,32 +35,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class KeyringFragment extends Fragment {
-
+// Fragment to display the keyring, which shows the user's stored public and private keys.
+// This is also where the user goes to add, remove, or export keys.
+// Authored by Gabriel Valachi (101068875).
+public class KeyringFragment extends Fragment
+{
+	// Main instance of the Encryption Tools activity.
     private EncryptionTools_MainActivity instance;
 
-    //private TabItem publicKeys;
-    //private TabItem privateKeys;
     private TabLayout keyTypeRow;
 
+    // List of keys currently being displayed.
     private RecyclerView keyList;
 
     private Button importKey;
     private Button generateKeypair;
 
+    // Are we currently displaying secret keys?
     private boolean showingSecretKeys = false;
 
     // The following are only used by generateKeypairDialog().
 	boolean keyWillExpire = false;
 	long daysAfterToday = 0;
 
+	// Called when the fragment is created.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -71,6 +69,7 @@ public class KeyringFragment extends Fragment {
 
         instance = (EncryptionTools_MainActivity)getActivity();
 
+        // Gets the toolbar and adds a back button.
         Toolbar theToolbar = theView.findViewById(R.id.toolbar);
         instance.setSupportActionBar(theToolbar);
         instance.getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -83,6 +82,7 @@ public class KeyringFragment extends Fragment {
             }
         });
 
+        // Creates the listener for the tab row that selects the type of keys to display.
         keyTypeRow = theView.findViewById(R.id.keyTypeRow);
         if ( keyTypeRow != null )
         	keyTypeRow.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -112,6 +112,7 @@ public class KeyringFragment extends Fragment {
 				}
 			});
 
+        // Button click listeners.
         importKey = theView.findViewById(R.id.importKey);
         if ( importKey != null )
             importKey.setOnClickListener(new View.OnClickListener() {
@@ -129,16 +130,18 @@ public class KeyringFragment extends Fragment {
                 }
             });
 
+        // Initializes the RecyclerView that shows all the relevant keys.
 		keyList = theView.findViewById(R.id.keyList);
 		keyList.setVerticalScrollBarEnabled(true);
 		keyList.setLayoutManager(new LinearLayoutManager(instance.getApplicationContext()));
 		keyList.setAdapter(new KeysAdapter(null, false));
 
-        showPublicKeys();
+        showPublicKeys();	// Since the public keys tab is selected by default, show the public keys first.
 
         return theView;
     }
 
+    // Shows the public keys stored on this device.
     private void showPublicKeys()
     {
     	Log.w("hyggelig", "showPublicKeys");
@@ -159,6 +162,7 @@ public class KeyringFragment extends Fragment {
 		keyList.getAdapter().notifyDataSetChanged();
     }
 
+    // Shows the private keys stored on this device.
     private void showPrivateKeys()
     {
     	Log.w("hyggelig", "showPrivateKeys");
@@ -179,6 +183,7 @@ public class KeyringFragment extends Fragment {
 		keyList.getAdapter().notifyDataSetChanged();
     }
 
+    // Opens a new activity for the user to select a key to import.
     private void importKeyPrompt()
     {
 		Intent pickFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -189,6 +194,8 @@ public class KeyringFragment extends Fragment {
 			startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), 0);
     }
 
+    // Called when the activity spawned in importKeyPrompt() returns with a selected file.
+	// Try to import the file if it's a valid OpenPGP key.
     @Override
 	public void onActivityResult(int reqcode, int rescode, Intent resultIntent)
 	{
@@ -196,6 +203,7 @@ public class KeyringFragment extends Fragment {
 		{
 			Uri targetURI = resultIntent.getData();
 
+			// Get the name and size of the key being imported.
 			Cursor theCursor = instance.getContentResolver().query(targetURI, null, null, null, null);
 			if ( theCursor == null )
 			{
@@ -207,11 +215,12 @@ public class KeyringFragment extends Fragment {
 			int filesize = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
 			theCursor.close();
 
-			// Copy the file over.
+			// Copy the file over into internal storage, in the appropriate key directory.
 			byte[] keyContents = new byte[filesize];
 			String outFilePath = "";
 			try
 			{
+				// Get the contents of the file.
 				InputStream fileIS = instance.getContentResolver().openInputStream(targetURI);
 				if ( fileIS == null )
 				{
@@ -221,8 +230,8 @@ public class KeyringFragment extends Fragment {
 				fileIS.read(keyContents);
 				fileIS.close();
 
+				// Check to make sure that we're importing an OpenPGP public or private key.
 				String keyContentsString = new String(keyContents, "ASCII");
-				Log.w("hyggelig", keyContentsString);	// FIXME: REMOVE WHEN DONE
 				if ( keyContentsString.contains("-----BEGIN PGP PUBLIC KEY BLOCK-----")
 						&& keyContentsString.contains("-----END PGP PUBLIC KEY BLOCK-----") )
 				{
@@ -239,6 +248,7 @@ public class KeyringFragment extends Fragment {
 				}
 				outFilePath += filename;
 
+				// Write the contents of the imported file to a new file in internal storage.
 				File newFile = new File(outFilePath);
 				newFile.createNewFile();
 				FileOutputStream fileOS = new FileOutputStream(newFile);
@@ -253,7 +263,7 @@ public class KeyringFragment extends Fragment {
 			}
 
 			Log.w("hyggelig", "File " + outFilePath + " written successfully");
-			// Refresh the list of keys.
+			// Refresh the list of keys, now that we just added one.
 			if ( showingSecretKeys )
 				showPrivateKeys();
 			else
@@ -261,6 +271,7 @@ public class KeyringFragment extends Fragment {
 		}
 	}
 
+	// Show the dialog to generate an OpenPGP keypair.
     private void generateKeypairDialog()
     {
     	Log.w("hyggelig", "generateKeypairDialog");
@@ -305,6 +316,7 @@ public class KeyringFragment extends Fragment {
 			}
 		});
 
+    	// Creates the handler for the date selector.
     	daysAfterToday = 1;
 		final Calendar selectedDate = Calendar.getInstance();
     	pickDate.setOnClickListener(new View.OnClickListener() {
@@ -315,15 +327,24 @@ public class KeyringFragment extends Fragment {
 						new DatePickerDialog.OnDateSetListener() {
 							@Override
 							public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-								// TODO: Check to see if the date is valid, ie. if it's after today.
 								Log.w("hyggelig", year + " " + month + " " + dayOfMonth);
 								selectedDate.set(year, month, dayOfMonth);
 								long difference = selectedDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
-								daysAfterToday = TimeUnit.MILLISECONDS.toDays(difference);
-								daysAfterToday = (daysAfterToday < 1 ? 1 : daysAfterToday);
-								Log.w("hyggelig", "daysAfterToday = " + daysAfterToday);
-								pickedDateAndTime.setText( "Expires: " + selectedDate.getTime().toString() );
-								pickedDateAndTime.setVisibility(View.VISIBLE);
+								
+								// We need to make sure the date selected is later than the current day.
+								if ( difference <= 0 )
+								{
+									alertError("Invalid date selected");
+								}
+								else
+								{
+									// Date selected is valid; convert it to days after today and feed it back to the user.
+									daysAfterToday = TimeUnit.MILLISECONDS.toDays(difference);
+									daysAfterToday = (daysAfterToday < 1 ? 1 : daysAfterToday);
+									Log.w("hyggelig", "daysAfterToday = " + daysAfterToday);
+									pickedDateAndTime.setText("Expires: " + selectedDate.getTime().toString());
+									pickedDateAndTime.setVisibility(View.VISIBLE);
+								}
 							}
 						},
 						selectedDate.get(Calendar.YEAR),
@@ -333,6 +354,7 @@ public class KeyringFragment extends Fragment {
 			}
 		});
 
+    	// Sets the handler for the button to actually generate the keypair.
     	generateButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -340,6 +362,7 @@ public class KeyringFragment extends Fragment {
 				String username = nameOfUser.getText().toString();
 				String password = privKeyPass.getText().toString();
 
+				// Make sure the required fields are not blank.
 				// TODO: Should also check for invalid characters in the filename. Then again, that'd be handled in the catch block.
 				if ( filename.equals("") )
 				{
@@ -357,6 +380,8 @@ public class KeyringFragment extends Fragment {
 					return;
 				}
 
+				// Parameters are OK, now let's generate the keypair.
+				// Generally, computationally intensive things like this shouldn't be done on the main thread, but this isn't too slow.
 				try
 				{
 					String[] args = {
@@ -385,6 +410,7 @@ public class KeyringFragment extends Fragment {
 						.setNegativeButton(android.R.string.ok, null)
 						.show();
 				genDialog.dismiss();
+				// Refresh the key list, now that we've just generated a new keypair.
 				if ( showingSecretKeys )
 					showPrivateKeys();
 				else
@@ -395,6 +421,7 @@ public class KeyringFragment extends Fragment {
 		genDialog.show();
     }
 
+    // Alerts the user of an error.
     // TODO: I really gotta move this into a utilities class or something.
 	private void alertError(String msg)
 	{
@@ -405,10 +432,11 @@ public class KeyringFragment extends Fragment {
 				.show();
 	}
 
+	// The adapter that handles the elements in the key list.
 	class KeysAdapter extends RecyclerView.Adapter<KeysAdapter.ImplementedViewHolder>
 	{
-		private String[] keyPairs;
-		private boolean showSecretKeys;
+		private String[] keyNames;	// Filenames of the keys being displayed.
+		private boolean showSecretKeys;	// If true, we're showing private keys.
 
 		class ImplementedViewHolder extends RecyclerView.ViewHolder
 		{
@@ -420,10 +448,10 @@ public class KeyringFragment extends Fragment {
 
 		public KeysAdapter(String[] theKeys, boolean secrets)
 		{
-			keyPairs = theKeys;
+			keyNames = theKeys;
 			showSecretKeys = secrets;
 		}
-
+		
 		@Override
 		public KeysAdapter.ImplementedViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
 		{
@@ -432,15 +460,20 @@ public class KeyringFragment extends Fragment {
 			return new KeysAdapter.ImplementedViewHolder(theView);
 		}
 
+		// Called for each item to be displayed in this list.
+		// This sets the key information - user ID, fingerprint, expiry date, etc. - for the respective key in the list.
+		// It also sets the click handler for the item, and the click handlers for the buttons in the UI that pops up after clicking this item.
 		@Override
 		public void onBindViewHolder(KeysAdapter.ImplementedViewHolder holder, int position)
 		{
-			final int thePosition = position;	// I'd rather not modify the function declaration.
-			String curFile = keyPairs[position];
+			final int thePosition = position;	// This is here because I'd rather not modify the function declaration.
+			String curFile = keyNames[position];
 
+			// Gets the information about the keys being represented.
 			final String[] keyInfo;	// See PublicKey.getKeyInfo() for info on the contents of this.
 			try
 			{
+				// We have different directories for public and private keys, and different ways of fetching them.
 				if ( showSecretKeys )
 					keyInfo = PublicKey.getKeyInfo(instance.getPrivkeysPath() + curFile, true);
 				else
@@ -453,6 +486,7 @@ public class KeyringFragment extends Fragment {
 				return;
 			}
 
+			// Changes the background color depending on the item's position, to differentiate between items.
 			ConstraintLayout theLayout = holder.itemView.findViewById(R.id.constraint_layout);
 			if ( position % 2 == 0 )
 			{
@@ -463,6 +497,8 @@ public class KeyringFragment extends Fragment {
 				theLayout.setBackgroundColor(Color.WHITE);
 			}
 
+			// Sets the click listener for this item in the list being displayed.
+			// When this item is clicked, a menu appears, asking the user if they want to export the key, delete it, or do neither.
 			theLayout.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -470,20 +506,23 @@ public class KeyringFragment extends Fragment {
 					opsDialog.setContentView(R.layout.encryptiontools_keyring_keyoptions);
 
 					final TextView storedKeyFilename = opsDialog.findViewById(R.id.storedKeyFilename);
-					storedKeyFilename.setText( "File: " + keyPairs[thePosition] );
+					storedKeyFilename.setText( "File: " + keyNames[thePosition] );
 					final TextView keyUser = opsDialog.findViewById(R.id.keyUser);
 					keyUser.setText( "User ID: " + keyInfo[0] );
 
+					// Sets the handler for the export key button in the brought-up menu.
+					// This just copies the key from internal storage to Hyggelig/EncryptionTools/ExportedKeys/ (external storage).
 					final Button exportKeyButton = opsDialog.findViewById(R.id.exportKeyButton);
 					exportKeyButton.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
 							// Key file from internal storage
 							File importedKey = new File((showSecretKeys ? instance.getPrivkeysPath()
-																		: instance.getPubkeysPath()) + keyPairs[thePosition]);
+																		: instance.getPubkeysPath()) + keyNames[thePosition]);
 							// Output key file
-							File exportedKey = new File(instance.getOutputDirPath() + "ExportedKeys/" + keyPairs[thePosition]);
+							File exportedKey = new File(instance.getOutputDirPath() + "ExportedKeys/" + keyNames[thePosition]);
 
+							// Now we copy the internally-stored key to an external directory.
 							try
 							{
 								byte[] keyContents = new byte[(int)importedKey.length()];
@@ -499,8 +538,8 @@ public class KeyringFragment extends Fragment {
 							}
 							catch ( Exception e )
 							{
-								Log.w("hyggelig", "Error while exporting key " + keyPairs[thePosition] + ": " + e.getMessage());
-								alertError("Error while exporting key " + keyPairs[thePosition] + ": " + e.getMessage());
+								Log.w("hyggelig", "Error while exporting key " + keyNames[thePosition] + ": " + e.getMessage());
+								alertError("Error while exporting key " + keyNames[thePosition] + ": " + e.getMessage());
 								e.printStackTrace();
 								return;
 							}
@@ -514,6 +553,8 @@ public class KeyringFragment extends Fragment {
 						}
 					});
 
+					// Sets up the handler for the delete button in the popup menu.
+					// Prompts the user if they want to delete the key, and if so, deletes it from internal storage.
 					final Button deleteKeyButton = opsDialog.findViewById(R.id.deleteKeyButton);
 					deleteKeyButton.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -526,7 +567,7 @@ public class KeyringFragment extends Fragment {
 										public void onClick(DialogInterface dialog, int which) {
 											File fileToDelete = new File((showSecretKeys ? instance.getPrivkeysPath()
 																							: instance.getPubkeysPath())
-																			+ keyPairs[thePosition]);
+																			+ keyNames[thePosition]);
 											if ( fileToDelete.delete() )
 											{
 												new AlertDialog.Builder(instance)
@@ -536,7 +577,7 @@ public class KeyringFragment extends Fragment {
 														.show();
 												opsDialog.dismiss();
 
-												if ( showingSecretKeys )
+												if ( showSecretKeys )
 													showPrivateKeys();
 												else
 													showPublicKeys();
@@ -550,6 +591,8 @@ public class KeyringFragment extends Fragment {
 						}
 					});
 
+					// Sets the handler for the cancel button in the popup menu.
+					// Just dismisses the menu.
 					final Button cancelKeyDialog = opsDialog.findViewById(R.id.cancelKeyDialog);
 					cancelKeyDialog.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -562,6 +605,12 @@ public class KeyringFragment extends Fragment {
 				}
 			});
 
+			// Displays the user ID, plus some other info, in the following format:
+			//	[REVOKED] (if revoked)
+			//	[key type]
+			//	[algorithm]
+			//	User ID
+			// If the key is revoked, this appears red.
 			TextView keyName = holder.itemView.findViewById(R.id.keyName);
 			if ( keyName != null )
 			{
@@ -580,12 +629,15 @@ public class KeyringFragment extends Fragment {
 				keyName.setText(finalName);
 			}
 
+			// Displays the key's fingerprint.
 			TextView keyFingerprint = holder.itemView.findViewById(R.id.keyFingerprint);
 			if ( keyFingerprint != null )
 			{
 				keyFingerprint.setText("Fingerprint: " + keyInfo[1]);
 			}
 
+			// Displays the key's expiration date.
+			// If this date has passed, this text appears in red.
 			TextView keyExpiration = holder.itemView.findViewById(R.id.keyExpiration);
 			if ( keyExpiration != null )
 			{
@@ -597,10 +649,12 @@ public class KeyringFragment extends Fragment {
 			}
 		}
 
+		// Gets the number of items in this adapter.
+		// Note that if keyNames is null, returns zero to prevent crashing.
 		@Override
 		public int getItemCount()
 		{
-			return keyPairs == null ? 0 : keyPairs.length;
+			return keyNames == null ? 0 : keyNames.length;
 		}
 	}
 }

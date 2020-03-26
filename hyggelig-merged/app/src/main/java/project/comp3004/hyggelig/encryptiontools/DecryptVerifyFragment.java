@@ -25,9 +25,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.didisoft.pgp.KeyPairInformation;
-import com.didisoft.pgp.KeyStore;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -41,8 +38,13 @@ import project.comp3004.hyggelig.R;
 import project.comp3004.hyggelig.aes.aes;
 import project.comp3004.hyggelig.publickey.PublicKey;
 
+// Fragment for the Decrypt/Verify File menu, which - you guessed it! - deals with decrypting and verifying files.
+// NOTE: Some elements, such as the preview for pictures/videos, are not in use.
+//		 However, they're kept in case we'll end up implementing them in the future.
+// Authored by Gabriel Valachi (101068875).
 public class DecryptVerifyFragment extends Fragment implements AdapterView.OnItemSelectedListener
 {
+	// Main instance of the Encryption Tools activity.
 	private EncryptionTools_MainActivity instance;
 
 	// Encrypt/sign modes
@@ -64,26 +66,30 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 	private TableRow sign_algo_row;
 	private TableRow privkey_row;
 	private TableRow pubkey_row;
-	private TableRow password_row;  // TODO: Give the option to generate a password.
+	private TableRow password_row;  // TODO: Give the option to grab a password from the Password Manager.
 	private TableRow execute_row;
 
 	private Button getfile;
 	private Spinner enc_cipher;
-	private Spinner sign_algo;
+	//private Spinner sign_algo;
 	private Spinner privkey;
 	private Spinner pubkey;
 	private EditText password;
 	private Button execute;
 
+	// URI of the input file.
 	private Uri targetFileURI;
 
+	// Path of the directory to store files output by any activity under the Encryption Tools.
 	private String outputDirPath;
 
+	// Called when this fragment is created.
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View theView = inflater.inflate(R.layout.encryptiontools_decrypt_file_layout, container, false);
 
+		// Creates the toolbar and back button.
 		Toolbar toolbar = theView.findViewById(R.id.toolbar);
 		instance = (EncryptionTools_MainActivity)getActivity();
 		instance.setSupportActionBar(toolbar);
@@ -100,21 +106,23 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		});
 		outputDirPath = instance.getOutputDirPath();
 
+		// Sets up listeners for the radio buttons.
 		RadioButton dec_radio = theView.findViewById(R.id.dec_radio);
 		if ( dec_radio != null ) dec_radio.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showDecryptionOptions(v);
+				showDecryptionOptions();
 			}
 		});
 		RadioButton verify_radio = theView.findViewById(R.id.verify_radio);
 		if ( verify_radio != null ) verify_radio.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showSigningOptions(v);
+				showVerificationOptions();
 			}
 		});
 
+		// Gets the UI elements for future access.
 		getfile_row = theView.findViewById(R.id.getfile_row);
 		enc_cipher_row = theView.findViewById(R.id.enc_cipher_row);
 		sign_algo_row = theView.findViewById(R.id.sign_algo_row);
@@ -125,7 +133,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
 		enc_cipher = theView.findViewById(R.id.enc_cipher);
 		pubkey = theView.findViewById(R.id.pubkey);
-		sign_algo = theView.findViewById(R.id.sign_algo);
+		//sign_algo = theView.findViewById(R.id.sign_algo);
 		privkey = theView.findViewById(R.id.privkey);
 
 		getfile = theView.findViewById(R.id.getfile);
@@ -133,6 +141,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 
 		password = theView.findViewById(R.id.password);
 
+		// Hides all UI elements except for the radio buttons. These will be displayed contextually.
 		if (getfile_row != null) getfile_row.setVisibility(View.GONE);
 		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
 		if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
@@ -141,13 +150,15 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		if (password_row != null) password_row.setVisibility(View.GONE);
 		if (execute_row != null) execute_row.setVisibility(View.GONE);
 
+		// Set the Spinner listeners.
 		Spinner filetype_menu = theView.findViewById(R.id.filetype);
 		if (filetype_menu != null) filetype_menu.setOnItemSelectedListener(this);
 		if (enc_cipher != null) enc_cipher.setOnItemSelectedListener(this);
-		if (sign_algo != null) sign_algo.setOnItemSelectedListener(this);
+		//if (sign_algo != null) sign_algo.setOnItemSelectedListener(this);
 		if (pubkey != null) pubkey.setOnItemSelectedListener(this);
 		if (privkey != null) privkey.setOnItemSelectedListener(this);
 
+		// Set the listener for the button to select a file.
 		if (getfile != null)
 			getfile.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -157,6 +168,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			});
 
 		// Get the filenames of the public and private keys, then populate the key names in the Spinners.
+		// The filenames are critical for decryption and verifying, and the key names are for the user's selection of the private/public key.
 		File pubkeysDir = new File(instance.getPubkeysPath());
 		if ( pubkeysDir.list() != null )    // Public keys
 		{
@@ -186,6 +198,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			privkey.setAdapter(adapter);
 		}
 
+		// Set the listener for the "Decrypt/Verify" button.
 		execute.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -197,17 +210,17 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 	}
 
 	// Shows options that are applicable to both encryption and signing.
-	private void showMutualOptions(View v) {
+	private void showMutualOptions() {
 		Log.w("hyggelig", "showMutualOptions");
 		if (getfile_row != null) getfile_row.setVisibility(View.VISIBLE);
 		if (execute_row != null) execute_row.setVisibility(View.VISIBLE);
 	}
 
-	private void showDecryptionOptions(View v) {
-		Log.w("hyggelig", "showEncryptionOptions");
+	// Shows decryption-specific parameters for the user to edit.
+	private void showDecryptionOptions() {
+		Log.w("hyggelig", "showDecryptionOptions");
 
-		//initAndHideAllOptions(v);
-		showMutualOptions(v);
+		showMutualOptions();
 
 		if (sign_algo_row != null) sign_algo_row.setVisibility(View.GONE);
 		if (privkey_row != null) privkey_row.setVisibility(View.GONE);
@@ -216,39 +229,46 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.VISIBLE);
 		//Spinner enc_cipher = v.findViewById(R.id.enc_cipher);
 		if (enc_cipher != null)
-			handleSpanners(v, enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
+			handleSpanners(enc_cipher.getSelectedItemPosition(), R.id.enc_cipher);
 		//if ( password_row != null ) password_row.setVisibility(View.VISIBLE);
 
 		if ( execute != null )
 			execMode = MODE_DECRYPT;
 
 		selectedKey = 0;
+		pubkey.setSelection(0);
+		privkey.setSelection(0);
 	}
 
-	// Show the options applicable for signing data.
-	private void showSigningOptions(View v) {
-		Log.w("hyggelig", "showSigningOptions");
-		//initAndHideAllOptions(v);
-		showMutualOptions(v);
+	// Show the options applicable for verifying data.
+	private void showVerificationOptions() {
+		Log.w("hyggelig", "showVerificationOptions");
+
+		showMutualOptions();
 
 		if (enc_cipher_row != null) enc_cipher_row.setVisibility(View.GONE);
-		if (pubkey_row != null) pubkey_row.setVisibility(View.GONE);
 		if (privkey_row != null) privkey_row.setVisibility(View.GONE);
 		if (password_row != null) password_row.setVisibility(View.GONE);
 
+		if (pubkey_row != null) pubkey_row.setVisibility(View.VISIBLE);
 		//if (sign_algo_row != null) sign_algo_row.setVisibility(View.VISIBLE);
 		//Spinner sign_algo = v.findViewById(R.id.sign_algo);
-		if (sign_algo != null)
-			handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
+		//if (sign_algo != null)
+		//	handleSpanners(v, sign_algo.getSelectedItemPosition(), R.id.sign_algo);
 
 		if ( execute != null )
 			execMode = MODE_VERIFY;
 
 		selectedKey = 0;
+		pubkey.setSelection(0);
+		privkey.setSelection(0);
 	}
 
-	// Handles the UI's Spinners.
-	private void handleSpanners(View v, int position, int ID)
+	// Handles the UI's Spinners when an item is selected.
+	// Args:
+	// 	position - Position of the selected item in the Spinner.
+	// 	ID - Spinner's resource ID.
+	private void handleSpanners(int position, int ID)
 	{
 		Log.w("hyggelig", "handleSpanners");
 		Log.w("hyggelig", "pos " + position);
@@ -270,8 +290,10 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 					if (password_row != null) password_row.setVisibility(View.VISIBLE);
 
 					selectedKey = 0;
+					pubkey.setSelection(0);
+					privkey.setSelection(0);
 				}
-				// Asymmetric - show password prompt
+				// Asymmetric - hide password prompt and show private key Spinner
 				else if (position == 1) {
 					Log.w("hyggelig", "pos 1");
 
@@ -282,6 +304,8 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 					if (privkey_row != null) privkey_row.setVisibility(View.VISIBLE);
 
 					selectedKey = 0;
+					pubkey.setSelection(0);
+					privkey.setSelection(0);
 				}
 				break;
 			case R.id.privkey:
@@ -292,12 +316,13 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		}
 	}
 
+	// Called when an item is selected in a Spinner.
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View v, int position, long id)
 	{
 		Log.w("hyggelig", "onItemSelected");
 		Log.w("hyggelig", "actual pos " + position);
-		handleSpanners(v, position, parent.getId());
+		handleSpanners(position, parent.getId());
 	}
 
 	@Override
@@ -317,6 +342,8 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			startActivityForResult(Intent.createChooser(pickFileIntent, "Select a File Manager"), 0);
 	}
 
+	// Called when an Activity invoked from this Fragment finishes.
+	// This only catches when a file has been selected.
 	@Override
 	public void onActivityResult(int requestcode, int resultcode, Intent resultIntent)
 	{
@@ -332,6 +359,10 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		}
 	}
 
+	// Decrypts the selected file and stores the plaintext contents in Hyggelig/EncryptionTools/DecryptOutput/.
+	// Args:
+	// 	keyPassword - Selected private key's password. No effect when symmetric encryption is selected.
+	// Returns true on success, false on failure.
 	private boolean decryptFile(String keyPassword)
 	{
 		if ( targetFileURI == null )
@@ -339,6 +370,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		if ( password == null ) // We need this for the symmetric encryption password.
 			return false;
 
+		// Get the name and size of the file that we'll be decrypting.
 		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
 		if ( theCursor == null )
 			return false;
@@ -347,7 +379,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
 		theCursor.close();
 
-		// Fetch the file to be decrypted.
+		// Fetch the contents file to be decrypted.
 		byte[] contents = new byte[size];
 		try
 		{
@@ -369,8 +401,6 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			return false;
 		}
 
-		Log.w("hyggelig", Arrays.toString(contents));   // FIXME: REMOVE WHEN DONE
-
 		// Now decrypt the file and save it.
 		byte[] encBytes;
 		String encOutPath = outputDirPath + "DecryptOutput/";
@@ -381,8 +411,10 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		{
 			try
 			{
+				// Decrypt the AES-256-encrypted file.
 				encBytes = aes.decrypt(contents, 256, password.getText().toString());
 
+				// Save the decrypted contents.
 				FileOutputStream fileOS = new FileOutputStream(encOutPath + newName);
 				fileOS.write(encBytes);
 				fileOS.close();
@@ -406,6 +438,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		{
 			try
 			{
+				// As with encryption, PublicKey.decrypt() needs an actual file on disk to decrypt.
 				// Since Android doesn't like me using file paths very much, we're gonna need to make a temporary file.
 				File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/dec_temp");
 				tempFile.createNewFile();
@@ -413,6 +446,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 				tempFileOS.write(contents);
 				tempFileOS.close();
 
+				// Now we actually decrypt and save the file.
 				String[] params = {tempFile.getAbsolutePath(), instance.getPrivkeysPath() + privkeys[selectedKey], keyPassword, encOutPath + newName};
 				int returnStatus = PublicKey.decrypt(params);
 				tempFile.delete();
@@ -420,8 +454,12 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 				{
 					case 0:
 						break;
-					case -1:
+					case -1:	// Programmer error
 						throw new Exception("Not enough arguments");
+					case -2:	// Password is incorrect
+						Log.w("hyggelig", "Incorrect password for the private key");
+						alertError("Incorrect password for the private key");
+						return false;
 				}
 			}
 			catch ( Exception e )
@@ -443,11 +481,14 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		return true;
 	}
 
+	// Verifies a file with the selected public key and stores the contents (with the signature stripped) in Hyggelig/EncryptionTools/VerifiedFiles/.
+	// Return true on success, false on failure.
 	private boolean verifyFile()
 	{
 		if ( targetFileURI == null )
 			return false;
 
+		// Get the name and size of the file we'll be verifying.
 		Cursor theCursor = instance.getContentResolver().query(targetFileURI, null, null, null, null);
 		if ( theCursor == null )
 			return false;
@@ -456,6 +497,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		int size = (int)theCursor.getLong( theCursor.getColumnIndex(OpenableColumns.SIZE) );
 		theCursor.close();
 
+		// Read in the contents of the file being verified.
 		byte[] contents = new byte[size];
 		try
 		{
@@ -485,6 +527,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		int result;
 		try
 		{
+			// Again, PublicKey.verify() needs an actual file stored on disk.
 			// We'll need to create a temporary file, since Android doesn't like it when we use file paths.
 			File tempFile = new File(instance.getFilesDir().getAbsolutePath() + "/sign_temp");
 			tempFile.createNewFile();
@@ -492,7 +535,9 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			tempFileOS.write(contents);
 			tempFileOS.close();
 
+			// Verify the file, store the stripped contents, and get whether or not the file has a valid signature.
 			result = PublicKey.verify(tempFile.getAbsolutePath(), instance.getPubkeysPath() + pubkeys[selectedKey],signOutPath + newName);
+			tempFile.delete();
 		}
 		catch ( Exception e )
 		{
@@ -502,6 +547,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 			return false;
 		}
 
+		// Notify the user of the file's legitimacy/validity.
 		String status = "";
 		String additionalInfo = "";
 		switch (result)
@@ -535,6 +581,7 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 		return true;
 	}
 
+	// Alerts the user of an error.
 	// TODO: I really gotta move this into a utilities class or something.
 	private void alertError(String msg)
 	{
@@ -545,12 +592,13 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 				.show();
 	}
 
-	// TODO: When encryption is available, finish this up.
+	// Called when the user clicks on the "Decrypt/Verify" button, once they've set all necessary parameters.
 	private void executeAction()
 	{
 		Log.w("hyggelig", "executeAction");
 		Log.w("hyggelig", "mode = " + execMode);
 
+		// Check to make sure we actually have a file to decrypt or verify selected.
 		if ( targetFileURI == null )
 		{
 			Log.w("hyggelig", "no file URI provided");
@@ -565,7 +613,6 @@ public class DecryptVerifyFragment extends Fragment implements AdapterView.OnIte
 				if ( password != null )
 				{
 					final String encPass = password.getText().toString();
-					Log.w("hyggelig", "password = " + encPass); // FIXME: REMOVE WHEN DONE
 					if ( encPass.equals("") )   // Blank password.
 					{
 						alertError("No password provided");

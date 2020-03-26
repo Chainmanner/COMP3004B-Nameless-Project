@@ -18,6 +18,9 @@ import java.io.FileOutputStream;
 
 import project.comp3004.hyggelig.R;
 
+// Activity for the user to take a picture or record a video, then exit.
+// MUST be called from another activity. Only used in EncryptFilesFragment.
+// Authored by Gabriel Valachi (101068875).
 public class CameraActivity extends AppCompatActivity
 {
 	private Camera theCamera;
@@ -36,13 +39,15 @@ public class CameraActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.camera_preview);
 
+		// Open the camera for usage.
 		theCamera = getCamera();
 
+		// Create the preview.
 		thePreview = new CameraPreview(this, theCamera);
 		FrameLayout previewFrame = this.findViewById(R.id.camera_preview);
 		previewFrame.addView(thePreview);
 
-
+		// Get parameters for which this activity was called.
 		outPath = "";
 		recordVideo = false;
 		Bundle params = this.getIntent().getExtras();
@@ -52,6 +57,7 @@ public class CameraActivity extends AppCompatActivity
 			recordVideo = params.getBoolean("recordVideo");
 		}
 
+		// Callback for when a picture is taken.
 		thePictureCallback = new Camera.PictureCallback() {
 			@Override
 			public void onPictureTaken(byte[] data, Camera camera) {
@@ -62,11 +68,14 @@ public class CameraActivity extends AppCompatActivity
 			}
 		};
 
-		theRecorder = null;
+		theRecorder = null;	// Needed for recording videos.
 
+		// Set the capture button's click listener.
 		final Button button_capture = this.findViewById(R.id.button_capture);
-		if ( recordVideo )
+		if ( recordVideo )	// Video
 		{
+			// For video, have the button start the recording initially, then stop it when clicked again.
+			// This wouldn't be ideal for a normal camera application, but we're exiting when the recording's stopped, so that's fine.
 			button_capture.setText("Start");
 			button_capture.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -82,8 +91,9 @@ public class CameraActivity extends AppCompatActivity
 				}
 			});
 		}
-		else
+		else			// Picture
 		{
+			// Just take a picture on clicking the button.
 			button_capture.setText("Capture");
 			button_capture.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -99,6 +109,7 @@ public class CameraActivity extends AppCompatActivity
 	{
 		Log.w("hyggelig", "CameraActivity.onStart");
 		super.onStart();
+		// Nothing to do here.
 	}
 
 	@Override
@@ -106,10 +117,13 @@ public class CameraActivity extends AppCompatActivity
 	{
 		Log.w("hyggelig", "CameraActivity.onStop");
 		super.onStop();
+
+		// Release the camera resources so that other programs can use the camera.
 		theCamera.stopPreview();
 		theCamera.release();
 	}
 
+	// Safely get the Camera instance.
 	private static Camera getCamera()
 	{
 		Camera retCamera = null;
@@ -125,6 +139,7 @@ public class CameraActivity extends AppCompatActivity
 		return retCamera;
 	}
 
+	// Prepare the camera and video output, then start the recording.
 	private void startRecording()
 	{
 		theRecorder = new MediaRecorder();
@@ -156,6 +171,7 @@ public class CameraActivity extends AppCompatActivity
 		theRecorder.start();
 	}
 
+	// Stop the recording, release used resources, and terminate this CameraActivity with a successful result.
 	private void stopRecording()
 	{
 		if ( theRecorder == null )
@@ -174,6 +190,7 @@ public class CameraActivity extends AppCompatActivity
 		finish();
 	}
 
+	// Save the input data to the file indicated by outPath.
 	private void saveData(byte[] data)
 	{
 		File outFile = new File(outPath);
