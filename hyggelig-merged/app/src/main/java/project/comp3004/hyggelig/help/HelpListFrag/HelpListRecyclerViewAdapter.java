@@ -16,19 +16,17 @@ import project.comp3004.hyggelig.help.HelpListFrag.HelpTopicListContent.HelpTopi
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link HelpTopic} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRecyclerViewAdapter.ViewHolder> {
 
     private final List<HelpTopic> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private boolean showCategories;
 
-    public HelpListRecyclerViewAdapter(List<HelpTopic> topics, OnListFragmentInteractionListener listener) {
+    public HelpListRecyclerViewAdapter(List<HelpTopic> topics, OnListFragmentInteractionListener listener,
+                                       boolean showCategories) {
         mValues = topics;
         mListener = listener;
+        this.showCategories = showCategories;
     }
 
     @Override
@@ -40,7 +38,11 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mContentView.setText(mValues.get(position).topic);
+        if (showCategories){
+            holder.mContentView.setText(mValues.get(position).category);
+        }else{
+            holder.mContentView.setText(mValues.get(position).topic);
+        }
         holder.mTopic = mValues.get(position);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +51,11 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
                 if (mListener != null) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mTopic);
+                    if(showCategories){
+                        mListener.onListFragmentInteraction(holder.mTopic.category);
+                    }else {
+                        mListener.onListFragmentInteraction(holder.mTopic);
+                    }
                 }
             }
         });
@@ -68,12 +74,8 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.help_topic);
+            mContentView = view.findViewById(R.id.help_topic);
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
-        }
     }
 }

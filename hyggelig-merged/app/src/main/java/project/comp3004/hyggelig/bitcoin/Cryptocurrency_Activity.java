@@ -72,9 +72,6 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
     private  TextView balance_textview;
     private  TextView wallet_balance_textview;
 
-
-    private static RequestQueue REQUEST_QUEUE = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,11 +83,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         balance_textview = findViewById(R.id.addr_balance);
         wallet_balance_textview = findViewById(R.id.curr_wallet_balance_text);
 
-        //Make sure there's a Volley RequestQueue active
-        if(REQUEST_QUEUE==null){
-            REQUEST_QUEUE=Volley.newRequestQueue(this);
-        }
-        REQUEST_QUEUE.start();
+        HttpQueue.getHttpQueue(this.getApplicationContext()).startQueue();
 
         getWalletBalance();
     }
@@ -155,7 +148,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         //Tag requests so that they can be canceled if needed
         walletBalanceRequest.setTag(walletBalanceTag);
 
-        REQUEST_QUEUE.add(walletBalanceRequest);
+        HttpQueue.getHttpQueue(this.getApplicationContext()).queueRequest(walletBalanceRequest);
     }
 
     public void validateAddress (JsonObjectRequest callerRequest, String address, final String callerTag) {
@@ -183,10 +176,10 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
                     JSONObject data = response.getJSONObject("data");
 
                     if (status.equals("fail")) {
-                        REQUEST_QUEUE.cancelAll(callerTag);
+                        HttpQueue.getHttpQueue(null).dequeueRequests(callerTag);
                         balance_textview.setText("Error: " + data.getString("error_message"));
                     } else if(!data.getBoolean("is_valid")) {
-                        REQUEST_QUEUE.cancelAll(callerTag);
+                        HttpQueue.getHttpQueue(null).dequeueRequests(callerTag);
                         balance_textview.setText("The provided address is not valid for the current " +
                                 "cryptocurrency network.");
                     }
@@ -211,7 +204,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         Response.ErrorListener onError = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                REQUEST_QUEUE.cancelAll(callerTag);
+                HttpQueue.getHttpQueue(null).dequeueRequests(callerTag);
                 try{
                     JSONObject errorObject = new JSONObject(new String(error.networkResponse.data));
                     JSONObject data = errorObject.getJSONObject("data");
@@ -229,8 +222,8 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         //Tag requests so that they can be canceled if needed
         addressValidateRequest.setTag(validateAddressTag);
 
-        REQUEST_QUEUE.add(addressValidateRequest);
-        REQUEST_QUEUE.add(callerRequest);
+        HttpQueue.getHttpQueue(this).queueRequest(addressValidateRequest);
+        HttpQueue.getHttpQueue(this).queueRequest(callerRequest);
     }
 
     public void generateNewAddress(View view){
@@ -307,7 +300,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
         JsonObjectRequest addressGenRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                                                         callback, onError);
         addressGenRequest.setTag(generateAddressTag);
-        REQUEST_QUEUE.add(addressGenRequest);
+        HttpQueue.getHttpQueue(this).queueRequest(addressGenRequest);
     }
 
     public void getAddressBalance(View view){
@@ -356,7 +349,7 @@ public class Cryptocurrency_Activity extends AppCompatActivity{
                         balance_textview.setText("Error: " + data.getString("error_message"));
                     } else {
                         balance_textview.setText(String.format("Available Balance: %.2f BTC",
-                                data.getDouble("available_balance")/SATOSHI_VALUE));
+                                data.getDouble("available_balance")));
                     }
                 }catch(JSONException json_ex){
                     json_ex.printStackTrace();

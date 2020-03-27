@@ -1,0 +1,29 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday March 9: 
+  None
+Tuesday March 10: 
+  None
+Wednesday March 11: [1.5 Hours]
+  Teem meeting: [1.5 Hours]
+	  We discussed possible implementations for the google drive backup system
+    We discussed implementing UML pipe and filter diagrams for our project so far
+    We decided:
+      I will be working on UML pipe and filter diagrams with explanations for the encryption tools architecture
+      I will later be implementing a system to allow removing things from the google drive backup remotely
+      Lastly, I will be working on the descriptions for the help prompts
+Thursday March 12:
+  None
+Friday March 13:
+  Made rought sketch of UML pipe and filter diagrams
+Saturday March 14: [3 Hours]
+  Implemented UML pipe and filter diagrams for encryption tools architecture:
+    Encryption and Decryption, sign and verify, and private folder diagrams
+Sunday March 15: [3 Hours]
+  Made modifications to the pipe and filter diagrams
+    Merged encryption and Decryption into a single diagram to save space
+    Made tweaks to encryption/decryption diagram for clarity/correctness
+    Made tweaks to the private folder tool to correctly show how access methods worked (removed reference to a database)
+Total Time this Week (so far):
+  [7.5 Hours]

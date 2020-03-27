@@ -1,0 +1,18 @@
+Student: Gabriel Valachi
+ID: 101068875
+Last updated Sunday March 15, 2020.
+
+Tasks:
+	- Implemented symmetric encryption in the Encryption Tools. (3 hours)
+		- Much of the time was spent trying to work with the filesystem, but I settled with something that works, even if it's not optimal.
+	- Worked on the Keyring of the Encryption Tools. (3 hours)
+		- Displays public and private keys.
+		- Can import keys as well.
+		- No key generation yet.
+
+Total time: 6 hours
+
+Next Steps:
+	- Complete the Keyring.
+	- Implement public key encryption/decryption and signing/verification.
+	- Present the system design on Friday March 20.

@@ -23,6 +23,20 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_encryptionToolsMainMenuFragment3_to_keyringFragment"
+            app:destination="@id/keyringFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_encryptionToolsMainMenuFragment3_to_privateFolderFragment"
+            app:destination="@id/privateFolderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/encryptFilesFragment2"
@@ -34,4 +48,14 @@
         android:name="project.comp3004.hyggelig.encryptiontools.DecryptVerifyFragment"
         android:label="decrypt_file_layout"
         tools:layout="@layout/encryptiontools_decrypt_file_layout" />
+    <fragment
+        android:id="@+id/keyringFragment"
+        android:name="project.comp3004.hyggelig.encryptiontools.KeyringFragment"
+        android:label="encryptiontools_keyring_layout"
+        tools:layout="@layout/encryptiontools_keyring_layout" />
+    <fragment
+        android:id="@+id/privateFolderFragment"
+        android:name="project.comp3004.hyggelig.encryptiontools.PrivateFolderFragment"
+        android:label="encryptiontools_private_folder_layout"
+        tools:layout="@layout/encryptiontools_private_folder_layout" />
 </navigation>

@@ -115,7 +115,6 @@ public class PublicKey {
 		//now we export the private key with its sub keys with the specified user
 		keyStoreObject.exportPrivateKey(privateKeyName, args[1], Boolean.parseBoolean(args[3]));
 
-		//remove the keystore object, it is no longer needed
 		//specify the name of the keystore object in the current working directory (i.e. add './' to the start of the filename)
 		String s = "./" + args[4];
 		//open a file pointer for the keystore object

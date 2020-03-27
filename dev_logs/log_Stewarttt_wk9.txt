@@ -1,0 +1,23 @@
+Student: Connor Stewart
+ID: 101041125
+
+Monday March 9: 
+  None
+Tuesday March 10: 
+  None
+Wednesday March 11: [1.5 Hours]
+  Teem Discussion: [1.5 Hours]
+	  We discussed overall architecture and design for the application
+	  Preparation of topics for meeting with TA
+Thursday March 12:
+  None
+Friday March 13: [1 Hour]
+  Group meeting with TA for project
+Saturday March 14: [2.5 Hours]
+  Implemented delete functionality for google drive backend
+  Fixed bugs in google drive back end
+  Fixed some comments across multiple programs
+Sunday March 15: [1 Hours]
+  Created help button information for the buttons in the application
+Total Time this Week (so far):
+  [6 Hours]

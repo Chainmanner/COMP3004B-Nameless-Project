@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="project.comp3004.hyggelig">
 
-    <!-- TODO: Explicitly request these permissions. -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <uses-feature android:name="android.hardware.Camera" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="project.comp3004.hyggelig.encryptiontools.EncryptFilesFragment"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
 
         <!-- Entry point Activity. -->
         <activity
@@ -27,20 +39,23 @@
             <!-- <nav-graph android:value="@navigation/navigation" /> -->
         </activity>
 
+        <!-- Encryption Tools -->
         <activity
             android:name="project.comp3004.hyggelig.encryptiontools.EncryptionTools_MainActivity"
             android:label="Encryption Tools"
             android:theme="@style/AppTheme.NoActionBar">
             <nav-graph android:value="@navigation/encryptiontools_navigation" />
         </activity>
+        <activity android:name="project.comp3004.hyggelig.camera.CameraActivity"
+            android:label="Camera"
+            android:screenOrientation="landscape" />
+
+        <!-- Passwords -->
         <activity
             android:name="project.comp3004.hyggelig.password.Password_MainActivity"
             android:label="Password Utilities"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
-        <!-- Passwords -->
-        <!-- TODO: Not a good idea to have a new Activity for each submenu. -->
         <activity
             android:name="project.comp3004.hyggelig.password.PasswordGenerator"
             android:label="Password Utilities"
@@ -53,7 +68,6 @@
         </activity>
 
         <!-- Bitcoin and Help -->
-        <!-- TODO: Separate these! -->
         <activity
             android:name="project.comp3004.hyggelig.bitcoin.Cryptocurrency_Activity"
             android:label="Password Utilities"

@@ -14,4 +14,4 @@ Mar 8
 		- Writing overall architecture description
 		- Writing Cryptocurrency architecture description					[3 hrs]
 ______________________________________________________
-Total hours:		
+Total hours:		7.5 hours
