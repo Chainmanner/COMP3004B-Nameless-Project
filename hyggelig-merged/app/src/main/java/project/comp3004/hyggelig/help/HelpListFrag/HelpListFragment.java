@@ -22,34 +22,16 @@ import java.util.Map;
 
 /**
  * A fragment representing a list of HelpTopics.
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- * Currently generates HelpTopicListContents based on stored String arrays. Would be nicer if the
- * topics could be generated from a database or a textfile or something.
+ * Activities containing this fragment MUST implement both {@link OnListFragmentInteractionListener}
+ * interfaces.
+ * Help topics are stored as text in the HelpDB.db file. The database is accessed through the Android
+ * Room classes in the HelpDb package.
  */
 public class HelpListFragment extends Fragment {
 
     private OnListFragmentInteractionListener mListener;
     private TopicList[] topics;
     private boolean showCategories;
-//    private static String[] topLevelTopics = {"Passwords","File Encryption","Cryptocurrency Wallet"};
-//    private static String[] passwordTopics =   {   "What is a Password Manager?", "Why shouldn't I reuse passwords?",
-//                                            "What makes a password \"good\"?"
-//                                        };
-//    private static String[] encryptionTopics = {   "Why should I encrypt my files?",
-//                                            "How does encryption work?", "What is an encryption key?"
-//                                        };
-//    private static String[] cryptoTopics = {    "What is a cryptocurrency?", "How do I get cryptocurrency?",
-//                                                "What is a cryptocurrency wallet?"
-//                                            };
-//
-//    private static Map<String, String[]> helpTopics = new HashMap<String, String[]>();
-//    static{
-//        helpTopics.put("top", topLevelTopics);
-//        helpTopics.put(topLevelTopics[0].toLowerCase(), passwordTopics);
-//        helpTopics.put(topLevelTopics[1].toLowerCase(), encryptionTopics);
-//        helpTopics.put(topLevelTopics[2].toLowerCase(), cryptoTopics);
-//    }
 
     /**So this currently get a string from when the user taps on a topic
      * This should probably be changed to something like an ID

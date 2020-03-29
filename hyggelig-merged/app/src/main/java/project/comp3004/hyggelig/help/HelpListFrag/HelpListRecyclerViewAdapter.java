@@ -8,9 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-//import com.example.myfirstapp.HelpListFrag.HelpListFragment.OnListFragmentInteractionListener;
-//import com.example.myfirstapp.HelpListFrag.HelpTopicListContent.HelpTopic;
-//import com.example.myfirstapp.R;
 import project.comp3004.hyggelig.help.HelpListFrag.HelpListFragment.OnListFragmentInteractionListener;
 import project.comp3004.hyggelig.help.HelpListFrag.HelpTopicListContent.HelpTopic;
 
@@ -49,8 +46,6 @@ public class HelpListRecyclerViewAdapter extends RecyclerView.Adapter<HelpListRe
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     if(showCategories){
                         mListener.onListFragmentInteraction(holder.mTopic.category);
                     }else {

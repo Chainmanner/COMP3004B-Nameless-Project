@@ -39,8 +39,7 @@ public class HelpTopicListContent {
 
     /**
      * A class representing a help topic
-     * Right now only contains a String with the topic itself, but could easily be extended to
-     * include more information. (E.g. if topics are made searchable)
+     * Contains the help topic, the category of the topic, and the topicID (from the database)
      */
     public static class HelpTopic {
         public final String topic;
