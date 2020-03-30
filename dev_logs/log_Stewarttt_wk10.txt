@@ -1,0 +1,7 @@
+Student: Connor Stewart
+ID: 101041125
+
+Mar 23 - Mar 29
+  All tasks related to application backend completed. No work left this week.
+  Talked with group members during discord meetings
+  Begining work for D4
