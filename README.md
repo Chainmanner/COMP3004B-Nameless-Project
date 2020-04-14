@@ -53,7 +53,7 @@ Team name: Hyggelig Security
 Group members:
 - Gabriel Valachi (Chainmanner)
   - Implemented the Encryption Tools.
-- Kevin Sullival (KRsully)
+- Kevin Sullivan (KRsully)
   - Implemented the Bitcoin Wallet and the Help topics.
 - Conner Stewart (Stewarttt)
   - Implemented cryptography functions, and wrappers for some libraries.
