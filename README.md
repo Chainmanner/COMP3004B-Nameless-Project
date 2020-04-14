@@ -44,6 +44,9 @@ However, keep the following in mind:
   - The library has not been publicly vetted for vulnerabilities, backdoors, or anti-features.
 - Since this application is written in Java, secrets are not scrubbed from memory when no longer in use.
   - Risk unknown due to Android's security measures.
+- We were planning to add in the ability to back up the password database, private folder contents, etc. to Google Drive.
+  - However, we did not have enough time to implement that.
+  - Some example code Conner found is present under googleDriveBackend/.
 
 # Metadata
 Team name: Hyggelig Security
