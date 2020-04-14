@@ -43,7 +43,7 @@ import org.json.JSONObject;
  */
 public class Cryptocurrency_Activity extends AppCompatActivity{
     //https://block.io/docs/basic
-    private static final String BITCOIN_TESTNET_API_KEY = "c7fc-7d3f-10f7-930f";
+    private static final String BITCOIN_TESTNET_API_KEY = "REMOVED";	// Gabriel: Don't bother looking in past commits, that key's useless now.
     private static final double SATOSHI_VALUE = 100000000.0;
     private static final String BLOCKIO_URL_BASE = "https://block.io/api/v2/";
     private static final String WALLET_BALANCE_QUERY = "get_balance/?api_key=";
