@@ -4,7 +4,7 @@ Repository for our COMP3004B (Object-Oriented Software Engineering) project.
 # Description
 Our task in COMP3004B, taught by Olga Baysal at Carleton University, was to get into groups of four and create a mobile application. Our group chose to make a privacy- and security-oriented application that allows the user to generate and store passwords; encrypt/decrypt and sign/verify sensitive files; quickly generate a cryptocurrency wallet and check its balance; and access topics on how to keep themselves secure.
 
-Our main project is under "hyggelig-merged".
+Our main project code is under hyggelig-merged/.
 
 The project has four groups of tools:
 - Password Tools
